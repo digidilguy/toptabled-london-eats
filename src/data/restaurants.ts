@@ -1,4 +1,3 @@
-
 import { Tag } from './tags';
 
 export interface Restaurant {
@@ -9,7 +8,8 @@ export interface Restaurant {
   voteCount: number;
   dateAdded: string;
   imageUrl: string;
-  weeklyVoteIncrease?: number; // Added this property
+  weeklyVoteIncrease?: number;
+  status: 'pending' | 'approved' | 'rejected';
 }
 
 export const restaurants: Restaurant[] = [
@@ -133,7 +133,7 @@ export const restaurants: Restaurant[] = [
     imageUrl: 'https://source.unsplash.com/random/300x200/?thai,cooking',
     weeklyVoteIncrease: 19,
   },
-];
+].map(restaurant => ({ ...restaurant, status: 'approved' }));
 
 // Helper function to get weekly trending restaurants
 export const getTrendingRestaurants = (allRestaurants: Restaurant[], limit = 5) => {
