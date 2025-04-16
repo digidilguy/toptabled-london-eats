@@ -1,6 +1,6 @@
 
 import { useRestaurants } from "@/context/RestaurantContext";
-import { MapPin, ThumbsDown, ThumbsUp, Tag } from "lucide-react";
+import { MapPin, ThumbsDown, ThumbsUp } from "lucide-react";
 import { tags } from "@/data/tags";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
@@ -62,20 +62,17 @@ const RestaurantGrid = () => {
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <div className="flex flex-wrap gap-1">
                 {restaurant.tagIds && restaurant.tagIds.length > 0 ? (
-                  restaurant.tagIds.map(tagId => {
+                  restaurant.tagIds.map((tagId) => {
                     const tag = tags.find(t => t.id === tagId);
-                    if (tag) {
-                      return (
-                        <Badge 
-                          key={tagId}
-                          variant="secondary"
-                          className="text-xs px-2 py-0.5 bg-secondary/50 rounded-full text-accent/80"
-                        >
-                          {tag.name}
-                        </Badge>
-                      );
-                    }
-                    return null;
+                    return tag ? (
+                      <Badge 
+                        key={tagId}
+                        variant="secondary"
+                        className="text-xs px-2 py-0.5 bg-secondary/50 rounded-full text-accent/80"
+                      >
+                        {tag.name}
+                      </Badge>
+                    ) : null;
                   })
                 ) : (
                   <span className="text-xs text-neutral">No tags</span>
