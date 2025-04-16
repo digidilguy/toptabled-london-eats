@@ -39,14 +39,12 @@ const RestaurantCard = ({
       return;
     }
 
-    // Check if user is trying to undo their vote
-    if (userVote === voteType) {
-      // Allow undoing a vote by voting again with the same type
-      voteForRestaurant(id, voteType);
-      setVoteAnimation('none');
-    } else {
-      // Normal voting flow
-      voteForRestaurant(id, voteType);
+    // Always call voteForRestaurant - the logic for checking if it's 
+    // the same vote (to remove it) is handled in the context
+    voteForRestaurant(id, voteType);
+    
+    // Only animate if this is a new vote or different from previous
+    if (userVote !== voteType) {
       setVoteAnimation(voteType);
       setTimeout(() => setVoteAnimation('none'), 300);
     }
@@ -117,7 +115,7 @@ const RestaurantCard = ({
             variant="ghost" 
             size="icon"
             className={`
-              ${voteAnimation === 'down' ? 'animate-vote-pulse' : ''}
+              ${voteAnimation === 'down' ? 'animate-vote-pulse' : ''} 
               ${userVote === 'down' ? 'text-downvote' : ''}
               hover:text-downvote
             `}
