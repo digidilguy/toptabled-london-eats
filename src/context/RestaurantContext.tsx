@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext } from 'react';
 import { restaurants as initialRestaurants } from '@/data/restaurants';
 import { RestaurantContextType, RestaurantProviderProps } from '@/types/restaurant';
@@ -21,7 +22,7 @@ export const RestaurantProvider: React.FC<RestaurantProviderProps> = ({ children
     trendingRestaurants,
     toggleTagFilter,
     clearTagFilters
-  } = useRestaurantFilters(restaurants, initialTagIds);
+  } = useRestaurantFilters(restaurants); // Remove the second argument here
 
   return (
     <RestaurantContext.Provider

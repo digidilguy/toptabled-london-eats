@@ -16,5 +16,5 @@ export interface RestaurantContextType {
 
 export interface RestaurantProviderProps {
   children: React.ReactNode;
-  initialTagIds?: string;
+  initialTagIds?: string; // This is no longer used but keeping for backwards compatibility
 }
