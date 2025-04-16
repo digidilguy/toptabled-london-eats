@@ -47,34 +47,34 @@ const RestaurantCard = ({
   }).filter(Boolean);
 
   return (
-    <Card className="restaurant-card overflow-hidden">
+    <Card className="restaurant-card group overflow-hidden transition-all duration-300 hover:shadow-xl">
       <div className="relative h-48 overflow-hidden">
         <img 
           src={imageUrl} 
           alt={name} 
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+        <a 
+          href={googleMapsLink} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="absolute top-3 right-3 bg-white/90 p-2 rounded-full text-neutral hover:text-accent transition-colors"
+        >
+          <MapPin size={18} />
+        </a>
       </div>
       
-      <CardContent className="pt-4">
-        <div className="flex justify-between items-start mb-3">
-          <h3 className="font-bold text-lg">{name}</h3>
-          <a 
-            href={googleMapsLink} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-neutral hover:text-accent transition-colors"
-          >
-            <MapPin size={18} />
-          </a>
-        </div>
+      <CardContent className="relative pt-4">
+        <h3 className="font-bold text-lg mb-3 line-clamp-1">{name}</h3>
         
         <div className="flex flex-wrap gap-1 mb-4">
           {restaurantTags.map(tag => tag && (
             <span 
               key={tag.id}
-              className="tag"
               onClick={() => toggleTagFilter(tag.id)}
+              className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                bg-secondary text-accent hover:bg-accent hover:text-white transition-colors cursor-pointer"
             >
               {tag.name}
             </span>
@@ -82,12 +82,12 @@ const RestaurantCard = ({
         </div>
       </CardContent>
       
-      <CardFooter className="flex justify-between items-center border-t pt-3">
+      <CardFooter className="flex justify-between items-center border-t pt-3 bg-secondary/50">
         <div className="flex items-center space-x-4">
           <Button 
             variant="ghost" 
             size="icon"
-            className={`${voteAnimation === 'up' ? 'animate-vote-pulse text-upvote' : ''}`}
+            className={`${voteAnimation === 'up' ? 'animate-vote-pulse text-upvote' : ''} hover:text-upvote`}
             onClick={() => handleVote('up')}
           >
             <ThumbsUp size={18} />
@@ -100,7 +100,7 @@ const RestaurantCard = ({
           <Button 
             variant="ghost" 
             size="icon"
-            className={`${voteAnimation === 'down' ? 'animate-vote-pulse text-downvote' : ''}`}
+            className={`${voteAnimation === 'down' ? 'animate-vote-pulse text-downvote' : ''} hover:text-downvote`}
             onClick={() => handleVote('down')}
           >
             <ThumbsDown size={18} />
@@ -111,7 +111,7 @@ const RestaurantCard = ({
           href={googleMapsLink} 
           target="_blank" 
           rel="noopener noreferrer"
-          className="text-xs text-accent hover:underline flex items-center gap-1"
+          className="text-xs text-accent hover:text-accent/70 flex items-center gap-1 transition-colors"
         >
           <span>View on Maps</span>
           <ExternalLink size={12} />
