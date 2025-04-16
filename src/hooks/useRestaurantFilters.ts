@@ -50,7 +50,7 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
     
     // Filter trending to only show approved restaurants
     const trending = restaurants
-      .filter(r => r.status === 'approved')
+      .filter(r => r.status === 'rejected')
       .sort((a, b) => (b.weeklyVoteIncrease || 0) - (a.weeklyVoteIncrease || 0))
       .slice(0, 5);
     setTrendingRestaurants(trending);
