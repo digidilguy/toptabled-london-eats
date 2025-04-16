@@ -63,7 +63,12 @@ export const RestaurantProvider: React.FC<RestaurantProviderProps> = ({ children
         }
         filtered.sort((a, b) => b.voteCount - a.voteCount);
         setFilteredRestaurants(filtered);
-        setTrendingRestaurants(filtered.slice(0, 5));
+        
+        // Sort trending restaurants by weekly vote increase
+        const trending = [...filtered].sort((a, b) => 
+          (b.weeklyVoteIncrease || 0) - (a.weeklyVoteIncrease || 0)
+        ).slice(0, 5);
+        setTrendingRestaurants(trending);
       } catch (error) {
         console.error('Failed to parse stored restaurants:', error);
         setRestaurants(initialRestaurants);
@@ -105,8 +110,11 @@ export const RestaurantProvider: React.FC<RestaurantProviderProps> = ({ children
     
     setFilteredRestaurants(filtered);
     
-    // Update trending restaurants (top 5 by vote count)
-    setTrendingRestaurants(filtered.slice(0, 5));
+    // Update trending restaurants (top 5 by weekly vote increase)
+    const trending = [...filtered]
+      .sort((a, b) => (b.weeklyVoteIncrease || 0) - (a.weeklyVoteIncrease || 0))
+      .slice(0, 5);
+    setTrendingRestaurants(trending);
     
     // Save to localStorage
     localStorage.setItem('topbites-restaurants', JSON.stringify(restaurants));
