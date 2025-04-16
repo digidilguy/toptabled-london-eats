@@ -21,7 +21,7 @@ export const restaurants: Restaurant[] = [
     voteCount: 123,
     dateAdded: '2023-01-15',
     imageUrl: 'https://source.unsplash.com/random/300x200/?indian,food',
-    weeklyVoteIncrease: 15, // Added sample weekly vote increase
+    weeklyVoteIncrease: 15,
   },
   {
     id: '2',
@@ -135,7 +135,6 @@ export const restaurants: Restaurant[] = [
   },
 ].map(restaurant => ({ ...restaurant, status: 'approved' }));
 
-// Helper function to get weekly trending restaurants
 export const getTrendingRestaurants = (allRestaurants: Restaurant[], limit = 5) => {
   return [...allRestaurants]
     .sort((a, b) => (b.weeklyVoteIncrease || 0) - (a.weeklyVoteIncrease || 0))
