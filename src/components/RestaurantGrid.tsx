@@ -1,15 +1,11 @@
 
 import { useRestaurants } from "@/context/RestaurantContext";
-import { MapPin, ThumbsUp } from "lucide-react";
+import { MapPin, ThumbsDown, ThumbsUp } from "lucide-react";
 import { tags } from "@/data/tags";
-import { useEffect } from "react";
+import { Button } from "./ui/button";
 
 const RestaurantGrid = () => {
-  const { filteredRestaurants } = useRestaurants();
-  
-  useEffect(() => {
-    console.log("Rendered restaurants:", filteredRestaurants.length);
-  }, [filteredRestaurants]);
+  const { filteredRestaurants, voteForRestaurant, userVotes } = useRestaurants();
 
   if (!filteredRestaurants.length) {
     return (
@@ -30,9 +26,30 @@ const RestaurantGrid = () => {
           <div className="flex-1 space-y-3 sm:space-y-2">
             <div className="flex items-center justify-between">
               <h3 className="font-serif text-lg text-accent">{restaurant.name}</h3>
-              <div className="flex items-center gap-2 text-sm">
-                <ThumbsUp size={16} className={restaurant.voteCount > 0 ? "text-upvote" : "text-neutral"} />
-                <span className="text-neutral">{restaurant.voteCount}</span>
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => voteForRestaurant(restaurant.id, 'up')}
+                  className="text-upvote hover:text-upvote/80"
+                >
+                  <ThumbsUp 
+                    size={16} 
+                    className={userVotes[restaurant.id] === 'up' ? 'fill-current' : ''} 
+                  />
+                </Button>
+                <span className="text-sm font-medium">{restaurant.voteCount}</span>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => voteForRestaurant(restaurant.id, 'down')}
+                  className="text-downvote hover:text-downvote/80"
+                >
+                  <ThumbsDown 
+                    size={16} 
+                    className={userVotes[restaurant.id] === 'down' ? 'fill-current' : ''} 
+                  />
+                </Button>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
