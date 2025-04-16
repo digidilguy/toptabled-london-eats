@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -28,7 +27,6 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
   const { login, signup } = useAuth();
 
   const handleClose = () => {
-    // Reset form state
     setLoginEmail('');
     setLoginPassword('');
     setSignupName('');
@@ -46,19 +44,11 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
-    // Client-side validation
-    if (!validateEmail(loginEmail)) {
-      setError('Please enter a valid email address');
-      return;
-    }
-    
     setIsLoading(true);
     
     try {
-      await login(loginEmail.trim(), loginPassword);
+      await login(loginEmail, loginPassword);
       handleClose();
-      // Call onSuccess callback if it exists
       if (onSuccess) {
         onSuccess();
       }
@@ -76,29 +66,11 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
-    // Client-side validation
-    if (!signupName.trim()) {
-      setError('Name is required');
-      return;
-    }
-    
-    if (!validateEmail(signupEmail)) {
-      setError('Please enter a valid email address');
-      return;
-    }
-    
-    if (signupPassword.length < 6) {
-      setError('Password must be at least 6 characters long');
-      return;
-    }
-    
     setIsLoading(true);
     
     try {
-      await signup(signupName.trim(), signupEmail.trim(), signupPassword);
+      await signup(signupName, signupEmail, signupPassword);
       handleClose();
-      // Call onSuccess callback if it exists
       if (onSuccess) {
         onSuccess();
       }

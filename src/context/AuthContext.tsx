@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,16 +28,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const { toast } = useToast();
 
-  // Set up auth state listener and check for existing session
   useEffect(() => {
-    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, currentSession) => {
         setSession(currentSession);
         if (currentSession?.user) {
           const { id, email } = currentSession.user;
           
-          // Map Supabase user to our application user format
           const user: AuthUser = {
             id,
             email: email || 'unknown',
@@ -55,13 +51,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     );
 
-    // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
       setSession(currentSession);
       if (currentSession?.user) {
         const { id, email } = currentSession.user;
         
-        // Map Supabase user to our application user format
         const user: AuthUser = {
           id,
           email: email || 'unknown',
@@ -78,7 +72,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => subscription.unsubscribe();
   }, []);
 
-  // Mock users for demo - kept here for reference
   const mockUsers = [
     { 
       id: '550e8400-e29b-41d4-a716-446655440000', 
@@ -108,17 +101,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     try {
-      // Trim email to prevent whitespace issues
-      const trimmedEmail = email.trim();
+      const trimmedEmail = email.trim().toLowerCase();
       
-      // Basic email validation
-      if (!isValidEmail(trimmedEmail)) {
+      if (!trimmedEmail) {
         toast({
-          title: "Invalid email format",
-          description: "Please enter a valid email address",
+          title: "Email Required",
+          description: "Please enter an email address",
           variant: "destructive",
         });
-        throw new Error("Invalid email format");
+        throw new Error("Email is required");
       }
       
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -129,13 +120,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error) {
         toast({
           title: "Login failed",
-          description: error.message || "Invalid email or password. Try user@example.com / password",
+          description: error.message || "Invalid email or password",
           variant: "destructive",
         });
         throw error;
       }
       
-      // Success notifications handled by onAuthStateChange
       toast({
         title: "Login successful",
         description: `Welcome back!`,
@@ -148,17 +138,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signup = async (name: string, email: string, password: string) => {
     try {
-      // Trim email to prevent whitespace issues
-      const trimmedEmail = email.trim();
+      const trimmedEmail = email.trim().toLowerCase();
+      const trimmedName = name.trim();
       
-      // Basic email validation
-      if (!isValidEmail(trimmedEmail)) {
+      if (!trimmedName) {
         toast({
-          title: "Invalid email format",
-          description: "Please enter a valid email address",
+          title: "Name Required",
+          description: "Please enter your name",
           variant: "destructive",
         });
-        throw new Error("Invalid email format");
+        throw new Error("Name is required");
+      }
+      
+      if (!trimmedEmail) {
+        toast({
+          title: "Email Required",
+          description: "Please enter an email address",
+          variant: "destructive",
+        });
+        throw new Error("Email is required");
       }
       
       if (password.length < 6) {
@@ -175,7 +173,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         password,
         options: {
           data: {
-            name
+            name: trimmedName
           }
         }
       });
@@ -191,7 +189,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       toast({
         title: "Signup successful",
-        description: `Welcome to TopTabled, ${name}!`,
+        description: `Welcome to TopTabled, ${trimmedName}!`,
       });
     } catch (error) {
       console.error('Signup error:', error);
@@ -212,18 +210,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
     
-    // State is updated by onAuthStateChange
     toast({
       title: "Logged out",
       description: "You have been successfully logged out",
     });
-  };
-
-  // Helper email validation function
-  const isValidEmail = (email: string): boolean => {
-    // Simple regex for basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
   };
 
   const isAuthenticated = !!authUser;
