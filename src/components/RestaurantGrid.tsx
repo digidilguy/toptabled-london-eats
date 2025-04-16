@@ -12,6 +12,7 @@ const RestaurantGrid = () => {
   if (filteredRestaurants.length > 0) {
     console.log("Restaurant data sample:", filteredRestaurants[0]);
     console.log("First restaurant tags:", filteredRestaurants[0].tagIds);
+    console.log("First restaurant tag data:", filteredRestaurants[0].tagData);
   }
 
   if (!filteredRestaurants.length) {
@@ -62,16 +63,23 @@ const RestaurantGrid = () => {
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <div className="flex flex-wrap gap-1">
                 {restaurant.tagIds && restaurant.tagIds.length > 0 ? (
-                  restaurant.tagIds.map((tagId) => {
-                    // Look up the tag in our local tags array
-                    const tag = tags.find(t => t.id === tagId);
+                  restaurant.tagIds.map((tagId, index) => {
+                    // First try to get the tag name from tagData if available
+                    const tagName = restaurant.tagData && restaurant.tagData[index] 
+                      ? restaurant.tagData[index].name 
+                      : null;
+                    
+                    // Fallback to lookup from local tags if needed
+                    const localTag = tags.find(t => t.id === tagId);
+                    const displayName = tagName || (localTag ? localTag.name : tagId);
+                    
                     return (
                       <Badge 
                         key={tagId}
                         variant="secondary"
                         className="text-xs px-2 py-0.5 bg-secondary/50 rounded-full text-accent/80"
                       >
-                        {tag ? tag.name : tagId}
+                        {displayName}
                       </Badge>
                     );
                   })

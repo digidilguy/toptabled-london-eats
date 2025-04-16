@@ -1,15 +1,15 @@
-
 import { Tag } from './tags';
 
 export interface Restaurant {
   id: string;
   name: string;
   tagIds: string[];
+  tagData?: { id: string; name: string }[];
   googleMapsLink: string;
   voteCount: number;
   dateAdded: string;
   imageUrl: string;
-  weeklyVoteIncrease?: number;
+  weeklyVoteIncrease: number;
   status: 'pending' | 'approved' | 'rejected';
 }
 

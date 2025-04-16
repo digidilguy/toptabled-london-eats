@@ -11,6 +11,20 @@ export const useSupabaseRestaurants = () => {
   const { user } = useAuth();
   const { toast } = useToast();
 
+  // Fetch all tags first to have their data available
+  const { data: tagsData = [] } = useQuery({
+    queryKey: ['tags'],
+    queryFn: async () => {
+      const { data: tags, error } = await supabase
+        .from('tags')
+        .select('*');
+
+      if (error) throw error;
+      console.log('Supabase tags:', tags);
+      return tags;
+    }
+  });
+
   // Fetch restaurants with their tags
   const { data: rawRestaurants = [], isLoading } = useQuery({
     queryKey: ['restaurants'],
@@ -20,7 +34,8 @@ export const useSupabaseRestaurants = () => {
         .select(`
           *,
           restaurant_tags(
-            tags(*)
+            tag_id,
+            tags(id, name)
           )
         `)
         .order('vote_count', { ascending: false });
@@ -33,15 +48,26 @@ export const useSupabaseRestaurants = () => {
 
   // Transform Supabase data to match the Restaurant type
   const restaurants: Restaurant[] = rawRestaurants.map(restaurant => {
-    // Extract tag IDs from the restaurant_tags relation
+    // Extract tag IDs and names from the restaurant_tags relation
     const tagIds = restaurant.restaurant_tags
-      ? restaurant.restaurant_tags.map((rt: any) => rt.tags.id)
+      ? restaurant.restaurant_tags.map((rt: any) => rt.tag_id)
       : [];
+    
+    // Also extract tag data to have name information
+    const tagData = restaurant.restaurant_tags
+      ? restaurant.restaurant_tags.map((rt: any) => ({
+          id: rt.tag_id,
+          name: rt.tags?.name || ''
+        }))
+      : [];
+    
+    console.log(`Tags for restaurant ${restaurant.name}:`, tagData);
     
     return {
       id: restaurant.id,
       name: restaurant.name,
       tagIds: tagIds.filter(Boolean), // Remove any empty strings
+      tagData: tagData.filter((t: any) => t.id && t.name), // Include full tag data
       googleMapsLink: restaurant.google_maps_link || '',
       voteCount: restaurant.vote_count || 0,
       dateAdded: restaurant.date_added || new Date().toISOString(),
