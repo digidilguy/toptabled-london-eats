@@ -39,6 +39,9 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
       
       if (error) throw error;
       
+      // Make sure we have a valid response
+      if (!data) return {};
+      
       return data.reduce((acc, vote) => ({
         ...acc,
         [vote.restaurant_id]: vote.vote_type
@@ -67,11 +70,13 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
 
         // Update restaurant vote count
         const voteChange = voteType === 'up' ? -1 : 1;
+        
+        // Use proper PostgreSQL expression syntax
         const { error: updateError } = await supabase
           .from('restaurants')
-          .update({ 
-            vote_count: vote_count => `${vote_count} + ${voteChange}`,
-            weekly_vote_increase: weekly_vote_increase => `${weekly_vote_increase} + ${voteChange}`
+          .update({
+            vote_count: restaurants.find(r => r.id === restaurantId)?.voteCount + voteChange,
+            weekly_vote_increase: (restaurants.find(r => r.id === restaurantId)?.weeklyVoteIncrease || 0) + voteChange
           })
           .eq('id', restaurantId);
         
@@ -96,11 +101,12 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
       
       if (voteError) throw voteError;
       
+      // Use proper PostgreSQL expression syntax
       const { error: updateError } = await supabase
         .from('restaurants')
-        .update({ 
-          vote_count: vote_count => `${vote_count} + ${voteChange}`,
-          weekly_vote_increase: weekly_vote_increase => `${weekly_vote_increase} + ${voteChange}`
+        .update({
+          vote_count: restaurants.find(r => r.id === restaurantId)?.voteCount + voteChange,
+          weekly_vote_increase: (restaurants.find(r => r.id === restaurantId)?.weeklyVoteIncrease || 0) + voteChange
         })
         .eq('id', restaurantId);
       
@@ -125,6 +131,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
       }
     },
     onError: (error) => {
+      console.error('Vote error:', error);
       toast({
         title: "Error",
         description: error.message,
@@ -139,10 +146,15 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
       if (!isAuthenticated) throw new Error('Must be logged in to add restaurants');
       
       const id = restaurantData.name.toLowerCase().replace(/\s+/g, '-');
-      const newRestaurant: Omit<Restaurant, 'voteCount' | 'weeklyVoteIncrease'> = {
-        ...restaurantData,
+      const newRestaurant = {
         id,
-        dateAdded: new Date().toISOString().split('T')[0],
+        name: restaurantData.name,
+        googleMapsLink: restaurantData.googleMapsLink,
+        imageUrl: restaurantData.imageUrl,
+        tagIds: restaurantData.tagIds || [],
+        vote_count: 0,
+        weekly_vote_increase: 0,
+        date_added: new Date().toISOString().split('T')[0],
         status: isAdmin ? 'approved' : 'pending'
       };
 
@@ -163,6 +175,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
       });
     },
     onError: (error) => {
+      console.error('Add restaurant error:', error);
       toast({
         title: "Error",
         description: error.message,
