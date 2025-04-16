@@ -26,7 +26,7 @@ const IndexPage = () => {
             
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
               <div className="lg:col-span-1">
-                <div className="sticky top-4 space-y-6">
+                <div className="space-y-6 lg:sticky lg:top-4">
                   <TrendingLeaderboard />
                   <TagFilter />
                 </div>

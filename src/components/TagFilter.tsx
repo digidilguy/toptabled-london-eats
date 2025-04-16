@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRestaurants } from "@/context/RestaurantContext";
 import { tags, tagCategories, Tag, TagCategory } from "@/data/tags";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const TagFilter = () => {
   const { activeTagIds, toggleTagFilter, clearTagFilters } = useRestaurants();
@@ -38,39 +38,38 @@ const TagFilter = () => {
   };
 
   return (
-    <Card className="mb-6">
-      <div className="p-4">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold">Filter Restaurants</h2>
-          {hasActiveFilters && (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg font-bold">Filter Restaurants</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {hasActiveFilters && (
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <p className="text-sm text-neutral mb-2">Active filters:</p>
+              <div className="flex flex-wrap gap-1">
+                {getSelectedTagNames().map((name, index) => (
+                  <span key={index} className="text-xs bg-accent text-white px-2 py-1 rounded">
+                    {name}
+                  </span>
+                ))}
+              </div>
+            </div>
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={clearTagFilters}
               className="text-xs"
             >
-              Clear all filters
+              Clear all
             </Button>
-          )}
-        </div>
-        
-        {hasActiveFilters && (
-          <div className="mb-4">
-            <p className="text-sm text-neutral mb-2">Active filters:</p>
-            <div className="flex flex-wrap gap-1">
-              {getSelectedTagNames().map((name, index) => (
-                <span key={index} className="text-xs bg-accent text-white px-2 py-1 rounded">
-                  {name}
-                </span>
-              ))}
-            </div>
           </div>
         )}
         
         <Tabs defaultValue="area" className="w-full">
-          <TabsList className="w-full mb-2">
+          <TabsList className="grid grid-cols-3 w-full mb-2">
             {tagCategories.map(category => (
-              <TabsTrigger key={category.id} value={category.id} className="flex-1">
+              <TabsTrigger key={category.id} value={category.id}>
                 {category.name}
               </TabsTrigger>
             ))}
@@ -82,7 +81,7 @@ const TagFilter = () => {
             </TabsContent>
           ))}
         </Tabs>
-      </div>
+      </CardContent>
     </Card>
   );
 };
