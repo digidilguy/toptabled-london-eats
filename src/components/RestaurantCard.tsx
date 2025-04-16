@@ -50,7 +50,7 @@ const RestaurantCard = ({
           {restaurantTags.map(tag => tag && (
             <span 
               key={tag.id}
-              className="px-2 py-1 text-sm rounded-full bg-secondary text-accent"
+              className="px-2 py-1 text-sm rounded-full bg-secondary text-secondary-foreground"
             >
               {tag.name}
             </span>
@@ -61,37 +61,39 @@ const RestaurantCard = ({
           href={googleMapsLink} 
           target="_blank" 
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-accent hover:text-accent/70 transition-colors"
+          className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 transition-colors"
         >
           <span>View on Maps</span>
           <ExternalLink size={16} />
         </a>
       </CardContent>
 
-      <CardFooter className="border-t pt-4">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => handleVote('up')}
-            className={`${userVote === 'up' ? 'text-green-600 bg-green-50' : ''} hover:text-green-600 hover:bg-green-50`}
-          >
-            <ThumbsUp className={userVote === 'up' ? 'fill-current' : ''} />
-          </Button>
+      <CardFooter className="border-t pt-4 flex justify-between items-center">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handleVote('up')}
+          className={`${
+            userVote === 'up' ? 'bg-green-100 border-green-500' : ''
+          } text-green-600 hover:bg-green-100 hover:text-green-700 hover:border-green-500`}
+        >
+          <ThumbsUp className={userVote === 'up' ? 'fill-green-500' : ''} size={18} />
+        </Button>
 
-          <span className="font-medium">
-            {voteCount}
-          </span>
+        <span className="font-semibold text-lg mx-4">
+          {voteCount}
+        </span>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => handleVote('down')}
-            className={`${userVote === 'down' ? 'text-red-600 bg-red-50' : ''} hover:text-red-600 hover:bg-red-50`}
-          >
-            <ThumbsDown className={userVote === 'down' ? 'fill-current' : ''} />
-          </Button>
-        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handleVote('down')}
+          className={`${
+            userVote === 'down' ? 'bg-red-100 border-red-500' : ''
+          } text-red-600 hover:bg-red-100 hover:text-red-700 hover:border-red-500`}
+        >
+          <ThumbsDown className={userVote === 'down' ? 'fill-red-500' : ''} size={18} />
+        </Button>
       </CardFooter>
 
       <AuthDialog 
