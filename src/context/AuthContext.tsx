@@ -108,8 +108,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     try {
+      // Trim email to prevent whitespace issues
+      const trimmedEmail = email.trim();
+      
+      // Basic email validation
+      if (!isValidEmail(trimmedEmail)) {
+        toast({
+          title: "Invalid email format",
+          description: "Please enter a valid email address",
+          variant: "destructive",
+        });
+        throw new Error("Invalid email format");
+      }
+      
       const { data, error } = await supabase.auth.signInWithPassword({
-        email, 
+        email: trimmedEmail, 
         password
       });
       
@@ -135,8 +148,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signup = async (name: string, email: string, password: string) => {
     try {
+      // Trim email to prevent whitespace issues
+      const trimmedEmail = email.trim();
+      
+      // Basic email validation
+      if (!isValidEmail(trimmedEmail)) {
+        toast({
+          title: "Invalid email format",
+          description: "Please enter a valid email address",
+          variant: "destructive",
+        });
+        throw new Error("Invalid email format");
+      }
+      
+      if (password.length < 6) {
+        toast({
+          title: "Password too short",
+          description: "Password must be at least 6 characters long",
+          variant: "destructive",
+        });
+        throw new Error("Password too short");
+      }
+      
       const { data, error } = await supabase.auth.signUp({
-        email,
+        email: trimmedEmail,
         password,
         options: {
           data: {
@@ -182,6 +217,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       title: "Logged out",
       description: "You have been successfully logged out",
     });
+  };
+
+  // Helper email validation function
+  const isValidEmail = (email: string): boolean => {
+    // Simple regex for basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
   const isAuthenticated = !!authUser;

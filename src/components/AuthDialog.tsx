@@ -5,6 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 import { useAuth } from '@/context/AuthContext';
 
 interface AuthDialogProps {
@@ -36,13 +38,25 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
     onClose();
   };
 
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email.trim());
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    
+    // Client-side validation
+    if (!validateEmail(loginEmail)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+    
     setIsLoading(true);
     
     try {
-      await login(loginEmail, loginPassword);
+      await login(loginEmail.trim(), loginPassword);
       handleClose();
       // Call onSuccess callback if it exists
       if (onSuccess) {
@@ -62,10 +76,27 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    
+    // Client-side validation
+    if (!signupName.trim()) {
+      setError('Name is required');
+      return;
+    }
+    
+    if (!validateEmail(signupEmail)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+    
+    if (signupPassword.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+    
     setIsLoading(true);
     
     try {
-      await signup(signupName, signupEmail, signupPassword);
+      await signup(signupName.trim(), signupEmail.trim(), signupPassword);
       handleClose();
       // Call onSuccess callback if it exists
       if (onSuccess) {
@@ -129,7 +160,10 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
               </div>
               
               {error && (
-                <p className="text-red-500 text-sm">{error}</p>
+                <Alert variant="destructive" className="py-2">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription className="text-sm ml-2">{error}</AlertDescription>
+                </Alert>
               )}
               
               <div className="text-xs text-neutral">
@@ -182,7 +216,10 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
               </div>
               
               {error && (
-                <p className="text-red-500 text-sm">{error}</p>
+                <Alert variant="destructive" className="py-2">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription className="text-sm ml-2">{error}</AlertDescription>
+                </Alert>
               )}
               
               <Button type="submit" className="w-full" disabled={isLoading}>
