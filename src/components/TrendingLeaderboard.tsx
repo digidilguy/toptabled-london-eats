@@ -20,7 +20,7 @@ const TrendingLeaderboard = () => {
 
   return (
     <Card className="mb-6">
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-3">  {/* Reduced bottom padding */}
         <CardTitle className="text-lg font-bold flex items-center">
           <span className="mr-2">Trending This Week</span>
           <TrendingUp size={18} className="text-upvote" />

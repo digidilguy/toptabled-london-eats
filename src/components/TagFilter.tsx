@@ -1,4 +1,3 @@
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -40,7 +39,7 @@ const TagFilter = () => {
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-bold">Filter Restaurants</CardTitle>
+        <CardTitle className="text-lg font-normal">Filter Restaurants</CardTitle>
       </CardHeader>
       <CardContent>
         {hasActiveFilters && (

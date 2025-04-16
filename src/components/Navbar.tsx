@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { useAuth } from '@/context/AuthContext';
@@ -18,7 +17,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <a href="/" className="flex items-center">
-              <span className="text-xl font-bold text-primary">TopTabled</span>
+              <span className="text-xl font-bold text-primary">LeaderEats</span>
               <span className="text-xs ml-2 bg-accent text-white px-1.5 py-0.5 rounded">London</span>
             </a>
           </div>
