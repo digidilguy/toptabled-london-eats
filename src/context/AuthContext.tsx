@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 interface User {
   id: string;
@@ -31,11 +31,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const storedUser = localStorage.getItem('toptabled-user');
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser));
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+        console.log('User loaded from localStorage:', parsedUser);
       } catch (error) {
         console.error('Failed to parse stored user:', error);
         localStorage.removeItem('toptabled-user');
       }
+    } else {
+      console.log('No user found in localStorage');
     }
   }, []);
 
@@ -54,6 +58,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { password, ...userWithoutPassword } = foundUser;
       setUser(userWithoutPassword);
       localStorage.setItem('toptabled-user', JSON.stringify(userWithoutPassword));
+      console.log('User logged in:', userWithoutPassword);
       toast({
         title: "Login successful",
         description: `Welcome back, ${userWithoutPassword.name}!`,
@@ -91,6 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     setUser(newUser);
     localStorage.setItem('toptabled-user', JSON.stringify(newUser));
+    console.log('New user signed up:', newUser);
     
     toast({
       title: "Signup successful",
@@ -99,6 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
+    console.log('User logged out');
     setUser(null);
     localStorage.removeItem('toptabled-user');
     toast({
@@ -107,13 +114,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
+  const isAuthenticated = !!user;
+  const isAdmin = user?.isAdmin || false;
+  const isPremium = user?.isPremium || false;
+
+  console.log('isAdmin:', isAdmin);
+
   return (
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: !!user,
-        isAdmin: user?.isAdmin || false,
-        isPremium: user?.isPremium || false,
+        isAuthenticated,
+        isAdmin,
+        isPremium,
         login,
         signup,
         logout

@@ -8,7 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 
 export const useSupabaseRestaurants = () => {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
 
   // Fetch all tags first to have their data available
@@ -89,6 +89,8 @@ export const useSupabaseRestaurants = () => {
         .eq('user_id', user.id);
 
       if (error) throw error;
+      
+      console.log('User votes:', votes);
 
       return votes.reduce((acc: Record<string, 'up' | 'down'>, vote) => {
         acc[vote.restaurant_id] = vote.vote_type as 'up' | 'down';
@@ -105,6 +107,8 @@ export const useSupabaseRestaurants = () => {
         throw new Error('Must be logged in to vote');
       }
 
+      console.log(`Submitting vote: ${voteType} for restaurant ${restaurantId} by user ${user.id}`);
+
       const { error } = await supabase
         .from('votes')
         .upsert({
@@ -113,7 +117,10 @@ export const useSupabaseRestaurants = () => {
           vote_type: voteType
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Vote error:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['restaurants'] });
@@ -122,16 +129,31 @@ export const useSupabaseRestaurants = () => {
   });
 
   const voteForRestaurant = async (restaurantId: string, voteType: 'up' | 'down') => {
+    console.log(`Vote requested for ${restaurantId}, type: ${voteType}`);
+    console.log('Authentication status:', { isAuthenticated, user });
+    
+    if (!isAuthenticated || !user) {
+      console.log('Not authenticated, showing toast');
+      toast({
+        title: 'Authentication required',
+        description: 'You need to log in to vote for restaurants',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     try {
+      console.log('Submitting vote mutation');
       await voteMutation.mutateAsync({ restaurantId, voteType });
       toast({
         title: 'Success!',
         description: `Your vote has been recorded`,
       });
     } catch (error) {
+      console.error('Vote error:', error);
       toast({
         title: 'Error',
-        description: 'You must be logged in to vote',
+        description: error instanceof Error ? error.message : 'Failed to record your vote',
         variant: 'destructive',
       });
     }
