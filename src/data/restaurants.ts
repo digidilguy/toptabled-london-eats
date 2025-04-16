@@ -150,7 +150,7 @@ export const restaurants: Restaurant[] = [
     name: 'Henry Test 3',
     tagIds: ['french', 'michelin-star', 'mayfair'],
     googleMapsLink: 'https://goo.gl/maps/example',
-    voteCount: 0,
+    voteCount: 15,
     dateAdded: '2025-04-16',
     imageUrl: 'https://source.unsplash.com/random/300x200/?french,restaurant',
     weeklyVoteIncrease: 0,
