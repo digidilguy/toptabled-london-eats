@@ -1,6 +1,6 @@
 
 import { useRestaurants } from "@/context/RestaurantContext";
-import { MapPin, ThumbsUp } from "lucide-react";
+import { ThumbsUp, MapPin } from "lucide-react";
 import { tags } from "@/data/tags";
 import { useEffect } from "react";
 
@@ -25,40 +25,37 @@ const RestaurantGrid = () => {
       {filteredRestaurants.map((restaurant) => (
         <div 
           key={restaurant.id}
-          className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
+          className="flex flex-col p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
         >
-          <div className="flex-1 space-y-3 sm:space-y-2">
-            <div className="flex items-center justify-between">
-              <h3 className="font-serif text-lg text-accent">{restaurant.name}</h3>
-              <div className="flex items-center gap-2 text-sm">
-                <ThumbsUp size={16} className={restaurant.voteCount > 0 ? "text-upvote" : "text-neutral"} />
-                <span className="text-neutral">{restaurant.voteCount}</span>
-              </div>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-xl font-medium">{restaurant.name}</h3>
+            <div className="flex items-center gap-1.5">
+              <ThumbsUp size={18} className="text-green-500" />
+              <span className="text-green-500 font-medium">{restaurant.voteCount}</span>
             </div>
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-              <div className="flex flex-wrap gap-1">
-                {restaurant.tagIds.map(tagId => {
-                  const tag = tags.find(t => t.id === tagId);
-                  return tag && (
-                    <span 
-                      key={tag.id}
-                      className="text-xs px-2 py-0.5 bg-secondary/50 rounded-full text-accent/80"
-                    >
-                      {tag.name}
-                    </span>
-                  );
-                })}
-              </div>
-              <a 
-                href={restaurant.googleMapsLink} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 transition-colors"
-              >
-                <MapPin size={14} />
-                <span>View on Maps</span>
-              </a>
-            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {restaurant.tagIds.map(tagId => {
+              const tag = tags.find(t => t.id === tagId);
+              return tag && (
+                <span 
+                  key={tag.id}
+                  className="text-sm px-3 py-1 bg-gray-100 rounded-md text-gray-600"
+                >
+                  {tag.name}
+                </span>
+              );
+            })}
+            
+            <a 
+              href={restaurant.googleMapsLink} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-sm text-primary hover:text-primary/80 transition-colors ml-auto"
+            >
+              <MapPin size={16} />
+              <span>View on Maps</span>
+            </a>
           </div>
         </div>
       ))}
