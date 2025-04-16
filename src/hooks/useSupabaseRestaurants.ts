@@ -26,6 +26,7 @@ export const useSupabaseRestaurants = () => {
         .order('vote_count', { ascending: false });
 
       if (error) throw error;
+      console.log('Supabase response:', restaurants);
       return restaurants;
     }
   });
@@ -34,7 +35,7 @@ export const useSupabaseRestaurants = () => {
   const restaurants: Restaurant[] = rawRestaurants.map(restaurant => {
     // Extract tag IDs from the restaurant_tags relation
     const tagIds = restaurant.restaurant_tags
-      ? restaurant.restaurant_tags.map((rt: any) => rt.tags?.id || '')
+      ? restaurant.restaurant_tags.map((rt: any) => rt.tags.id)
       : [];
     
     return {
