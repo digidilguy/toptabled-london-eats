@@ -9,7 +9,7 @@ export interface RestaurantContextType {
   toggleTagFilter: (tagId: string) => void;
   clearTagFilters: () => void;
   voteForRestaurant: (restaurantId: string, voteType: 'up' | 'down') => void;
-  addRestaurant: (restaurant: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded' | 'status'>) => void;
+  addRestaurant: (restaurant: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded'>) => void;
   getRestaurantById: (id: string) => Restaurant | undefined;
   userVotes: Record<string, 'up' | 'down'>;
 }
