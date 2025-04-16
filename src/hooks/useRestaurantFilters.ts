@@ -25,10 +25,10 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
     console.log('Current restaurants:', restaurants);
     console.log('isAdmin:', isAdmin);
     
-    // IMPORTANT FIX: Default all restaurants to 'approved' status if status is missing
+    // Apply filter for approved restaurants or include pending if admin
     let visibleRestaurants = restaurants.map(r => ({
       ...r,
-      status: r.status || 'approved'
+      status: r.status || 'approved' // Default to approved if status is missing
     }));
     
     // Filter restaurants that are approved or, if admin, include pending ones
@@ -38,6 +38,7 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
     
     console.log('Visible restaurants after status filter:', visibleRestaurants);
     
+    // Apply tag filters if any are active
     if (activeTagIds.length > 0) {
       visibleRestaurants = visibleRestaurants.filter(restaurant => 
         activeTagIds.every(tagId => restaurant.tagIds.includes(tagId))
@@ -51,6 +52,7 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
       }
     }
     
+    // Sort by vote count
     visibleRestaurants.sort((a, b) => b.voteCount - a.voteCount);
     setFilteredRestaurants(visibleRestaurants);
     
