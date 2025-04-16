@@ -1,3 +1,4 @@
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,7 +18,7 @@ const TagFilter = () => {
           <Badge 
             key={tag.id}
             variant={activeTagIds.includes(tag.id) ? "default" : "outline"}
-            className="cursor-pointer text-xs py-1.5"
+            className="cursor-pointer text-xs py-1.5 font-normal"
             onClick={() => toggleTagFilter(tag.id)}
           >
             {tag.name}
@@ -39,7 +40,7 @@ const TagFilter = () => {
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-normal">Filter Restaurants</CardTitle>
+        <CardTitle className="text-lg font-bold">Filter Restaurants</CardTitle>
       </CardHeader>
       <CardContent>
         {hasActiveFilters && (
