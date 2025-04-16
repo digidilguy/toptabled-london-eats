@@ -1,8 +1,8 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ThumbsUp, ThumbsDown, MapPin, ExternalLink } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, ExternalLink } from 'lucide-react';
 import { useRestaurants } from '@/context/RestaurantContext';
 import { useAuth } from '@/context/AuthContext';
 import { tags } from '@/data/tags';
@@ -14,7 +14,6 @@ interface RestaurantCardProps {
   tagIds: string[];
   googleMapsLink: string;
   voteCount: number;
-  imageUrl: string;
 }
 
 const RestaurantCard = ({
@@ -23,12 +22,10 @@ const RestaurantCard = ({
   tagIds,
   googleMapsLink,
   voteCount,
-  imageUrl
 }: RestaurantCardProps) => {
-  const { voteForRestaurant, toggleTagFilter, userVotes } = useRestaurants();
+  const { voteForRestaurant, userVotes } = useRestaurants();
   const { isAuthenticated } = useAuth();
-  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
-  const [voteAnimation, setVoteAnimation] = useState<'none' | 'up' | 'down'>('none');
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = React.useState(false);
 
   const userVote = userVotes[id];
 
@@ -37,101 +34,66 @@ const RestaurantCard = ({
       setIsAuthDialogOpen(true);
       return;
     }
-
     voteForRestaurant(id, voteType);
-    
-    setVoteAnimation(voteType);
-    setTimeout(() => setVoteAnimation('none'), 300);
   };
 
-  const restaurantTags = tagIds.map(tagId => {
-    return tags.find(tag => tag.id === tagId);
-  }).filter(Boolean);
+  const restaurantTags = tagIds
+    .map(tagId => tags.find(tag => tag.id === tagId))
+    .filter(Boolean);
 
   return (
-    <Card className="restaurant-card group overflow-hidden transition-all duration-300 hover:shadow-xl">
-      <div className="relative h-48 overflow-hidden">
-        <img 
-          src={imageUrl} 
-          alt={name} 
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-        <a 
-          href={googleMapsLink} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="absolute top-3 right-3 bg-white/90 p-2 rounded-full text-neutral hover:text-accent transition-colors"
-        >
-          <MapPin size={18} />
-        </a>
-      </div>
-      
-      <CardContent className="relative pt-4">
-        <h3 className="font-bold text-lg mb-3 line-clamp-1">{name}</h3>
+    <Card className="w-full">
+      <CardContent className="pt-6">
+        <h3 className="text-lg font-bold mb-3">{name}</h3>
         
-        <div className="flex flex-wrap gap-1 mb-4">
+        <div className="flex flex-wrap gap-2 mb-4">
           {restaurantTags.map(tag => tag && (
             <span 
               key={tag.id}
-              onClick={() => toggleTagFilter(tag.id)}
-              className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                bg-secondary text-accent hover:bg-accent hover:text-white transition-colors cursor-pointer"
+              className="px-2 py-1 text-sm rounded-full bg-secondary text-accent"
             >
               {tag.name}
             </span>
           ))}
         </div>
-      </CardContent>
-      
-      <CardFooter className="flex justify-between items-center border-t pt-3 bg-secondary/50">
-        <div className="flex items-center space-x-4">
-          {/* Upvote Button */}
-          <Button 
-            variant="ghost" 
-            size="icon"
-            className={`
-              ${voteAnimation === 'up' ? 'animate-vote-pulse' : ''} 
-              ${userVote === 'up' ? 'text-upvote bg-green-100' : ''}
-              hover:text-upvote hover:bg-green-100
-            `}
-            onClick={() => handleVote('up')}
-            aria-label="Upvote"
-          >
-            <ThumbsUp size={18} className={`${userVote === 'up' ? 'fill-current' : ''}`} />
-          </Button>
-          
-          <span className={`font-medium ${voteCount > 0 ? 'text-upvote' : voteCount < 0 ? 'text-downvote' : 'text-neutral'}`}>
-            {voteCount}
-          </span>
-          
-          {/* Downvote Button - Ensuring it's red and visible */}
-          <Button 
-            variant="ghost" 
-            size="icon"
-            className={`
-              ${voteAnimation === 'down' ? 'animate-vote-pulse' : ''} 
-              ${userVote === 'down' ? 'text-downvote bg-red-100' : ''}
-              hover:text-downvote hover:bg-red-100
-            `}
-            onClick={() => handleVote('down')}
-            aria-label="Downvote"
-          >
-            <ThumbsDown size={18} className={`${userVote === 'down' ? 'fill-current' : ''}`} />
-          </Button>
-        </div>
-        
+
         <a 
           href={googleMapsLink} 
           target="_blank" 
           rel="noopener noreferrer"
-          className="text-xs text-accent hover:text-accent/70 flex items-center gap-1 transition-colors"
+          className="inline-flex items-center gap-1 text-accent hover:text-accent/70 transition-colors"
         >
           <span>View on Maps</span>
-          <ExternalLink size={12} />
+          <ExternalLink size={16} />
         </a>
+      </CardContent>
+
+      <CardFooter className="border-t pt-4">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => handleVote('up')}
+            className={`${userVote === 'up' ? 'text-green-600 bg-green-50' : ''} hover:text-green-600 hover:bg-green-50`}
+          >
+            <ThumbsUp className={userVote === 'up' ? 'fill-current' : ''} />
+          </Button>
+
+          <span className="font-medium">
+            {voteCount}
+          </span>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => handleVote('down')}
+            className={`${userVote === 'down' ? 'text-red-600 bg-red-50' : ''} hover:text-red-600 hover:bg-red-50`}
+          >
+            <ThumbsDown className={userVote === 'down' ? 'fill-current' : ''} />
+          </Button>
+        </div>
       </CardFooter>
-      
+
       <AuthDialog 
         isOpen={isAuthDialogOpen} 
         onClose={() => setIsAuthDialogOpen(false)} 
