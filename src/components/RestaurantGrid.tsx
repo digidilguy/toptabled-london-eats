@@ -9,7 +9,10 @@ const RestaurantGrid = () => {
   const { filteredRestaurants, voteForRestaurant, userVotes } = useRestaurants();
 
   console.log("RestaurantGrid rendering with:", filteredRestaurants.length, "restaurants");
-  console.log("Restaurant data sample:", filteredRestaurants[0]);
+  if (filteredRestaurants.length > 0) {
+    console.log("Restaurant data sample:", filteredRestaurants[0]);
+    console.log("First restaurant tags:", filteredRestaurants[0].tagIds);
+  }
 
   if (!filteredRestaurants.length) {
     return (
