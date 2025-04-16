@@ -15,7 +15,7 @@ const IndexPage = () => {
           
           <div className="container mx-auto px-4 py-8">
             <header className="mb-12 text-center">
-              <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              <h1 className="font-serif text-4xl md:text-5xl mb-4 text-accent">
                 Top London Restaurants
               </h1>
               <p className="text-neutral max-w-2xl mx-auto text-lg">
