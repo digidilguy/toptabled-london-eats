@@ -71,7 +71,6 @@ const RestaurantGrid = () => {
                         variant="secondary"
                         className="text-xs px-2 py-0.5 bg-secondary/50 rounded-full text-accent/80"
                       >
-                        {/* Display tag name if found, otherwise display tagId */}
                         {tag ? tag.name : tagId}
                       </Badge>
                     );
