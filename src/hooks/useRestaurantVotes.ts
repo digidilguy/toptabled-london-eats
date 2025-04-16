@@ -128,13 +128,14 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
     });
   };
 
-  const addRestaurant = (restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded' | 'status'>) => {
+  const addRestaurant = (restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded' | 'status' | 'weeklyVoteIncrease'>) => {
     const newRestaurant: Restaurant = {
       ...restaurantData,
       id: (restaurants.length + 1).toString(),
       voteCount: 0,
       dateAdded: new Date().toISOString().split('T')[0],
-      status: isAdmin ? 'approved' : 'pending'
+      status: isAdmin ? 'approved' : 'pending',
+      weeklyVoteIncrease: 0
     };
 
     setRestaurants(prev => [...prev, newRestaurant]);

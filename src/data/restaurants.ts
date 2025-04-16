@@ -1,4 +1,3 @@
-
 import { Tag } from './tags';
 
 export interface Restaurant {
@@ -9,7 +8,8 @@ export interface Restaurant {
   voteCount: number;
   dateAdded: string;
   imageUrl: string;
-  weeklyVoteIncrease?: number; // Added this property
+  weeklyVoteIncrease?: number;
+  status: 'pending' | 'approved' | 'rejected';
 }
 
 export const restaurants: Restaurant[] = [
@@ -21,7 +21,8 @@ export const restaurants: Restaurant[] = [
     voteCount: 123,
     dateAdded: '2023-01-15',
     imageUrl: 'https://source.unsplash.com/random/300x200/?indian,food',
-    weeklyVoteIncrease: 15, // Added sample weekly vote increase
+    weeklyVoteIncrease: 15,
+    status: 'approved',
   },
   {
     id: '2',
@@ -32,6 +33,7 @@ export const restaurants: Restaurant[] = [
     dateAdded: '2023-02-01',
     imageUrl: 'https://source.unsplash.com/random/300x200/?pasta,italian',
     weeklyVoteIncrease: 12,
+    status: 'approved',
   },
   {
     id: '3',
@@ -42,6 +44,7 @@ export const restaurants: Restaurant[] = [
     dateAdded: '2023-01-20',
     imageUrl: 'https://source.unsplash.com/random/300x200/?pasta',
     weeklyVoteIncrease: 10,
+    status: 'approved',
   },
   {
     id: '4',
@@ -52,6 +55,7 @@ export const restaurants: Restaurant[] = [
     dateAdded: '2023-02-05',
     imageUrl: 'https://source.unsplash.com/random/300x200/?bao,asian',
     weeklyVoteIncrease: 8,
+    status: 'approved',
   },
   {
     id: '5',
@@ -62,6 +66,7 @@ export const restaurants: Restaurant[] = [
     dateAdded: '2023-01-25',
     imageUrl: 'https://source.unsplash.com/random/300x200/?mediterranean,food',
     weeklyVoteIncrease: 20,
+    status: 'approved',
   },
   {
     id: '6',
@@ -72,6 +77,7 @@ export const restaurants: Restaurant[] = [
     dateAdded: '2023-02-10',
     imageUrl: 'https://source.unsplash.com/random/300x200/?italian,restaurant',
     weeklyVoteIncrease: 18,
+    status: 'approved',
   },
   {
     id: '7',
@@ -82,6 +88,7 @@ export const restaurants: Restaurant[] = [
     dateAdded: '2023-01-18',
     imageUrl: 'https://source.unsplash.com/random/300x200/?spanish,tapas',
     weeklyVoteIncrease: 16,
+    status: 'approved',
   },
   {
     id: '8',
@@ -92,6 +99,7 @@ export const restaurants: Restaurant[] = [
     dateAdded: '2023-02-15',
     imageUrl: 'https://source.unsplash.com/random/300x200/?thai,food',
     weeklyVoteIncrease: 14,
+    status: 'approved',
   },
   {
     id: '9',
@@ -102,6 +110,7 @@ export const restaurants: Restaurant[] = [
     dateAdded: '2023-01-22',
     imageUrl: 'https://source.unsplash.com/random/300x200/?japanese,noodles',
     weeklyVoteIncrease: 22,
+    status: 'approved',
   },
   {
     id: '10',
@@ -112,6 +121,7 @@ export const restaurants: Restaurant[] = [
     dateAdded: '2023-02-20',
     imageUrl: 'https://source.unsplash.com/random/300x200/?sustainable,food',
     weeklyVoteIncrease: 25,
+    status: 'approved',
   },
   {
     id: '11',
@@ -122,6 +132,7 @@ export const restaurants: Restaurant[] = [
     dateAdded: '2023-01-28',
     imageUrl: 'https://source.unsplash.com/random/300x200/?srilanka,food',
     weeklyVoteIncrease: 13,
+    status: 'approved',
   },
   {
     id: '12',
@@ -132,8 +143,12 @@ export const restaurants: Restaurant[] = [
     dateAdded: '2023-02-25',
     imageUrl: 'https://source.unsplash.com/random/300x200/?thai,cooking',
     weeklyVoteIncrease: 19,
+    status: 'approved',
   },
-];
+].map(restaurant => ({ 
+  ...restaurant, 
+  status: restaurant.status || 'approved' 
+}));
 
 // Helper function to get weekly trending restaurants
 export const getTrendingRestaurants = (allRestaurants: Restaurant[], limit = 5) => {

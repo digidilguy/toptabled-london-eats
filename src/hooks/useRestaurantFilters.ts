@@ -1,13 +1,15 @@
 
 import { useState, useEffect } from 'react';
 import { Restaurant } from '@/data/restaurants';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 
 export const useRestaurantFilters = (restaurants: Restaurant[]) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTagIds, setActiveTagIds] = useState<string[]>([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>(restaurants);
   const [trendingRestaurants, setTrendingRestaurants] = useState<Restaurant[]>(restaurants.slice(0, 5));
+  const { isAdmin } = useAuth();
 
   // Initialize from URL params
   useEffect(() => {
@@ -19,10 +21,13 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
   }, []);
 
   useEffect(() => {
-    let filtered = [...restaurants];
+    // Filter restaurants that are approved or, if admin, include pending ones
+    let visibleRestaurants = isAdmin 
+      ? [...restaurants]
+      : restaurants.filter(r => r.status === 'approved');
     
     if (activeTagIds.length > 0) {
-      filtered = filtered.filter(restaurant => 
+      visibleRestaurants = visibleRestaurants.filter(restaurant => 
         activeTagIds.every(tagId => restaurant.tagIds.includes(tagId))
       );
       // Update URL when filters change
@@ -32,14 +37,15 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
       setSearchParams({});
     }
     
-    filtered.sort((a, b) => b.voteCount - a.voteCount);
-    setFilteredRestaurants(filtered);
+    visibleRestaurants.sort((a, b) => b.voteCount - a.voteCount);
+    setFilteredRestaurants(visibleRestaurants);
     
-    const trending = [...filtered]
+    // Filter trending to only show approved restaurants
+    const trending = [...visibleRestaurants]
       .sort((a, b) => (b.weeklyVoteIncrease || 0) - (a.weeklyVoteIncrease || 0))
       .slice(0, 5);
     setTrendingRestaurants(trending);
-  }, [restaurants, activeTagIds]);
+  }, [restaurants, activeTagIds, isAdmin]);
 
   const toggleTagFilter = (tagId: string) => {
     setActiveTagIds(prev => 
