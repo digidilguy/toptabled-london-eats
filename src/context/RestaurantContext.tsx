@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext } from 'react';
 import { restaurants as initialRestaurants } from '@/data/restaurants';
 import { RestaurantContextType, RestaurantProviderProps } from '@/types/restaurant';

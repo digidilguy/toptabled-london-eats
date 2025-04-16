@@ -1,21 +1,22 @@
 
 import { useState, useEffect } from 'react';
 import { Restaurant } from '@/data/restaurants';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 
-export const useRestaurantFilters = (restaurants: Restaurant[], initialTagIds = '') => {
+export const useRestaurantFilters = (restaurants: Restaurant[]) => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeTagIds, setActiveTagIds] = useState<string[]>([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>(restaurants);
   const [trendingRestaurants, setTrendingRestaurants] = useState<Restaurant[]>(restaurants.slice(0, 5));
 
+  // Initialize from URL params
   useEffect(() => {
-    if (initialTagIds) {
-      const tagsParam = new URLSearchParams(initialTagIds).get('tags');
-      if (tagsParam) {
-        const tagIds = tagsParam.split(',');
-        setActiveTagIds(tagIds);
-      }
+    const tagsParam = searchParams.get('tags');
+    if (tagsParam) {
+      const tagIds = tagsParam.split(',');
+      setActiveTagIds(tagIds);
     }
-  }, [initialTagIds]);
+  }, []);
 
   useEffect(() => {
     let filtered = [...restaurants];
@@ -24,6 +25,11 @@ export const useRestaurantFilters = (restaurants: Restaurant[], initialTagIds = 
       filtered = filtered.filter(restaurant => 
         activeTagIds.every(tagId => restaurant.tagIds.includes(tagId))
       );
+      // Update URL when filters change
+      setSearchParams({ tags: activeTagIds.join(',') });
+    } else {
+      // Clear URL params when no filters
+      setSearchParams({});
     }
     
     filtered.sort((a, b) => b.voteCount - a.voteCount);
@@ -45,6 +51,7 @@ export const useRestaurantFilters = (restaurants: Restaurant[], initialTagIds = 
 
   const clearTagFilters = () => {
     setActiveTagIds([]);
+    setSearchParams({});
   };
 
   return {
