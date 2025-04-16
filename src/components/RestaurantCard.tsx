@@ -25,10 +25,13 @@ const RestaurantCard = ({
   voteCount,
   imageUrl
 }: RestaurantCardProps) => {
-  const { voteForRestaurant, toggleTagFilter } = useRestaurants();
+  const { voteForRestaurant, toggleTagFilter, userVotes } = useRestaurants();
   const { isAuthenticated } = useAuth();
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const [voteAnimation, setVoteAnimation] = useState<'none' | 'up' | 'down'>('none');
+
+  // Get the user's vote for this restaurant
+  const userVote = userVotes[id];
 
   const handleVote = (voteType: 'up' | 'down') => {
     if (!isAuthenticated) {
@@ -36,9 +39,17 @@ const RestaurantCard = ({
       return;
     }
 
-    voteForRestaurant(id, voteType);
-    setVoteAnimation(voteType);
-    setTimeout(() => setVoteAnimation('none'), 300);
+    // Check if user is trying to undo their vote
+    if (userVote === voteType) {
+      // Allow undoing a vote by voting again with the same type
+      voteForRestaurant(id, voteType);
+      setVoteAnimation('none');
+    } else {
+      // Normal voting flow
+      voteForRestaurant(id, voteType);
+      setVoteAnimation(voteType);
+      setTimeout(() => setVoteAnimation('none'), 300);
+    }
   };
 
   // Get tag names from ids
@@ -87,8 +98,13 @@ const RestaurantCard = ({
           <Button 
             variant="ghost" 
             size="icon"
-            className={`${voteAnimation === 'up' ? 'animate-vote-pulse text-upvote' : ''} hover:text-upvote`}
+            className={`
+              ${voteAnimation === 'up' ? 'animate-vote-pulse' : ''} 
+              ${userVote === 'up' ? 'text-upvote' : ''}
+              hover:text-upvote
+            `}
             onClick={() => handleVote('up')}
+            aria-label="Upvote"
           >
             <ThumbsUp size={18} />
           </Button>
@@ -100,8 +116,13 @@ const RestaurantCard = ({
           <Button 
             variant="ghost" 
             size="icon"
-            className={`${voteAnimation === 'down' ? 'animate-vote-pulse text-downvote' : ''} hover:text-downvote`}
+            className={`
+              ${voteAnimation === 'down' ? 'animate-vote-pulse' : ''}
+              ${userVote === 'down' ? 'text-downvote' : ''}
+              hover:text-downvote
+            `}
             onClick={() => handleVote('down')}
+            aria-label="Downvote"
           >
             <ThumbsDown size={18} />
           </Button>

@@ -155,11 +155,34 @@ export const RestaurantProvider: React.FC<RestaurantProviderProps> = ({ children
     // Check if user has already voted for this restaurant
     const existingVote = userVotes[restaurantId];
     
+    // If user is clicking the same vote type they already selected, 
+    // treat it as removing their vote
     if (existingVote === voteType) {
+      const updatedVotes = { ...userVotes };
+      delete updatedVotes[restaurantId];
+      
+      setRestaurants(prev => 
+        prev.map(restaurant => {
+          if (restaurant.id === restaurantId) {
+            // Undo the previous vote
+            const updatedVoteCount = voteType === 'up' 
+              ? restaurant.voteCount - 1 
+              : restaurant.voteCount + 1;
+            
+            return {
+              ...restaurant,
+              voteCount: updatedVoteCount
+            };
+          }
+          return restaurant;
+        })
+      );
+      
+      setUserVotes(updatedVotes);
+      
       toast({
-        title: "Already voted",
-        description: `You have already ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
-        variant: "destructive",
+        title: "Vote removed",
+        description: `Your vote has been removed`,
       });
       return;
     }
@@ -176,7 +199,9 @@ export const RestaurantProvider: React.FC<RestaurantProviderProps> = ({ children
           
           return {
             ...restaurant,
-            voteCount: restaurant.voteCount + voteChange
+            voteCount: restaurant.voteCount + voteChange,
+            // Update weekly vote increase for trending calculation
+            weeklyVoteIncrease: (restaurant.weeklyVoteIncrease || 0) + (voteType === 'up' ? 1 : -1)
           };
         }
         return restaurant;
