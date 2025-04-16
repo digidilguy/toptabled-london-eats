@@ -12,7 +12,7 @@ export const useSupabaseRestaurants = () => {
   const { toast } = useToast();
 
   // Fetch restaurants with their tags
-  const { data: restaurants = [], isLoading } = useQuery({
+  const { data: rawRestaurants = [], isLoading } = useQuery({
     queryKey: ['restaurants'],
     queryFn: async () => {
       const { data: restaurants, error } = await supabase
@@ -28,6 +28,26 @@ export const useSupabaseRestaurants = () => {
       if (error) throw error;
       return restaurants;
     }
+  });
+
+  // Transform Supabase data to match the Restaurant type
+  const restaurants: Restaurant[] = rawRestaurants.map(restaurant => {
+    // Extract tag IDs from the restaurant_tags relation
+    const tagIds = restaurant.restaurant_tags
+      ? restaurant.restaurant_tags.map((rt: any) => rt.tags?.id || '')
+      : [];
+    
+    return {
+      id: restaurant.id,
+      name: restaurant.name,
+      tagIds: tagIds.filter(Boolean), // Remove any empty strings
+      googleMapsLink: restaurant.google_maps_link || '',
+      voteCount: restaurant.vote_count || 0,
+      dateAdded: restaurant.date_added || new Date().toISOString(),
+      imageUrl: restaurant.image_url || 'https://source.unsplash.com/random/300x200/?restaurant',
+      weeklyVoteIncrease: restaurant.weekly_vote_increase || 0,
+      status: restaurant.status as 'pending' | 'approved' | 'rejected' || 'approved',
+    };
   });
 
   // Fetch user votes if authenticated
