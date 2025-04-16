@@ -145,12 +145,22 @@ export const restaurants: Restaurant[] = [
     weeklyVoteIncrease: 19,
     status: 'approved',
   },
+  {
+    id: 'henry-test-3',
+    name: 'Henry Test 3',
+    tagIds: ['french', 'michelin-star', 'mayfair'],
+    googleMapsLink: 'https://goo.gl/maps/example',
+    voteCount: 0,
+    dateAdded: '2025-04-16',
+    imageUrl: 'https://source.unsplash.com/random/300x200/?french,restaurant',
+    weeklyVoteIncrease: 0,
+    status: 'approved'
+  }
 ].map(restaurant => ({
   ...restaurant,
   status: 'approved' as const
 }));
 
-// Helper function to get weekly trending restaurants
 export const getTrendingRestaurants = (allRestaurants: Restaurant[], limit = 5) => {
   return [...allRestaurants]
     .filter(r => r.status === 'approved')
