@@ -10,6 +10,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
   const { isAuthenticated, user } = useAuth();
   const { toast } = useToast();
 
+  // Initialize restaurants from localStorage or use initial data
   useEffect(() => {
     const storedRestaurants = localStorage.getItem('topbites-restaurants');
     if (storedRestaurants) {
@@ -24,6 +25,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
     }
   }, [initialRestaurants]);
 
+  // Load user votes from localStorage
   useEffect(() => {
     if (isAuthenticated && user?.email) {
       const storedVotes = localStorage.getItem(`topbites-votes-${user.email}`);
@@ -37,10 +39,12 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
     }
   }, [isAuthenticated, user]);
 
+  // Save restaurants to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('topbites-restaurants', JSON.stringify(restaurants));
   }, [restaurants]);
 
+  // Save user votes to localStorage whenever they change
   useEffect(() => {
     if (isAuthenticated && user?.email) {
       localStorage.setItem(`topbites-votes-${user.email}`, JSON.stringify(userVotes));
@@ -57,76 +61,61 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
       return;
     }
 
-    console.log(`Attempting to vote ${voteType} for restaurant ${restaurantId}`);
-    console.log(`Current user votes:`, userVotes);
-
+    console.log(`Voting ${voteType} for restaurant ${restaurantId}`);
+    
+    // Update restaurants with the new vote count
     setRestaurants(prevRestaurants => {
-      const updatedRestaurants = prevRestaurants.map(restaurant => {
+      return prevRestaurants.map(restaurant => {
         if (restaurant.id === restaurantId) {
           const currentVote = userVotes[restaurantId];
           let newVoteCount = restaurant.voteCount;
           
           // If user is clicking the same vote type they already selected, remove the vote
           if (currentVote === voteType) {
-            // Remove the vote
-            newVoteCount = voteType === 'up' 
-              ? newVoteCount - 1 
-              : newVoteCount + 1;
+            newVoteCount = voteType === 'up' ? newVoteCount - 1 : newVoteCount + 1;
             
-            // Update userVotes in the next tick to avoid state batching issues
-            setTimeout(() => {
-              const updatedVotes = { ...userVotes };
-              delete updatedVotes[restaurantId];
-              setUserVotes(updatedVotes);
-              
-              toast({
-                title: "Vote removed",
-                description: `Your vote has been removed`,
-              });
-            }, 0);
+            // Remove the user's vote
+            const updatedVotes = { ...userVotes };
+            delete updatedVotes[restaurantId];
+            setUserVotes(updatedVotes);
+            
+            toast({
+              title: "Vote removed",
+              description: `Your vote has been removed`,
+            });
           } 
           // If user is changing their vote from one type to another
           else if (currentVote) {
             // Change from down to up: +2 (remove down, add up)
             // Change from up to down: -2 (remove up, add down)
-            newVoteCount = voteType === 'up' 
-              ? newVoteCount + 2 
-              : newVoteCount - 2;
+            newVoteCount = voteType === 'up' ? newVoteCount + 2 : newVoteCount - 2;
             
-            // Update userVotes
-            setTimeout(() => {
-              setUserVotes(prev => ({
-                ...prev,
-                [restaurantId]: voteType
-              }));
-              
-              toast({
-                title: voteType === 'up' ? "Upvoted!" : "Downvoted!",
-                description: `You have ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
-              });
-            }, 0);
+            // Update the user's vote
+            setUserVotes({
+              ...userVotes,
+              [restaurantId]: voteType
+            });
+            
+            toast({
+              title: voteType === 'up' ? "Upvoted!" : "Downvoted!",
+              description: `You have ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
+            });
           } 
           // If user is voting for the first time
           else {
-            newVoteCount = voteType === 'up' 
-              ? newVoteCount + 1 
-              : newVoteCount - 1;
+            newVoteCount = voteType === 'up' ? newVoteCount + 1 : newVoteCount - 1;
             
-            // Update userVotes
-            setTimeout(() => {
-              setUserVotes(prev => ({
-                ...prev,
-                [restaurantId]: voteType
-              }));
-              
-              toast({
-                title: voteType === 'up' ? "Upvoted!" : "Downvoted!",
-                description: `You have ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
-              });
-            }, 0);
+            // Add the user's vote
+            setUserVotes({
+              ...userVotes,
+              [restaurantId]: voteType
+            });
+            
+            toast({
+              title: voteType === 'up' ? "Upvoted!" : "Downvoted!",
+              description: `You have ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
+            });
           }
-          
-          console.log(`Vote updated for restaurant ${restaurantId}: ${newVoteCount}`);
           
           return {
             ...restaurant,
@@ -136,8 +125,6 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         }
         return restaurant;
       });
-      
-      return updatedRestaurants;
     });
   };
 
