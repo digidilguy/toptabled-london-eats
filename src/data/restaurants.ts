@@ -1,3 +1,4 @@
+
 import { Tag } from './tags';
 
 export interface Restaurant {
@@ -147,7 +148,7 @@ export const restaurants: Restaurant[] = [
   },
 ].map(restaurant => ({ 
   ...restaurant, 
-  status: restaurant.status || 'approved' 
+  status: restaurant.status as 'pending' | 'approved' | 'rejected' || 'approved' 
 }));
 
 // Helper function to get weekly trending restaurants
