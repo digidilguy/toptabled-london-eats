@@ -12,9 +12,10 @@ import AuthDialog from "@/components/AuthDialog";
 import { tags } from "@/data/tags";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import TrendingLeaderboard from "@/components/TrendingLeaderboard";
 
 const RestaurantList = () => {
-  const { filteredRestaurants, voteForRestaurant, activeTagIds } = useRestaurants();
+  const { filteredRestaurants, voteForRestaurant, activeTagIds, userVotes } = useRestaurants();
   const { isAuthenticated } = useAuth();
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const [votingRestaurantId, setVotingRestaurantId] = useState<string | null>(null);
@@ -94,8 +95,9 @@ const RestaurantList = () => {
                     <Button 
                       variant="ghost" 
                       size="icon"
-                      className="text-upvote hover:text-upvote/80"
+                      className={`text-upvote hover:text-upvote/80 ${userVotes[restaurant.id] === 'up' ? 'bg-upvote/10' : ''}`}
                       onClick={() => handleVote(restaurant.id, 'up')}
+                      disabled={userVotes[restaurant.id] === 'up'}
                     >
                       <ThumbsUp size={18} />
                     </Button>
@@ -107,8 +109,9 @@ const RestaurantList = () => {
                     <Button 
                       variant="ghost" 
                       size="icon"
-                      className="text-downvote hover:text-downvote/80"
+                      className={`text-downvote hover:text-downvote/80 ${userVotes[restaurant.id] === 'down' ? 'bg-downvote/10' : ''}`}
                       onClick={() => handleVote(restaurant.id, 'down')}
+                      disabled={userVotes[restaurant.id] === 'down'}
                     >
                       <ThumbsDown size={18} />
                     </Button>
@@ -181,6 +184,7 @@ const IndexPage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               <div className="lg:col-span-1 space-y-6">
                 <TagFilter />
+                <TrendingLeaderboard />
               </div>
               
               <div className="lg:col-span-3">
