@@ -14,21 +14,39 @@ interface RestaurantContextType {
   voteForRestaurant: (restaurantId: string, voteType: 'up' | 'down') => void;
   addRestaurant: (restaurant: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded'>) => void;
   getRestaurantById: (id: string) => Restaurant | undefined;
+  userVotes: Record<string, 'up' | 'down'>;
 }
 
 const RestaurantContext = createContext<RestaurantContextType | undefined>(undefined);
 
-export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+interface RestaurantProviderProps {
+  children: React.ReactNode;
+  initialTagIds?: string;
+}
+
+export const RestaurantProvider: React.FC<RestaurantProviderProps> = ({ children, initialTagIds = '' }) => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>([]);
   const [trendingRestaurants, setTrendingRestaurants] = useState<Restaurant[]>([]);
   const [activeTagIds, setActiveTagIds] = useState<string[]>([]);
+  const [userVotes, setUserVotes] = useState<Record<string, 'up' | 'down'>>({});
   const { toast } = useToast();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+
+  // Parse tags from URL
+  useEffect(() => {
+    if (initialTagIds) {
+      const tagsParam = new URLSearchParams(initialTagIds).get('tags');
+      if (tagsParam) {
+        const tagIds = tagsParam.split(',');
+        setActiveTagIds(tagIds);
+      }
+    }
+  }, [initialTagIds]);
 
   // Load restaurants from localStorage or use initial data
   useEffect(() => {
-    const storedRestaurants = localStorage.getItem('toptabled-restaurants');
+    const storedRestaurants = localStorage.getItem('topbites-restaurants');
     if (storedRestaurants) {
       try {
         setRestaurants(JSON.parse(storedRestaurants));
@@ -39,7 +57,19 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     } else {
       setRestaurants(initialRestaurants);
     }
-  }, []);
+    
+    // Load user votes from localStorage
+    if (isAuthenticated && user?.email) {
+      const storedVotes = localStorage.getItem(`topbites-votes-${user.email}`);
+      if (storedVotes) {
+        try {
+          setUserVotes(JSON.parse(storedVotes));
+        } catch (error) {
+          console.error('Failed to parse stored votes:', error);
+        }
+      }
+    }
+  }, [isAuthenticated, user]);
 
   // Update filtered restaurants when restaurants or active tags change
   useEffect(() => {
@@ -60,8 +90,15 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setTrendingRestaurants(filtered.slice(0, 5));
     
     // Save to localStorage
-    localStorage.setItem('toptabled-restaurants', JSON.stringify(restaurants));
+    localStorage.setItem('topbites-restaurants', JSON.stringify(restaurants));
   }, [restaurants, activeTagIds]);
+
+  // Save user votes when they change
+  useEffect(() => {
+    if (isAuthenticated && user?.email) {
+      localStorage.setItem(`topbites-votes-${user.email}`, JSON.stringify(userVotes));
+    }
+  }, [userVotes, isAuthenticated, user]);
 
   // Toggle a tag filter on/off
   const toggleTagFilter = (tagId: string) => {
@@ -79,7 +116,7 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // Vote for a restaurant
   const voteForRestaurant = (restaurantId: string, voteType: 'up' | 'down') => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !user?.email) {
       toast({
         title: "Authentication required",
         description: "You need to log in to vote for restaurants",
@@ -88,18 +125,42 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       return;
     }
 
+    // Check if user has already voted for this restaurant
+    const existingVote = userVotes[restaurantId];
+    
+    if (existingVote === voteType) {
+      toast({
+        title: "Already voted",
+        description: `You have already ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setRestaurants(prev => 
       prev.map(restaurant => {
         if (restaurant.id === restaurantId) {
-          const voteValue = voteType === 'up' ? 1 : -1;
+          let voteChange = voteType === 'up' ? 1 : -1;
+          
+          // If changing vote, reverse previous vote first
+          if (existingVote) {
+            voteChange += existingVote === 'up' ? -1 : 1;
+          }
+          
           return {
             ...restaurant,
-            voteCount: restaurant.voteCount + voteValue
+            voteCount: restaurant.voteCount + voteChange
           };
         }
         return restaurant;
       })
     );
+    
+    // Update user votes
+    setUserVotes(prev => ({
+      ...prev,
+      [restaurantId]: voteType
+    }));
     
     toast({
       title: voteType === 'up' ? "Upvoted!" : "Downvoted!",
@@ -140,7 +201,8 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         clearTagFilters,
         voteForRestaurant,
         addRestaurant,
-        getRestaurantById
+        getRestaurantById,
+        userVotes
       }}
     >
       {children}
