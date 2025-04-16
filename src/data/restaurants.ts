@@ -1,4 +1,3 @@
-
 import { Tag } from './tags';
 
 export interface Restaurant {
@@ -146,14 +145,15 @@ export const restaurants: Restaurant[] = [
     weeklyVoteIncrease: 19,
     status: 'approved',
   },
-].map(restaurant => ({ 
-  ...restaurant, 
-  status: 'approved' 
+].map(restaurant => ({
+  ...restaurant,
+  status: 'approved' as const
 }));
 
 // Helper function to get weekly trending restaurants
 export const getTrendingRestaurants = (allRestaurants: Restaurant[], limit = 5) => {
   return [...allRestaurants]
+    .filter(r => r.status === 'approved')
     .sort((a, b) => (b.weeklyVoteIncrease || 0) - (a.weeklyVoteIncrease || 0))
     .slice(0, limit);
 };

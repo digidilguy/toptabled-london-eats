@@ -18,10 +18,10 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
       const tagIds = tagsParam.split(',');
       setActiveTagIds(tagIds);
     }
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
-    // Let's debug what's happening with restaurants
+    // Debug information
     console.log('Current restaurants:', restaurants);
     console.log('isAdmin:', isAdmin);
     
@@ -40,14 +40,17 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
       setSearchParams({ tags: activeTagIds.join(',') });
     } else {
       // Clear URL params when no filters
-      setSearchParams({});
+      if (searchParams.has('tags')) {
+        setSearchParams({});
+      }
     }
     
     visibleRestaurants.sort((a, b) => b.voteCount - a.voteCount);
     setFilteredRestaurants(visibleRestaurants);
     
     // Filter trending to only show approved restaurants
-    const trending = [...visibleRestaurants]
+    const trending = restaurants
+      .filter(r => r.status === 'approved')
       .sort((a, b) => (b.weeklyVoteIncrease || 0) - (a.weeklyVoteIncrease || 0))
       .slice(0, 5);
     setTrendingRestaurants(trending);

@@ -7,7 +7,7 @@ import { useRestaurantVotes } from '@/hooks/useRestaurantVotes';
 
 const RestaurantContext = createContext<RestaurantContextType | undefined>(undefined);
 
-export const RestaurantProvider: React.FC<RestaurantProviderProps> = ({ children, initialTagIds = '' }) => {
+export const RestaurantProvider: React.FC<RestaurantProviderProps> = ({ children }) => {
   const {
     restaurants,
     userVotes,
@@ -22,7 +22,7 @@ export const RestaurantProvider: React.FC<RestaurantProviderProps> = ({ children
     trendingRestaurants,
     toggleTagFilter,
     clearTagFilters
-  } = useRestaurantFilters(restaurants); // Remove the second argument here
+  } = useRestaurantFilters(restaurants);
 
   return (
     <RestaurantContext.Provider

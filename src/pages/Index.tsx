@@ -48,7 +48,6 @@ const IndexPage = () => {
             </div>
           </footer>
 
-          {/* Now render SubmitRestaurantForm here, within the RestaurantProvider context */}
           <SubmitRestaurantForm
             isOpen={isSubmitFormOpen}
             onClose={() => setIsSubmitFormOpen(false)}
