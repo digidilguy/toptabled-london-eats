@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { ThumbsUp } from 'lucide-react';
-import { MapPin } from 'lucide-react';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ThumbsUp, ThumbsDown, ExternalLink } from 'lucide-react';
 import { useRestaurants } from '@/context/RestaurantContext';
 import { useAuth } from '@/context/AuthContext';
 import { tags } from '@/data/tags';
@@ -29,13 +29,12 @@ const RestaurantCard = ({
 
   const userVote = userVotes[id];
 
-  const handleVote = () => {
+  const handleVote = (voteType: 'up' | 'down') => {
     if (!isAuthenticated) {
       setIsAuthDialogOpen(true);
       return;
     }
-    // Only handle upvotes in this simpler version
-    voteForRestaurant(id, 'up');
+    voteForRestaurant(id, voteType);
   };
 
   const restaurantTags = tagIds
@@ -43,44 +42,64 @@ const RestaurantCard = ({
     .filter(Boolean);
 
   return (
-    <Card className="w-full bg-white hover:shadow-md transition-shadow">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xl font-medium">{name}</h3>
-          <button 
-            onClick={handleVote}
-            className="flex items-center gap-1.5 cursor-pointer"
-            aria-label="Upvote restaurant"
-          >
-            <ThumbsUp 
-              size={18} 
-              className={`text-green-500 ${userVote === 'up' ? 'fill-green-500' : ''}`} 
-            />
-            <span className="text-green-500 font-medium">{voteCount}</span>
-          </button>
-        </div>
+    <Card className="w-full">
+      <CardContent className="pt-6">
+        <h3 className="text-lg font-bold mb-3">{name}</h3>
         
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap gap-2 mb-4">
           {restaurantTags.map(tag => tag && (
             <span 
               key={tag.id}
-              className="text-sm px-3 py-1 bg-gray-100 rounded-md text-gray-600"
+              className="px-2 py-1 text-sm rounded-full bg-secondary text-secondary-foreground"
             >
               {tag.name}
             </span>
           ))}
-          
-          <a 
-            href={googleMapsLink} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 text-sm text-primary hover:text-primary/80 transition-colors ml-auto"
-          >
-            <MapPin size={16} />
-            <span>View on Maps</span>
-          </a>
         </div>
+
+        <a 
+          href={googleMapsLink} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 transition-colors"
+        >
+          <span>View on Maps</span>
+          <ExternalLink size={16} />
+        </a>
       </CardContent>
+
+      <CardFooter className="border-t pt-4 flex justify-between items-center">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handleVote('up')}
+          className={`${
+            userVote === 'up' ? 'bg-green-100 border-green-500' : ''
+          } text-green-600 hover:bg-green-100 hover:text-green-700 hover:border-green-500`}
+          aria-label="Upvote restaurant"
+        >
+          <ThumbsUp className={userVote === 'up' ? 'fill-green-500' : ''} size={18} />
+        </Button>
+
+        <span className="font-semibold text-lg mx-4">
+          {voteCount}
+        </span>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handleVote('down')}
+          className={`${
+            userVote === 'down' ? 'bg-red-100 border-red-500' : ''
+          } text-red-600 hover:bg-red-100 hover:text-red-700 hover:border-red-500 transition-colors`}
+          aria-label="Downvote restaurant"
+        >
+          <ThumbsDown 
+            className={`${userVote === 'down' ? 'fill-red-500' : ''}`} 
+            size={18} 
+          />
+        </Button>
+      </CardFooter>
 
       <AuthDialog 
         isOpen={isAuthDialogOpen} 
