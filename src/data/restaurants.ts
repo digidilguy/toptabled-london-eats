@@ -148,7 +148,7 @@ export const restaurants: Restaurant[] = [
   },
 ].map(restaurant => ({ 
   ...restaurant, 
-  status: restaurant.status as 'pending' | 'approved' | 'rejected' || 'approved' 
+  status: 'approved' 
 }));
 
 // Helper function to get weekly trending restaurants
