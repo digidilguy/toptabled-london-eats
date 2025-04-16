@@ -9,7 +9,122 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      restaurant_tags: {
+        Row: {
+          restaurant_id: string
+          tag_id: string
+        }
+        Insert: {
+          restaurant_id: string
+          tag_id: string
+        }
+        Update: {
+          restaurant_id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "restaurant_tags_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "restaurant_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      restaurants: {
+        Row: {
+          created_at: string | null
+          date_added: string | null
+          google_maps_link: string | null
+          id: string
+          image_url: string | null
+          name: string
+          status: string | null
+          vote_count: number | null
+          weekly_vote_increase: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          date_added?: string | null
+          google_maps_link?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          status?: string | null
+          vote_count?: number | null
+          weekly_vote_increase?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          date_added?: string | null
+          google_maps_link?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          status?: string | null
+          vote_count?: number | null
+          weekly_vote_increase?: number | null
+        }
+        Relationships: []
+      }
+      tags: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      votes: {
+        Row: {
+          created_at: string | null
+          id: string
+          restaurant_id: string | null
+          user_id: string | null
+          vote_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          restaurant_id?: string | null
+          user_id?: string | null
+          vote_type: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          restaurant_id?: string | null
+          user_id?: string | null
+          vote_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "votes_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
