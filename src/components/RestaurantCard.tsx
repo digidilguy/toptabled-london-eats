@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -85,6 +86,7 @@ const RestaurantCard = ({
       
       <CardFooter className="flex justify-between items-center border-t pt-3 bg-secondary/50">
         <div className="flex items-center space-x-4">
+          {/* Upvote Button */}
           <Button 
             variant="ghost" 
             size="icon"
@@ -103,6 +105,7 @@ const RestaurantCard = ({
             {voteCount}
           </span>
           
+          {/* Downvote Button - Ensuring it's red and visible */}
           <Button 
             variant="ghost" 
             size="icon"
