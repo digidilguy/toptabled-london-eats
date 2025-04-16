@@ -4,6 +4,7 @@ import TagFilter from "@/components/TagFilter";
 import { AuthProvider } from "@/context/AuthContext";
 import { RestaurantProvider } from "@/context/RestaurantContext";
 import RestaurantGrid from "@/components/RestaurantGrid";
+import TrendingLeaderboard from "@/components/TrendingLeaderboard";
 
 const IndexPage = () => {
   return (
@@ -25,7 +26,8 @@ const IndexPage = () => {
             
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
               <div className="lg:col-span-1">
-                <div className="sticky top-4">
+                <div className="sticky top-4 space-y-6">
+                  <TrendingLeaderboard />
                   <TagFilter />
                 </div>
               </div>

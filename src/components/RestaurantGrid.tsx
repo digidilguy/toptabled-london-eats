@@ -1,6 +1,7 @@
 
 import { useRestaurants } from "@/context/RestaurantContext";
-import RestaurantCard from "./RestaurantCard";
+import { MapPin, ThumbsUp } from "lucide-react";
+import { tags } from "@/data/tags";
 import { useEffect } from "react";
 
 const RestaurantGrid = () => {
@@ -20,17 +21,46 @@ const RestaurantGrid = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="space-y-4">
       {filteredRestaurants.map((restaurant) => (
-        <RestaurantCard
+        <div 
           key={restaurant.id}
-          id={restaurant.id}
-          name={restaurant.name}
-          tagIds={restaurant.tagIds}
-          googleMapsLink={restaurant.googleMapsLink}
-          voteCount={restaurant.voteCount}
-          imageUrl={restaurant.imageUrl}
-        />
+          className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
+        >
+          <div className="flex-1">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-semibold">{restaurant.name}</h3>
+              <div className="flex items-center gap-2 text-sm text-neutral">
+                <ThumbsUp size={16} className={restaurant.voteCount > 0 ? "text-upvote" : ""} />
+                <span>{restaurant.voteCount}</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex flex-wrap gap-1">
+                {restaurant.tagIds.map(tagId => {
+                  const tag = tags.find(t => t.id === tagId);
+                  return tag && (
+                    <span 
+                      key={tag.id}
+                      className="text-xs px-2 py-0.5 bg-secondary rounded-full text-neutral"
+                    >
+                      {tag.name}
+                    </span>
+                  );
+                })}
+              </div>
+              <a 
+                href={restaurant.googleMapsLink} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-xs text-neutral hover:text-accent"
+              >
+                <MapPin size={14} />
+                <span>View on Maps</span>
+              </a>
+            </div>
+          </div>
+        </div>
       ))}
     </div>
   );
