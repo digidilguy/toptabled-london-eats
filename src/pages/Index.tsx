@@ -7,10 +7,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { ThumbsUp, ThumbsDown, ExternalLink, MapPin } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AuthDialog from "@/components/AuthDialog";
 import { tags } from "@/data/tags";
-import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import TrendingLeaderboard from "@/components/TrendingLeaderboard";
 
@@ -66,6 +65,8 @@ const RestaurantList = () => {
       navigate({ search: newSearch ? `?${newSearch}` : '' }, { replace: true });
     }
   }, [activeTagIds, navigate, location.search]);
+  
+  console.log("Filtered restaurants:", filteredRestaurants); // Debug log
     
   return (
     <div className="rounded-lg border overflow-hidden">
@@ -80,7 +81,7 @@ const RestaurantList = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredRestaurants.length > 0 ? (
+          {filteredRestaurants && filteredRestaurants.length > 0 ? (
             filteredRestaurants.map((restaurant, index) => (
               <TableRow key={restaurant.id}>
                 <TableCell className="font-bold text-lg">{index + 1}</TableCell>

@@ -25,9 +25,10 @@ interface RestaurantProviderProps {
 }
 
 export const RestaurantProvider: React.FC<RestaurantProviderProps> = ({ children, initialTagIds = '' }) => {
-  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
-  const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>([]);
-  const [trendingRestaurants, setTrendingRestaurants] = useState<Restaurant[]>([]);
+  // Initialize with the static data first - this ensures data is always available immediately
+  const [restaurants, setRestaurants] = useState<Restaurant[]>(initialRestaurants);
+  const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>(initialRestaurants);
+  const [trendingRestaurants, setTrendingRestaurants] = useState<Restaurant[]>(initialRestaurants.slice(0, 5));
   const [activeTagIds, setActiveTagIds] = useState<string[]>([]);
   const [userVotes, setUserVotes] = useState<Record<string, 'up' | 'down'>>({});
   const { toast } = useToast();
@@ -49,13 +50,26 @@ export const RestaurantProvider: React.FC<RestaurantProviderProps> = ({ children
     const storedRestaurants = localStorage.getItem('topbites-restaurants');
     if (storedRestaurants) {
       try {
-        setRestaurants(JSON.parse(storedRestaurants));
+        const parsedRestaurants = JSON.parse(storedRestaurants);
+        setRestaurants(parsedRestaurants);
+        
+        // Also update filtered restaurants initially
+        let filtered = [...parsedRestaurants];
+        if (activeTagIds.length > 0) {
+          filtered = filtered.filter(restaurant => 
+            activeTagIds.some(tagId => restaurant.tagIds.includes(tagId))
+          );
+        }
+        filtered.sort((a, b) => b.voteCount - a.voteCount);
+        setFilteredRestaurants(filtered);
+        setTrendingRestaurants(filtered.slice(0, 5));
       } catch (error) {
         console.error('Failed to parse stored restaurants:', error);
         setRestaurants(initialRestaurants);
       }
     } else {
-      setRestaurants(initialRestaurants);
+      // Initial data already set in state initialization, just save it to localStorage
+      localStorage.setItem('topbites-restaurants', JSON.stringify(initialRestaurants));
     }
     
     // Load user votes from localStorage
