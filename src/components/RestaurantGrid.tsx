@@ -63,16 +63,18 @@ const RestaurantGrid = () => {
               <div className="flex flex-wrap gap-1">
                 {restaurant.tagIds && restaurant.tagIds.length > 0 ? (
                   restaurant.tagIds.map((tagId) => {
+                    // Look up the tag in our local tags array
                     const tag = tags.find(t => t.id === tagId);
-                    return tag ? (
+                    return (
                       <Badge 
                         key={tagId}
                         variant="secondary"
                         className="text-xs px-2 py-0.5 bg-secondary/50 rounded-full text-accent/80"
                       >
-                        {tag.name}
+                        {/* Display tag name if found, otherwise display tagId */}
+                        {tag ? tag.name : tagId}
                       </Badge>
-                    ) : null;
+                    );
                   })
                 ) : (
                   <span className="text-xs text-neutral">No tags</span>
