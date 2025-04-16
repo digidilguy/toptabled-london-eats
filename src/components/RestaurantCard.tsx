@@ -94,7 +94,7 @@ const RestaurantCard = ({
           } text-red-600 hover:bg-red-100 hover:text-red-700 hover:border-red-500 transition-colors`}
           aria-label="Downvote restaurant"
         >
-          <ThumbsDown 
+          <ThumbsUp 
             className={`${userVote === 'down' ? 'fill-red-500' : ''}`} 
             size={18} 
           />
