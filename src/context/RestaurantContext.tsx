@@ -56,8 +56,9 @@ export const RestaurantProvider: React.FC<RestaurantProviderProps> = ({ children
         // Also update filtered restaurants initially
         let filtered = [...parsedRestaurants];
         if (activeTagIds.length > 0) {
+          // Changed filtering logic to require ALL selected tags to be present
           filtered = filtered.filter(restaurant => 
-            activeTagIds.some(tagId => restaurant.tagIds.includes(tagId))
+            activeTagIds.every(tagId => restaurant.tagIds.includes(tagId))
           );
         }
         filtered.sort((a, b) => b.voteCount - a.voteCount);
@@ -90,13 +91,17 @@ export const RestaurantProvider: React.FC<RestaurantProviderProps> = ({ children
     let filtered = [...restaurants];
     
     if (activeTagIds.length > 0) {
+      // Changed filtering logic to require ALL selected tags to be present
       filtered = filtered.filter(restaurant => 
-        activeTagIds.some(tagId => restaurant.tagIds.includes(tagId))
+        activeTagIds.every(tagId => restaurant.tagIds.includes(tagId))
       );
     }
     
     // Sort by vote count (descending)
     filtered.sort((a, b) => b.voteCount - a.voteCount);
+    
+    console.log("Active tag IDs:", activeTagIds);
+    console.log("Filtered results:", filtered.length);
     
     setFilteredRestaurants(filtered);
     
