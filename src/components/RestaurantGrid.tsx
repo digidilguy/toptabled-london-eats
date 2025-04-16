@@ -7,6 +7,8 @@ import { Button } from "./ui/button";
 const RestaurantGrid = () => {
   const { filteredRestaurants, voteForRestaurant, userVotes } = useRestaurants();
 
+  console.log("RestaurantGrid rendering with:", filteredRestaurants.length, "restaurants");
+
   if (!filteredRestaurants.length) {
     return (
       <div className="text-center py-12 px-4 rounded-lg border border-neutral/10 bg-white/50 backdrop-blur-sm">

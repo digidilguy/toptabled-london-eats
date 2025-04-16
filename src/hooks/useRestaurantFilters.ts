@@ -21,10 +21,16 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
   }, []);
 
   useEffect(() => {
+    // Let's debug what's happening with restaurants
+    console.log('Current restaurants:', restaurants);
+    console.log('isAdmin:', isAdmin);
+    
     // Filter restaurants that are approved or, if admin, include pending ones
     let visibleRestaurants = isAdmin 
       ? [...restaurants]
       : restaurants.filter(r => r.status === 'approved');
+    
+    console.log('Visible restaurants after status filter:', visibleRestaurants);
     
     if (activeTagIds.length > 0) {
       visibleRestaurants = visibleRestaurants.filter(restaurant => 
@@ -45,7 +51,7 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
       .sort((a, b) => (b.weeklyVoteIncrease || 0) - (a.weeklyVoteIncrease || 0))
       .slice(0, 5);
     setTrendingRestaurants(trending);
-  }, [restaurants, activeTagIds, isAdmin]);
+  }, [restaurants, activeTagIds, isAdmin, searchParams]);
 
   const toggleTagFilter = (tagId: string) => {
     setActiveTagIds(prev => 
