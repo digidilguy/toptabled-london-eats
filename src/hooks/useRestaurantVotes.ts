@@ -57,16 +57,23 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
       return;
     }
 
-    const existingVote = userVotes[restaurantId];
-    
-    setRestaurants(prev => 
-      prev.map(restaurant => {
+    console.log(`Attempting to vote ${voteType} for restaurant ${restaurantId}`);
+    console.log(`Current user votes:`, userVotes);
+
+    setRestaurants(prevRestaurants => {
+      const updatedRestaurants = prevRestaurants.map(restaurant => {
         if (restaurant.id === restaurantId) {
-          let voteChange = 0;
+          const currentVote = userVotes[restaurantId];
+          let newVoteCount = restaurant.voteCount;
           
-          if (existingVote === voteType) {
-            voteChange = voteType === 'up' ? -1 : 1;
+          // If user is clicking the same vote type they already selected, remove the vote
+          if (currentVote === voteType) {
+            // Remove the vote
+            newVoteCount = voteType === 'up' 
+              ? newVoteCount - 1 
+              : newVoteCount + 1;
             
+            // Update userVotes in the next tick to avoid state batching issues
             setTimeout(() => {
               const updatedVotes = { ...userVotes };
               delete updatedVotes[restaurantId];
@@ -77,14 +84,35 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
                 description: `Your vote has been removed`,
               });
             }, 0);
+          } 
+          // If user is changing their vote from one type to another
+          else if (currentVote) {
+            // Change from down to up: +2 (remove down, add up)
+            // Change from up to down: -2 (remove up, add down)
+            newVoteCount = voteType === 'up' 
+              ? newVoteCount + 2 
+              : newVoteCount - 2;
             
-          } else {
-            if (existingVote) {
-              voteChange = voteType === 'up' ? 2 : -2;
-            } else {
-              voteChange = voteType === 'up' ? 1 : -1;
-            }
+            // Update userVotes
+            setTimeout(() => {
+              setUserVotes(prev => ({
+                ...prev,
+                [restaurantId]: voteType
+              }));
+              
+              toast({
+                title: voteType === 'up' ? "Upvoted!" : "Downvoted!",
+                description: `You have ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
+              });
+            }, 0);
+          } 
+          // If user is voting for the first time
+          else {
+            newVoteCount = voteType === 'up' 
+              ? newVoteCount + 1 
+              : newVoteCount - 1;
             
+            // Update userVotes
             setTimeout(() => {
               setUserVotes(prev => ({
                 ...prev,
@@ -98,36 +126,42 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
             }, 0);
           }
           
+          console.log(`Vote updated for restaurant ${restaurantId}: ${newVoteCount}`);
+          
           return {
             ...restaurant,
-            voteCount: restaurant.voteCount + voteChange,
-            weeklyVoteIncrease: (restaurant.weeklyVoteIncrease || 0) + (voteChange > 0 ? 1 : voteChange < 0 ? -1 : 0)
+            voteCount: newVoteCount,
+            weeklyVoteIncrease: restaurant.weeklyVoteIncrease || 0
           };
         }
         return restaurant;
-      })
-    );
+      });
+      
+      return updatedRestaurants;
+    });
+  };
+
+  const addRestaurant = (restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded'>) => {
+    const newRestaurant: Restaurant = {
+      ...restaurantData,
+      id: (restaurants.length + 1).toString(),
+      voteCount: 0,
+      dateAdded: new Date().toISOString().split('T')[0],
+    };
+
+    setRestaurants(prev => [...prev, newRestaurant]);
+    
+    toast({
+      title: "Restaurant added",
+      description: `${restaurantData.name} has been added to the list`,
+    });
   };
 
   return {
     restaurants,
     userVotes,
     voteForRestaurant,
-    addRestaurant: (restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded'>) => {
-      const newRestaurant: Restaurant = {
-        ...restaurantData,
-        id: (restaurants.length + 1).toString(),
-        voteCount: 0,
-        dateAdded: new Date().toISOString().split('T')[0],
-      };
-
-      setRestaurants(prev => [...prev, newRestaurant]);
-      
-      toast({
-        title: "Restaurant added",
-        description: `${restaurantData.name} has been added to the list`,
-      });
-    },
+    addRestaurant,
     getRestaurantById: (id: string) => restaurants.find(restaurant => restaurant.id === id)
   };
 };

@@ -34,20 +34,19 @@ const RestaurantCard = ({
   const userVote = userVotes[id];
 
   const handleVote = (voteType: 'up' | 'down') => {
+    console.log(`Handle vote called: ${voteType} for restaurant ${id}`);
+    
     if (!isAuthenticated) {
       setIsAuthDialogOpen(true);
       return;
     }
 
-    // Always call voteForRestaurant - the logic for checking if it's 
-    // the same vote (to remove it) is handled in the context
+    // Call voteForRestaurant from the context
     voteForRestaurant(id, voteType);
     
-    // Only animate if this is a new vote or different from previous
-    if (userVote !== voteType) {
-      setVoteAnimation(voteType);
-      setTimeout(() => setVoteAnimation('none'), 300);
-    }
+    // Set animation
+    setVoteAnimation(voteType);
+    setTimeout(() => setVoteAnimation('none'), 300);
   };
 
   // Get tag names from ids
@@ -98,13 +97,13 @@ const RestaurantCard = ({
             size="icon"
             className={`
               ${voteAnimation === 'up' ? 'animate-vote-pulse' : ''} 
-              ${userVote === 'up' ? 'text-upvote' : ''}
-              hover:text-upvote
+              ${userVote === 'up' ? 'text-upvote bg-green-100' : ''}
+              hover:text-upvote hover:bg-green-100
             `}
             onClick={() => handleVote('up')}
             aria-label="Upvote"
           >
-            <ThumbsUp size={18} />
+            <ThumbsUp size={18} className={`${userVote === 'up' ? 'fill-current' : ''}`} />
           </Button>
           
           <span className={`font-medium ${voteCount > 0 ? 'text-upvote' : voteCount < 0 ? 'text-downvote' : 'text-neutral'}`}>
@@ -116,13 +115,13 @@ const RestaurantCard = ({
             size="icon"
             className={`
               ${voteAnimation === 'down' ? 'animate-vote-pulse' : ''} 
-              ${userVote === 'down' ? 'text-downvote' : ''}
-              hover:text-downvote
+              ${userVote === 'down' ? 'text-downvote bg-red-100' : ''}
+              hover:text-downvote hover:bg-red-100
             `}
             onClick={() => handleVote('down')}
             aria-label="Downvote"
           >
-            <ThumbsDown size={18} />
+            <ThumbsDown size={18} className={`${userVote === 'down' ? 'fill-current' : ''}`} />
           </Button>
         </div>
         
