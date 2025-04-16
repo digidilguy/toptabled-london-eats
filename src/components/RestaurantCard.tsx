@@ -89,10 +89,15 @@ const RestaurantCard = ({
           variant="outline"
           size="sm"
           onClick={() => handleVote('down')}
-          className="text-red-600 hover:bg-red-100 hover:text-red-700 hover:border-red-500 transition-colors"
+          className={`${
+            userVote === 'down' ? 'bg-red-100 border-red-500' : ''
+          } text-red-600 hover:bg-red-100 hover:text-red-700 hover:border-red-500 transition-colors`}
           aria-label="Downvote restaurant"
         >
-          <ThumbsDown size={18} className="text-red-600" />
+          <ThumbsDown 
+            className={`${userVote === 'down' ? 'fill-red-500' : ''}`} 
+            size={18} 
+          />
         </Button>
       </CardFooter>
 
