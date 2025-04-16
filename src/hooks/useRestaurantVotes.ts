@@ -1,83 +1,178 @@
+
 import { useState, useEffect } from 'react';
 import { Restaurant } from '@/data/restaurants';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from "@/hooks/use-toast";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
 
 export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
-  const [restaurants, setRestaurants] = useState<Restaurant[]>(initialRestaurants);
-  const [userVotes, setUserVotes] = useState<Record<string, 'up' | 'down'>>({});
   const { isAuthenticated, user, isAdmin } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  // Initialize restaurants - prioritize initial data over localStorage to ensure consistency
-  useEffect(() => {
-    console.log('Initializing with initialRestaurants:', initialRestaurants);
-    
-    // Start with the initial restaurants from the data file
-    const updatedRestaurants = [...initialRestaurants];
-    
-    // Check if there are stored restaurants
-    const storedRestaurants = localStorage.getItem('topbites-restaurants');
-    if (storedRestaurants) {
-      try {
-        const parsedStored = JSON.parse(storedRestaurants);
+  // Fetch restaurants from Supabase
+  const { data: restaurants = [] } = useQuery({
+    queryKey: ['restaurants'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('restaurants')
+        .select('*')
+        .order('vote_count', { ascending: false });
+      
+      if (error) throw error;
+      return data as Restaurant[];
+    },
+    initialData: initialRestaurants
+  });
+
+  // Fetch user votes
+  const { data: userVotes = {} } = useQuery({
+    queryKey: ['user-votes', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return {};
+      
+      const { data, error } = await supabase
+        .from('restaurant_votes')
+        .select('restaurant_id, vote_type')
+        .eq('user_id', user.id);
+      
+      if (error) throw error;
+      
+      return data.reduce((acc, vote) => ({
+        ...acc,
+        [vote.restaurant_id]: vote.vote_type
+      }), {});
+    },
+    enabled: !!user?.id
+  });
+
+  // Vote mutation
+  const voteMutation = useMutation({
+    mutationFn: async ({ restaurantId, voteType }: { restaurantId: string, voteType: 'up' | 'down' }) => {
+      if (!user?.id) throw new Error('Must be logged in to vote');
+
+      const currentVote = userVotes[restaurantId];
+      
+      // If clicking the same vote type, remove the vote
+      if (currentVote === voteType) {
+        // Delete the vote
+        const { error: deleteError } = await supabase
+          .from('restaurant_votes')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('restaurant_id', restaurantId);
         
-        // Merge stored votes with initial data to preserve vote counts
-        parsedStored.forEach((storedRestaurant: Restaurant) => {
-          const existingIndex = updatedRestaurants.findIndex(r => r.id === storedRestaurant.id);
-          if (existingIndex >= 0) {
-            // Update existing restaurant's vote count and weekly increase
-            updatedRestaurants[existingIndex] = {
-              ...updatedRestaurants[existingIndex],
-              voteCount: storedRestaurant.voteCount,
-              weeklyVoteIncrease: storedRestaurant.weeklyVoteIncrease || 0
-            };
-          } else if (storedRestaurant.id !== '13') {
-            // Add new restaurant if it's not the conflicting "Henry's Test" with ID 13
-            updatedRestaurants.push(storedRestaurant);
-          }
+        if (deleteError) throw deleteError;
+
+        // Update restaurant vote count
+        const voteChange = voteType === 'up' ? -1 : 1;
+        const { error: updateError } = await supabase
+          .from('restaurants')
+          .update({ 
+            vote_count: supabase.raw(`vote_count + ${voteChange}`),
+            weekly_vote_increase: supabase.raw(`weekly_vote_increase + ${voteChange}`)
+          })
+          .eq('id', restaurantId);
+        
+        if (updateError) throw updateError;
+
+        return { action: 'removed' };
+      }
+      
+      // If changing vote or voting for the first time
+      const voteChange = currentVote 
+        ? (voteType === 'up' ? 2 : -2) // Changing from down to up (+2) or up to down (-2)
+        : (voteType === 'up' ? 1 : -1); // First time voting
+      
+      // Start transaction
+      const { error: voteError } = await supabase
+        .from('restaurant_votes')
+        .upsert({
+          user_id: user.id,
+          restaurant_id: restaurantId,
+          vote_type: voteType
         });
-      } catch (error) {
-        console.error('Failed to parse stored restaurants:', error);
+      
+      if (voteError) throw voteError;
+      
+      const { error: updateError } = await supabase
+        .from('restaurants')
+        .update({ 
+          vote_count: supabase.raw(`vote_count + ${voteChange}`),
+          weekly_vote_increase: supabase.raw(`weekly_vote_increase + ${voteChange}`)
+        })
+        .eq('id', restaurantId);
+      
+      if (updateError) throw updateError;
+
+      return { action: 'voted', type: voteType };
+    },
+    onSuccess: (result, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['restaurants'] });
+      queryClient.invalidateQueries({ queryKey: ['user-votes'] });
+      
+      if (result.action === 'removed') {
+        toast({
+          title: "Vote removed",
+          description: "Your vote has been removed",
+        });
+      } else {
+        toast({
+          title: variables.voteType === 'up' ? "Upvoted!" : "Downvoted!",
+          description: `You have ${variables.voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
+        });
       }
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     }
-    
-    // Update state and localStorage with merged data
-    setRestaurants(updatedRestaurants);
-    localStorage.setItem('topbites-restaurants', JSON.stringify(updatedRestaurants));
-  }, [initialRestaurants]);
+  });
 
-  // Load user votes from localStorage
-  useEffect(() => {
-    if (isAuthenticated && user?.email) {
-      const storedVotes = localStorage.getItem(`topbites-votes-${user.email}`);
-      if (storedVotes) {
-        try {
-          setUserVotes(JSON.parse(storedVotes));
-        } catch (error) {
-          console.error('Failed to parse stored votes:', error);
-        }
-      }
-    }
-  }, [isAuthenticated, user]);
+  // Add restaurant mutation
+  const addRestaurantMutation = useMutation({
+    mutationFn: async (restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded' | 'status' | 'weeklyVoteIncrease'>) => {
+      if (!isAuthenticated) throw new Error('Must be logged in to add restaurants');
+      
+      const id = restaurantData.name.toLowerCase().replace(/\s+/g, '-');
+      const newRestaurant: Omit<Restaurant, 'voteCount' | 'weeklyVoteIncrease'> = {
+        ...restaurantData,
+        id,
+        dateAdded: new Date().toISOString().split('T')[0],
+        status: isAdmin ? 'approved' : 'pending'
+      };
 
-  // Save restaurants to localStorage whenever they change after initial load
-  useEffect(() => {
-    // Only update localStorage after initial load to prevent race conditions
-    if (restaurants !== initialRestaurants) {
-      localStorage.setItem('topbites-restaurants', JSON.stringify(restaurants));
-    }
-  }, [restaurants, initialRestaurants]);
+      const { error } = await supabase
+        .from('restaurants')
+        .insert(newRestaurant);
 
-  // Save user votes to localStorage whenever they change
-  useEffect(() => {
-    if (isAuthenticated && user?.email) {
-      localStorage.setItem(`topbites-votes-${user.email}`, JSON.stringify(userVotes));
+      if (error) throw error;
+      return newRestaurant;
+    },
+    onSuccess: (restaurant) => {
+      queryClient.invalidateQueries({ queryKey: ['restaurants'] });
+      toast({
+        title: isAdmin ? "Restaurant added" : "Restaurant submitted for review",
+        description: isAdmin 
+          ? `${restaurant.name} has been added to the list` 
+          : `${restaurant.name} has been submitted and will be reviewed by an admin`,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     }
-  }, [userVotes, isAuthenticated, user]);
+  });
 
   const voteForRestaurant = (restaurantId: string, voteType: 'up' | 'down') => {
-    if (!isAuthenticated || !user?.email) {
+    if (!isAuthenticated) {
       toast({
         title: "Authentication required",
         description: "You need to log in to vote for restaurants",
@@ -85,95 +180,12 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
       });
       return;
     }
-
-    console.log(`Voting ${voteType} for restaurant ${restaurantId}`);
     
-    // Update restaurants with the new vote count
-    setRestaurants(prevRestaurants => {
-      return prevRestaurants.map(restaurant => {
-        if (restaurant.id === restaurantId) {
-          const currentVote = userVotes[restaurantId];
-          let newVoteCount = restaurant.voteCount;
-          
-          // If user is clicking the same vote type they already selected, remove the vote
-          if (currentVote === voteType) {
-            newVoteCount = voteType === 'up' ? newVoteCount - 1 : newVoteCount + 1;
-            
-            // Remove the user's vote
-            const updatedVotes = { ...userVotes };
-            delete updatedVotes[restaurantId];
-            setUserVotes(updatedVotes);
-            
-            toast({
-              title: "Vote removed",
-              description: `Your vote has been removed`,
-            });
-          } 
-          // If user is changing their vote from one type to another
-          else if (currentVote) {
-            // Change from down to up: +2 (remove down, add up)
-            // Change from up to down: -2 (remove up, add down)
-            newVoteCount = voteType === 'up' ? newVoteCount + 2 : newVoteCount - 2;
-            
-            // Update the user's vote
-            setUserVotes({
-              ...userVotes,
-              [restaurantId]: voteType
-            });
-            
-            toast({
-              title: voteType === 'up' ? "Upvoted!" : "Downvoted!",
-              description: `You have ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
-            });
-          } 
-          // If user is voting for the first time
-          else {
-            newVoteCount = voteType === 'up' ? newVoteCount + 1 : newVoteCount - 1;
-            
-            // Add the user's vote
-            setUserVotes({
-              ...userVotes,
-              [restaurantId]: voteType
-            });
-            
-            toast({
-              title: voteType === 'up' ? "Upvoted!" : "Downvoted!",
-              description: `You have ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
-            });
-          }
-          
-          return {
-            ...restaurant,
-            voteCount: newVoteCount,
-            weeklyVoteIncrease: restaurant.weeklyVoteIncrease || 0
-          };
-        }
-        return restaurant;
-      });
-    });
+    voteMutation.mutate({ restaurantId, voteType });
   };
 
   const addRestaurant = (restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded' | 'status' | 'weeklyVoteIncrease'>) => {
-    // Generate a URL-friendly ID from the restaurant name
-    const id = restaurantData.name.toLowerCase().replace(/\s+/g, '-');
-    
-    const newRestaurant: Restaurant = {
-      ...restaurantData,
-      id,
-      voteCount: 0,
-      dateAdded: new Date().toISOString().split('T')[0],
-      status: isAdmin ? 'approved' : 'pending',
-      weeklyVoteIncrease: 0
-    };
-
-    setRestaurants(prev => [...prev, newRestaurant]);
-    
-    toast({
-      title: isAdmin ? "Restaurant added" : "Restaurant submitted for review",
-      description: isAdmin 
-        ? `${restaurantData.name} has been added to the list` 
-        : `${restaurantData.name} has been submitted and will be reviewed by an admin`,
-    });
+    addRestaurantMutation.mutate(restaurantData);
   };
 
   return {
