@@ -67,7 +67,7 @@ const RestaurantList = () => {
   }, [activeTagIds, navigate, location.search]);
   
   console.log("Filtered restaurants:", filteredRestaurants); // Debug log
-    
+  
   return (
     <div className="rounded-lg border overflow-hidden">
       <Table>

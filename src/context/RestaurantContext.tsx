@@ -83,7 +83,7 @@ export const RestaurantProvider: React.FC<RestaurantProviderProps> = ({ children
         }
       }
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, activeTagIds]);
 
   // Update filtered restaurants when restaurants or active tags change
   useEffect(() => {
