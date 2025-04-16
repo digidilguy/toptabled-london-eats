@@ -90,9 +90,13 @@ const RestaurantCard = ({
           onClick={() => handleVote('down')}
           className={`${
             userVote === 'down' ? 'bg-red-100 border-red-500' : ''
-          } text-red-600 hover:bg-red-100 hover:text-red-700 hover:border-red-500`}
+          } text-red-600 hover:bg-red-100 hover:text-red-700 hover:border-red-500 transition-all`}
+          aria-label="Downvote restaurant"
         >
-          <ThumbsDown className={userVote === 'down' ? 'fill-red-500' : ''} size={18} />
+          <ThumbsDown 
+            className={`${userVote === 'down' ? 'fill-red-500' : ''} transition-all`} 
+            size={18} 
+          />
         </Button>
       </CardFooter>
 
