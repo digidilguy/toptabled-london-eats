@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>(initialRestaurants);
   const [userVotes, setUserVotes] = useState<Record<string, 'up' | 'down'>>({});
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, isAdmin } = useAuth();
   const { toast } = useToast();
 
   // Initialize restaurants from localStorage or use initial data
@@ -128,19 +128,22 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
     });
   };
 
-  const addRestaurant = (restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded'>) => {
+  const addRestaurant = (restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded' | 'status'>) => {
     const newRestaurant: Restaurant = {
       ...restaurantData,
       id: (restaurants.length + 1).toString(),
       voteCount: 0,
       dateAdded: new Date().toISOString().split('T')[0],
+      status: isAdmin ? 'approved' : 'pending'
     };
 
     setRestaurants(prev => [...prev, newRestaurant]);
     
     toast({
-      title: "Restaurant added",
-      description: `${restaurantData.name} has been added to the list`,
+      title: isAdmin ? "Restaurant added" : "Restaurant submitted for review",
+      description: isAdmin 
+        ? `${restaurantData.name} has been added to the list` 
+        : `${restaurantData.name} has been submitted and will be reviewed by an admin`,
     });
   };
 

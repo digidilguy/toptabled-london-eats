@@ -1,17 +1,21 @@
 
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import TagFilter from "@/components/TagFilter";
 import { AuthProvider } from "@/context/AuthContext";
 import { RestaurantProvider } from "@/context/RestaurantContext";
 import RestaurantGrid from "@/components/RestaurantGrid";
 import TrendingLeaderboard from "@/components/TrendingLeaderboard";
+import SubmitRestaurantForm from "@/components/SubmitRestaurantForm";
 
 const IndexPage = () => {
+  const [isSubmitFormOpen, setIsSubmitFormOpen] = useState(false);
+
   return (
     <AuthProvider>
       <RestaurantProvider>
         <div className="min-h-screen bg-gradient-to-br from-secondary to-white">
-          <Navbar />
+          <Navbar onSubmitRestaurantClick={() => setIsSubmitFormOpen(true)} />
           
           <div className="container mx-auto px-4 py-8">
             <header className="mb-12 text-center">
@@ -43,6 +47,12 @@ const IndexPage = () => {
               <p>© 2025 LeaderEats – Discover London's best restaurants</p>
             </div>
           </footer>
+
+          {/* Now render SubmitRestaurantForm here, within the RestaurantProvider context */}
+          <SubmitRestaurantForm
+            isOpen={isSubmitFormOpen}
+            onClose={() => setIsSubmitFormOpen(false)}
+          />
         </div>
       </RestaurantProvider>
     </AuthProvider>

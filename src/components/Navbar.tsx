@@ -1,14 +1,16 @@
+
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { useAuth } from '@/context/AuthContext';
 import AuthDialog from './AuthDialog';
 import { Menu, X, User } from 'lucide-react';
-import SubmitRestaurantForm from './SubmitRestaurantForm';
 
-const Navbar = () => {
+// Remove the import for SubmitRestaurantForm
+// We'll use a render prop pattern instead
+
+const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => void }) => {
   const { isAuthenticated, isAdmin, user, logout } = useAuth();
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
-  const [isSubmitFormOpen, setIsSubmitFormOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -27,7 +29,7 @@ const Navbar = () => {
             {isAuthenticated && (
               <Button 
                 variant="outline" 
-                onClick={() => setIsSubmitFormOpen(true)}
+                onClick={onSubmitRestaurantClick}
               >
                 Submit Restaurant
               </Button>
@@ -72,7 +74,9 @@ const Navbar = () => {
                   variant="outline" 
                   className="justify-start"
                   onClick={() => {
-                    setIsSubmitFormOpen(true);
+                    if (onSubmitRestaurantClick) {
+                      onSubmitRestaurantClick();
+                    }
                     setIsMenuOpen(false);
                   }}
                 >
@@ -122,10 +126,7 @@ const Navbar = () => {
         onClose={() => setIsAuthDialogOpen(false)} 
       />
 
-      <SubmitRestaurantForm
-        isOpen={isSubmitFormOpen}
-        onClose={() => setIsSubmitFormOpen(false)}
-      />
+      {/* Remove the direct rendering of SubmitRestaurantForm here */}
     </nav>
   );
 };
