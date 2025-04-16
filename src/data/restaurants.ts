@@ -1,3 +1,4 @@
+
 import { Tag } from './tags';
 
 export interface Restaurant {
@@ -12,7 +13,8 @@ export interface Restaurant {
   status: 'pending' | 'approved' | 'rejected';
 }
 
-export const restaurants: Restaurant[] = [
+// Define the restaurants array
+const initialRestaurants: Restaurant[] = [
   {
     id: '1',
     name: 'Dishoom',
@@ -153,13 +155,13 @@ export const restaurants: Restaurant[] = [
     voteCount: 15,
     dateAdded: '2025-04-16',
     imageUrl: 'https://source.unsplash.com/random/300x200/?french,restaurant',
-    weeklyVoteIncrease: 0,
+    weeklyVoteIncrease: 5,
     status: 'approved'
   }
-].map(restaurant => ({
-  ...restaurant,
-  status: 'approved' as const
-}));
+];
+
+// Export the restaurants with all properties preserved
+export const restaurants: Restaurant[] = initialRestaurants;
 
 export const getTrendingRestaurants = (allRestaurants: Restaurant[], limit = 5) => {
   return [...allRestaurants]
