@@ -1,8 +1,10 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { User, Session } from '@supabase/supabase-js';
 
-interface User {
+interface AuthUser {
   id: string;
   email: string;
   name: string;
@@ -11,7 +13,7 @@ interface User {
 }
 
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
   isPremium: boolean;
@@ -23,27 +25,60 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [authUser, setAuthUser] = useState<AuthUser | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const { toast } = useToast();
 
-  // Check if user is logged in on mount
+  // Set up auth state listener and check for existing session
   useEffect(() => {
-    const storedUser = localStorage.getItem('toptabled-user');
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-        console.log('User loaded from localStorage:', parsedUser);
-      } catch (error) {
-        console.error('Failed to parse stored user:', error);
-        localStorage.removeItem('toptabled-user');
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, currentSession) => {
+        setSession(currentSession);
+        if (currentSession?.user) {
+          const { id, email } = currentSession.user;
+          
+          // Map Supabase user to our application user format
+          const user: AuthUser = {
+            id,
+            email: email || 'unknown',
+            name: email?.split('@')[0] || 'User',
+            isPremium: email === 'premium@example.com',
+            isAdmin: email === 'admin@example.com',
+          };
+          
+          setAuthUser(user);
+          console.log('Auth state changed:', event, user);
+        } else {
+          setAuthUser(null);
+        }
       }
-    } else {
-      console.log('No user found in localStorage');
-    }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+      setSession(currentSession);
+      if (currentSession?.user) {
+        const { id, email } = currentSession.user;
+        
+        // Map Supabase user to our application user format
+        const user: AuthUser = {
+          id,
+          email: email || 'unknown',
+          name: email?.split('@')[0] || 'User',
+          isPremium: email === 'premium@example.com',
+          isAdmin: email === 'admin@example.com',
+        };
+        
+        setAuthUser(user);
+        console.log('Existing session found:', user);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  // Mock users for demo with UUID-format IDs
+  // Mock users for demo - kept here for reference
   const mockUsers = [
     { 
       id: '550e8400-e29b-41d4-a716-446655440000', 
@@ -72,83 +107,93 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   ];
 
   const login = async (email: string, password: string) => {
-    // Mock authentication logic
-    const foundUser = mockUsers.find(u => u.email === email && u.password === password);
-    
-    if (foundUser) {
-      const { password, ...userWithoutPassword } = foundUser;
-      setUser(userWithoutPassword);
-      localStorage.setItem('toptabled-user', JSON.stringify(userWithoutPassword));
-      console.log('User logged in:', userWithoutPassword);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email, 
+        password
+      });
+      
+      if (error) {
+        toast({
+          title: "Login failed",
+          description: error.message || "Invalid email or password. Try user@example.com / password",
+          variant: "destructive",
+        });
+        throw error;
+      }
+      
+      // Success notifications handled by onAuthStateChange
       toast({
         title: "Login successful",
-        description: `Welcome back, ${userWithoutPassword.name}!`,
+        description: `Welcome back!`,
       });
-    } else {
-      toast({
-        title: "Login failed",
-        description: "Invalid email or password. Try user@example.com / password",
-        variant: "destructive",
-      });
-      throw new Error('Invalid email or password');
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
     }
   };
 
   const signup = async (name: string, email: string, password: string) => {
-    // Check if user already exists
-    if (mockUsers.some(u => u.email === email)) {
-      toast({
-        title: "Signup failed",
-        description: "Email already in use",
-        variant: "destructive",
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            name
+          }
+        }
       });
-      throw new Error('Email already in use');
+      
+      if (error) {
+        toast({
+          title: "Signup failed",
+          description: error.message || "Could not create account",
+          variant: "destructive",
+        });
+        throw error;
+      }
+      
+      toast({
+        title: "Signup successful",
+        description: `Welcome to TopTabled, ${name}!`,
+      });
+    } catch (error) {
+      console.error('Signup error:', error);
+      throw error;
     }
-
-    // Generate a UUID for the new user
-    const uuid = crypto.randomUUID ? crypto.randomUUID() : 
-      '550e8400-e29b-41d4-a716-' + Math.floor(Math.random() * 10000000000).toString().padStart(12, '0');
-
-    // In a real app, you would make an API call to create the user
-    // For this demo, we'll just simulate a successful signup
-    const newUser = {
-      id: uuid,
-      email,
-      name,
-      isPremium: false,
-      isAdmin: false
-    };
-
-    setUser(newUser);
-    localStorage.setItem('toptabled-user', JSON.stringify(newUser));
-    console.log('New user signed up:', newUser);
-    
-    toast({
-      title: "Signup successful",
-      description: `Welcome to TopTabled, ${name}!`,
-    });
   };
 
-  const logout = () => {
-    console.log('User logged out');
-    setUser(null);
-    localStorage.removeItem('toptabled-user');
+  const logout = async () => {
+    const { error } = await supabase.auth.signOut();
+    
+    if (error) {
+      console.error('Logout error:', error);
+      toast({
+        title: "Logout failed",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // State is updated by onAuthStateChange
     toast({
       title: "Logged out",
       description: "You have been successfully logged out",
     });
   };
 
-  const isAuthenticated = !!user;
-  const isAdmin = user?.isAdmin || false;
-  const isPremium = user?.isPremium || false;
+  const isAuthenticated = !!authUser;
+  const isAdmin = authUser?.isAdmin || false;
+  const isPremium = authUser?.isPremium || false;
 
-  console.log('isAdmin:', isAdmin);
+  console.log('Auth state:', { isAuthenticated, isAdmin, isPremium });
 
   return (
     <AuthContext.Provider
       value={{
-        user,
+        user: authUser,
         isAuthenticated,
         isAdmin,
         isPremium,

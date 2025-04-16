@@ -117,18 +117,63 @@ export const useSupabaseRestaurants = () => {
       console.log(`Submitting vote: ${voteType} for restaurant ${restaurantId} by user ${user.id}`);
 
       try {
-        const { error } = await supabase
+        // First, check if the user already has a vote for this restaurant
+        const { data: existingVotes, error: fetchError } = await supabase
           .from('votes')
-          .upsert({
-            restaurant_id: restaurantId,
-            user_id: user.id,
-            vote_type: voteType
-          });
-
-        if (error) {
-          console.error('Vote error:', error);
-          throw error;
+          .select('*')
+          .eq('restaurant_id', restaurantId)
+          .eq('user_id', user.id);
+          
+        if (fetchError) {
+          console.error('Error checking existing vote:', fetchError);
+          throw fetchError;
         }
+        
+        if (existingVotes && existingVotes.length > 0) {
+          const existingVote = existingVotes[0];
+          console.log('Existing vote found:', existingVote);
+          
+          // If voting the same way, delete the vote (toggle off)
+          if (existingVote.vote_type === voteType) {
+            const { error: deleteError } = await supabase
+              .from('votes')
+              .delete()
+              .eq('id', existingVote.id);
+              
+            if (deleteError) {
+              console.error('Error deleting vote:', deleteError);
+              throw deleteError;
+            }
+          } else {
+            // If voting the opposite way, update the vote
+            const { error: updateError } = await supabase
+              .from('votes')
+              .update({ vote_type: voteType })
+              .eq('id', existingVote.id);
+              
+            if (updateError) {
+              console.error('Error updating vote:', updateError);
+              throw updateError;
+            }
+          }
+        } else {
+          // If no existing vote, insert a new one
+          const { error: insertError } = await supabase
+            .from('votes')
+            .insert({
+              restaurant_id: restaurantId,
+              user_id: user.id,
+              vote_type: voteType
+            });
+            
+          if (insertError) {
+            console.error('Error inserting vote:', insertError);
+            throw insertError;
+          }
+        }
+        
+        // Update the restaurant vote count
+        await updateRestaurantVoteCount(restaurantId);
       } catch (err) {
         console.error('Vote operation failed:', err);
         throw err;
@@ -139,6 +184,45 @@ export const useSupabaseRestaurants = () => {
       queryClient.invalidateQueries({ queryKey: ['user-votes'] });
     }
   });
+  
+  // Helper function to update restaurant vote count
+  const updateRestaurantVoteCount = async (restaurantId: string) => {
+    try {
+      // Count upvotes
+      const { data: upvotes, error: upError } = await supabase
+        .from('votes')
+        .select('*', { count: 'exact' })
+        .eq('restaurant_id', restaurantId)
+        .eq('vote_type', 'up');
+        
+      if (upError) throw upError;
+      
+      // Count downvotes
+      const { data: downvotes, error: downError } = await supabase
+        .from('votes')
+        .select('*', { count: 'exact' })
+        .eq('restaurant_id', restaurantId)
+        .eq('vote_type', 'down');
+        
+      if (downError) throw downError;
+      
+      // Calculate net vote count
+      const upCount = upvotes?.length || 0;
+      const downCount = downvotes?.length || 0;
+      const netVotes = upCount - downCount;
+      
+      // Update the restaurant
+      const { error: updateError } = await supabase
+        .from('restaurants')
+        .update({ vote_count: netVotes })
+        .eq('id', restaurantId);
+        
+      if (updateError) throw updateError;
+      
+    } catch (error) {
+      console.error('Failed to update restaurant vote count:', error);
+    }
+  };
 
   const voteForRestaurant = async (restaurantId: string, voteType: 'up' | 'down') => {
     console.log(`Vote requested for ${restaurantId}, type: ${voteType}`);

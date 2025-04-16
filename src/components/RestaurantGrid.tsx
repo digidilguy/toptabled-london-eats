@@ -8,10 +8,11 @@ import { useAuth } from "@/context/AuthContext";
 
 const RestaurantGrid = () => {
   const { filteredRestaurants, voteForRestaurant, userVotes } = useRestaurants();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   console.log("RestaurantGrid rendering with:", filteredRestaurants.length, "restaurants");
   console.log("User votes:", userVotes);
+  console.log("Current user:", user);
   
   if (filteredRestaurants.length > 0) {
     console.log("Restaurant data sample:", filteredRestaurants[0]);
