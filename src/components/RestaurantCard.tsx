@@ -84,7 +84,7 @@ const RestaurantCard = ({
         <span className="font-semibold text-lg mx-4">
           {voteCount}
         </span>
-JUNK JUNK JUNK
+
         <Button
           variant="outline"
           size="sm"
