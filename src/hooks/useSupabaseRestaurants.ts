@@ -83,19 +83,26 @@ export const useSupabaseRestaurants = () => {
     queryFn: async () => {
       if (!user) return {};
       
-      const { data: votes, error } = await supabase
-        .from('votes')
-        .select('restaurant_id, vote_type')
-        .eq('user_id', user.id);
+      try {
+        const { data: votes, error } = await supabase
+          .from('votes')
+          .select('restaurant_id, vote_type')
+          .eq('user_id', user.id);
 
-      if (error) throw error;
-      
-      console.log('User votes:', votes);
-
-      return votes.reduce((acc: Record<string, 'up' | 'down'>, vote) => {
-        acc[vote.restaurant_id] = vote.vote_type as 'up' | 'down';
-        return acc;
-      }, {});
+        if (error) {
+          console.error('Error fetching user votes:', error);
+          throw error;
+        }
+        
+        console.log('User votes:', votes);
+        return votes.reduce((acc: Record<string, 'up' | 'down'>, vote) => {
+          acc[vote.restaurant_id] = vote.vote_type as 'up' | 'down';
+          return acc;
+        }, {});
+      } catch (error) {
+        console.error('Failed to fetch user votes:', error);
+        return {};
+      }
     },
     enabled: !!user
   });
@@ -109,17 +116,22 @@ export const useSupabaseRestaurants = () => {
 
       console.log(`Submitting vote: ${voteType} for restaurant ${restaurantId} by user ${user.id}`);
 
-      const { error } = await supabase
-        .from('votes')
-        .upsert({
-          restaurant_id: restaurantId,
-          user_id: user.id,
-          vote_type: voteType
-        });
+      try {
+        const { error } = await supabase
+          .from('votes')
+          .upsert({
+            restaurant_id: restaurantId,
+            user_id: user.id,
+            vote_type: voteType
+          });
 
-      if (error) {
-        console.error('Vote error:', error);
-        throw error;
+        if (error) {
+          console.error('Vote error:', error);
+          throw error;
+        }
+      } catch (err) {
+        console.error('Vote operation failed:', err);
+        throw err;
       }
     },
     onSuccess: () => {

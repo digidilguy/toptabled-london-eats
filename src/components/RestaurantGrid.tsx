@@ -4,11 +4,15 @@ import { MapPin, ThumbsDown, ThumbsUp } from "lucide-react";
 import { tags } from "@/data/tags";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
+import { useAuth } from "@/context/AuthContext";
 
 const RestaurantGrid = () => {
   const { filteredRestaurants, voteForRestaurant, userVotes } = useRestaurants();
+  const { isAuthenticated } = useAuth();
 
   console.log("RestaurantGrid rendering with:", filteredRestaurants.length, "restaurants");
+  console.log("User votes:", userVotes);
+  
   if (filteredRestaurants.length > 0) {
     console.log("Restaurant data sample:", filteredRestaurants[0]);
     console.log("First restaurant tags:", filteredRestaurants[0].tagIds);
@@ -40,6 +44,8 @@ const RestaurantGrid = () => {
                   size="icon"
                   onClick={() => voteForRestaurant(restaurant.id, 'up')}
                   className="text-upvote hover:text-upvote/80"
+                  disabled={!isAuthenticated}
+                  title={!isAuthenticated ? "Login to vote" : "Upvote"}
                 >
                   <ThumbsUp 
                     size={16} 
@@ -52,6 +58,8 @@ const RestaurantGrid = () => {
                   size="icon"
                   onClick={() => voteForRestaurant(restaurant.id, 'down')}
                   className="text-downvote hover:text-downvote/80"
+                  disabled={!isAuthenticated}
+                  title={!isAuthenticated ? "Login to vote" : "Downvote"}
                 >
                   <ThumbsDown 
                     size={16} 
