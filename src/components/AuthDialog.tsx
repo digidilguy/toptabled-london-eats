@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,9 +9,10 @@ import { useAuth } from '@/context/AuthContext';
 interface AuthDialogProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
-const AuthDialog = ({ isOpen, onClose }: AuthDialogProps) => {
+const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
@@ -43,6 +43,10 @@ const AuthDialog = ({ isOpen, onClose }: AuthDialogProps) => {
     try {
       await login(loginEmail, loginPassword);
       handleClose();
+      // Call onSuccess callback if it exists
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -62,6 +66,10 @@ const AuthDialog = ({ isOpen, onClose }: AuthDialogProps) => {
     try {
       await signup(signupName, signupEmail, signupPassword);
       handleClose();
+      // Call onSuccess callback if it exists
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
