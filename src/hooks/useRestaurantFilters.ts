@@ -28,7 +28,7 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
     // Filter restaurants that are approved or, if admin, include pending ones
     let visibleRestaurants = isAdmin 
       ? [...restaurants]
-      : restaurants.filter(r => r.status === 'xxxx');
+      : restaurants.filter(r => r.status === 'approved');
     
     console.log('Visible restaurants after status filter:', visibleRestaurants);
     
