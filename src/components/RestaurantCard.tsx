@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ThumbsUp, ThumbsDown, MapPin, ExternalLink } from 'lucide-react';
@@ -30,26 +29,20 @@ const RestaurantCard = ({
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const [voteAnimation, setVoteAnimation] = useState<'none' | 'up' | 'down'>('none');
 
-  // Get the user's vote for this restaurant
   const userVote = userVotes[id];
 
   const handleVote = (voteType: 'up' | 'down') => {
-    console.log(`Handle vote called: ${voteType} for restaurant ${id}`);
-    
     if (!isAuthenticated) {
       setIsAuthDialogOpen(true);
       return;
     }
 
-    // Call voteForRestaurant from the context
     voteForRestaurant(id, voteType);
     
-    // Set animation
     setVoteAnimation(voteType);
     setTimeout(() => setVoteAnimation('none'), 300);
   };
 
-  // Get tag names from ids
   const restaurantTags = tagIds.map(tagId => {
     return tags.find(tag => tag.id === tagId);
   }).filter(Boolean);
