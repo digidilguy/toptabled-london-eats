@@ -86,8 +86,8 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         const { error: updateError } = await supabase
           .from('restaurants')
           .update({ 
-            vote_count: supabase.raw(`vote_count + ${voteChange}`),
-            weekly_vote_increase: supabase.raw(`weekly_vote_increase + ${voteChange}`)
+            vote_count: voteChange,
+            weekly_vote_increase: voteChange
           })
           .eq('id', restaurantId);
         
@@ -115,8 +115,8 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
       const { error: updateError } = await supabase
         .from('restaurants')
         .update({ 
-          vote_count: supabase.raw(`vote_count + ${voteChange}`),
-          weekly_vote_increase: supabase.raw(`weekly_vote_increase + ${voteChange}`)
+          vote_count: voteChange,
+          weekly_vote_increase: voteChange
         })
         .eq('id', restaurantId);
       
