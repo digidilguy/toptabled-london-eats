@@ -14,3 +14,32 @@ export const isSupabaseConfigured = () => {
     && import.meta.env.VITE_SUPABASE_URL !== 'https://placeholder-url.supabase.co';
 };
 
+// Function to clear all data from the database
+export const clearAllDatabaseData = async () => {
+  if (!isSupabaseConfigured()) {
+    throw new Error('Supabase is not configured with valid credentials');
+  }
+  
+  try {
+    // First clear restaurant_votes table (has foreign key constraints)
+    const { error: votesError } = await supabase
+      .from('restaurant_votes')
+      .delete()
+      .neq('restaurant_id', 'non-existent-id'); // Trick to delete all rows
+      
+    if (votesError) throw votesError;
+    
+    // Then clear restaurants table
+    const { error: restaurantsError } = await supabase
+      .from('restaurants')
+      .delete()
+      .neq('id', 'non-existent-id'); // Trick to delete all rows
+    
+    if (restaurantsError) throw restaurantsError;
+    
+    return { success: true };
+  } catch (error) {
+    console.error('Error clearing database:', error);
+    throw error;
+  }
+};
