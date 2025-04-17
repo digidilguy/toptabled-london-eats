@@ -8,11 +8,12 @@ import { useRestaurants } from '@/context/RestaurantContext';
 import { useAuth } from '@/context/AuthContext';
 
 interface SubmitRestaurantFormProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen?: boolean;
+  onClose?: () => void;
+  onSuccess?: () => void;
 }
 
-const SubmitRestaurantForm = ({ isOpen, onClose }: SubmitRestaurantFormProps) => {
+const SubmitRestaurantForm = ({ isOpen = false, onClose = () => {}, onSuccess }: SubmitRestaurantFormProps) => {
   const [name, setName] = useState('');
   const [googleMapsLink, setGoogleMapsLink] = useState('');
   const [imageUrl, setImageUrl] = useState('https://source.unsplash.com/random/300x200/?restaurant,food');
@@ -39,6 +40,11 @@ const SubmitRestaurantForm = ({ isOpen, onClose }: SubmitRestaurantFormProps) =>
         imageUrl,
         tagIds: [] // Empty tags as we removed the tag selection
       });
+      
+      // Call onSuccess if provided
+      if (onSuccess) {
+        onSuccess();
+      }
       
       handleClose();
     } catch (error) {

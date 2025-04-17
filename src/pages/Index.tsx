@@ -28,7 +28,7 @@ const Index = () => {
             <div className="lg:w-8/12">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
                 <h2 className="text-xl font-semibold">All Restaurants</h2>
-                <TagFilter className="mt-3 sm:mt-0" />
+                <TagFilter />
               </div>
               
               <RestaurantGrid />
@@ -51,6 +51,8 @@ const Index = () => {
             
             <div className="py-4">
               <SubmitRestaurantForm 
+                isOpen={isSheetOpen}
+                onClose={() => setIsSheetOpen(false)}
                 onSuccess={() => setIsSheetOpen(false)}
               />
             </div>
