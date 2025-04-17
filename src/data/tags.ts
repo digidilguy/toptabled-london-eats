@@ -30,4 +30,3 @@ export const tags: Tag[] = [
   { id: 'vegetarian', name: 'Vegetarian', category: 'dietary' },
   { id: 'vegan', name: 'Vegan', category: 'dietary' }
 ];
-

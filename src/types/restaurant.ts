@@ -1,3 +1,15 @@
+export type TagCategory = 'area' | 'cuisine' | 'awards' | 'dietary';
+
+export interface TagCategoryDefinition {
+  id: TagCategory;
+  name: string;
+}
+
+export interface Tag {
+  id: string;
+  name: string;
+  category: TagCategory;
+}
 
 export interface RestaurantContextType {
   restaurants: Restaurant[];
