@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,6 +23,12 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// Simple email validation function
+const isValidEmail = (email: string): boolean => {
+  const trimmedEmail = email.trim();
+  return !!trimmedEmail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail);
+};
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [authUser, setAuthUser] = useState<AuthUser | null>(null);
@@ -112,6 +119,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error("Email is required");
       }
       
+      if (!isValidEmail(trimmedEmail)) {
+        toast({
+          title: "Invalid Email",
+          description: "Please enter a valid email address",
+          variant: "destructive",
+        });
+        throw new Error("Email address is invalid");
+      }
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email: trimmedEmail, 
         password
@@ -157,6 +173,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           variant: "destructive",
         });
         throw new Error("Email is required");
+      }
+      
+      // Add explicit email validation
+      if (!isValidEmail(trimmedEmail)) {
+        toast({
+          title: "Invalid Email",
+          description: "Please enter a valid email address",
+          variant: "destructive",
+        });
+        throw new Error("Email address is invalid");
       }
       
       if (password.length < 6) {

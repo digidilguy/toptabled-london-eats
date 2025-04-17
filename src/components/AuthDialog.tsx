@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -23,6 +24,11 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
   const [signupPassword, setSignupPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [validationErrors, setValidationErrors] = useState<{
+    name?: string;
+    email?: string;
+    password?: string;
+  }>({});
   
   const { login, signup } = useAuth();
 
@@ -33,17 +39,73 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
     setSignupEmail('');
     setSignupPassword('');
     setError('');
+    setValidationErrors({});
     onClose();
   };
 
   const validateEmail = (email: string): boolean => {
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) return false;
+    
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email.trim());
+    return emailRegex.test(trimmedEmail);
+  };
+
+  const validateSignupForm = (): boolean => {
+    const errors: {
+      name?: string;
+      email?: string;
+      password?: string;
+    } = {};
+    
+    if (!signupName.trim()) {
+      errors.name = 'Name is required';
+    }
+    
+    if (!signupEmail.trim()) {
+      errors.email = 'Email is required';
+    } else if (!validateEmail(signupEmail)) {
+      errors.email = 'Please enter a valid email address';
+    }
+    
+    if (!signupPassword) {
+      errors.password = 'Password is required';
+    } else if (signupPassword.length < 6) {
+      errors.password = 'Password must be at least 6 characters';
+    }
+    
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const validateLoginForm = (): boolean => {
+    const errors: {
+      email?: string;
+      password?: string;
+    } = {};
+    
+    if (!loginEmail.trim()) {
+      errors.email = 'Email is required';
+    } else if (!validateEmail(loginEmail)) {
+      errors.email = 'Please enter a valid email address';
+    }
+    
+    if (!loginPassword) {
+      errors.password = 'Password is required';
+    }
+    
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    
+    if (!validateLoginForm()) {
+      return;
+    }
+    
     setIsLoading(true);
     
     try {
@@ -66,6 +128,11 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    
+    if (!validateSignupForm()) {
+      return;
+    }
+    
     setIsLoading(true);
     
     try {
@@ -97,7 +164,11 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
         <Tabs 
           defaultValue="login" 
           value={activeTab}
-          onValueChange={(value) => setActiveTab(value as "login" | "signup")}
+          onValueChange={(value) => {
+            setActiveTab(value as "login" | "signup");
+            setError('');
+            setValidationErrors({});
+          }}
           className="w-full"
         >
           <TabsList className="grid w-full grid-cols-2">
@@ -115,8 +186,12 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
                   placeholder="you@example.com"
+                  className={validationErrors.email ? "border-red-500" : ""}
                   required
                 />
+                {validationErrors.email && (
+                  <p className="text-sm text-red-500">{validationErrors.email}</p>
+                )}
               </div>
               
               <div className="space-y-2">
@@ -127,8 +202,12 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
                   placeholder="••••••••"
+                  className={validationErrors.password ? "border-red-500" : ""}
                   required
                 />
+                {validationErrors.password && (
+                  <p className="text-sm text-red-500">{validationErrors.password}</p>
+                )}
               </div>
               
               {error && (
@@ -158,8 +237,12 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
                   value={signupName}
                   onChange={(e) => setSignupName(e.target.value)}
                   placeholder="Your Name"
+                  className={validationErrors.name ? "border-red-500" : ""}
                   required
                 />
+                {validationErrors.name && (
+                  <p className="text-sm text-red-500">{validationErrors.name}</p>
+                )}
               </div>
               
               <div className="space-y-2">
@@ -170,8 +253,12 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
                   value={signupEmail}
                   onChange={(e) => setSignupEmail(e.target.value)}
                   placeholder="you@example.com"
+                  className={validationErrors.email ? "border-red-500" : ""}
                   required
                 />
+                {validationErrors.email && (
+                  <p className="text-sm text-red-500">{validationErrors.email}</p>
+                )}
               </div>
               
               <div className="space-y-2">
@@ -182,9 +269,13 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
                   value={signupPassword}
                   onChange={(e) => setSignupPassword(e.target.value)}
                   placeholder="••••••••"
+                  className={validationErrors.password ? "border-red-500" : ""}
                   required
                   minLength={6}
                 />
+                {validationErrors.password && (
+                  <p className="text-sm text-red-500">{validationErrors.password}</p>
+                )}
               </div>
               
               {error && (
