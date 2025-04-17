@@ -41,7 +41,7 @@ const Index = () => {
         </main>
         
         <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-          <SheetContent className="md:max-w-md overflow-y-auto">
+          <SheetContent>
             <SheetHeader>
               <SheetTitle>Submit a Restaurant</SheetTitle>
               <SheetDescription>
