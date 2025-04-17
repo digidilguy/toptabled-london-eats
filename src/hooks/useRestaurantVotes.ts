@@ -26,6 +26,12 @@ function isValidUUID(id: string | undefined): boolean {
   return uuidRegex.test(id);
 }
 
+// Helper function to check if user is a mock user (using string IDs like '1', '2', '3')
+function isMockUser(userId: string | undefined): boolean {
+  if (!userId) return false;
+  return ['1', '2', '3'].includes(userId);
+}
+
 export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
   const { isAuthenticated, user, isAdmin } = useAuth();
   const { toast } = useToast();
@@ -80,9 +86,6 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
   const { data: userVotes = {} } = useQuery({
     queryKey: ['user-votes', user?.id],
     queryFn: async () => {
-      // For mock users, they have string IDs, not UUIDs
-      const isMockUser = user?.id && ['1', '2', '3'].includes(user.id);
-      
       // Check if user is authenticated
       if (!isAuthenticated || !user?.id) {
         console.log('User not authenticated, not fetching votes');
@@ -90,7 +93,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
       }
       
       // Skip Supabase check for mock users
-      if (isMockUser) {
+      if (isMockUser(user.id)) {
         console.log('Mock user detected, skipping Supabase vote fetch');
         return {};
       }
@@ -140,23 +143,25 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         throw new Error('Invalid user ID');
       }
       
-      // For mock users with string IDs, just simulate voting without Supabase
-      const isMockUser = ['1', '2', '3'].includes(user.id);
-      
-      console.log('Voting with user ID:', user.id, 'Mock user:', isMockUser);
+      console.log('Voting with user ID:', user.id, 'Mock user:', isMockUser(user.id));
       console.log('Restaurant ID:', restaurantId);
       console.log('Vote type:', voteType);
 
       const currentVote = userVotes[restaurantId];
       
-      // For mock users, just return a success response
-      if (isMockUser) {
-        // Simulate success
-        return { action: currentVote === voteType ? 'removed' : 'voted', type: voteType };
+      // For mock users, just return a success response without interacting with Supabase
+      if (isMockUser(user.id)) {
+        console.log('Processing mock user vote');
+        // Simulate success response
+        return { 
+          action: currentVote === voteType ? 'removed' : 'voted', 
+          type: voteType 
+        };
       }
       
       // For real users, check UUID validity
       if (!isValidUUID(user.id)) {
+        console.error('Invalid UUID for real user:', user.id);
         throw new Error('Your user ID is not a valid UUID');
       }
       
@@ -284,9 +289,18 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
           ignoreDuplicates: false 
         });
       
-      if (error) throw error;
+      if (error) {
+        // If there's an error here, it might be due to RLS. 
+        // Let's try to use the importInitialData function from lib/supabase
+        console.error('Error importing initial data directly:', error);
+        console.log('Trying to import using lib/supabase function...');
+        
+        // Use the importInitialData function from lib/supabase
+        const { importInitialData: libImportInitialData } = await import('@/lib/supabase');
+        await libImportInitialData(initialRestaurants);
+      }
       
-      console.log('Initial data imported successfully:', dbRestaurants.length, 'restaurants');
+      console.log('Initial data imported successfully');
       return { success: true, count: dbRestaurants.length };
     } catch (error) {
       console.error('Error importing initial data:', error);

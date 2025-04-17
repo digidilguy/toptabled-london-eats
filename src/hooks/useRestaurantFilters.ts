@@ -54,7 +54,7 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
     setAvailableTags(Array.from(tagSet));
     console.log('Available tags:', Array.from(tagSet));
 
-    // Apply tag filters if any are active - modified to use OR logic instead of AND
+    // Apply tag filters if any are active - using OR logic
     if (activeTagIds.length > 0) {
       visibleRestaurants = visibleRestaurants.filter(restaurant => 
         // Check if the restaurant has ANY of the active tags (OR filter)
