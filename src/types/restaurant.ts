@@ -6,6 +6,7 @@ export interface RestaurantContextType {
   trendingRestaurants: Restaurant[];
   filteredRestaurants: Restaurant[];
   activeTagIds: string[];
+  availableTags: string[];
   toggleTagFilter: (tagId: string) => void;
   clearTagFilters: () => void;
   voteForRestaurant: (restaurantId: string, voteType: 'up' | 'down') => void;

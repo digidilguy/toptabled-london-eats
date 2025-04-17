@@ -7,10 +7,18 @@ import { tags, tagCategories, Tag, TagCategory } from "@/data/tags";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const TagFilter = () => {
-  const { activeTagIds, toggleTagFilter, clearTagFilters } = useRestaurants();
+  const { activeTagIds, toggleTagFilter, clearTagFilters, availableTags } = useRestaurants();
   
   const renderTagsByCategory = (category: TagCategory) => {
-    const categoryTags = tags.filter(tag => tag.category === category);
+    // Filter tags by category and availability in current restaurants
+    const categoryTags = tags.filter(tag => 
+      tag.category === category && 
+      availableTags.includes(tag.id)
+    );
+    
+    if (categoryTags.length === 0) {
+      return <p className="text-xs text-neutral-400 italic">No {category} tags available</p>;
+    }
     
     return (
       <div className="flex flex-wrap gap-2 mt-3">

@@ -21,7 +21,8 @@ export const RestaurantProvider: React.FC<RestaurantProviderProps> = ({ children
     filteredRestaurants,
     trendingRestaurants,
     toggleTagFilter,
-    clearTagFilters
+    clearTagFilters,
+    availableTags
   } = useRestaurantFilters(restaurants);
 
   return (
@@ -36,7 +37,8 @@ export const RestaurantProvider: React.FC<RestaurantProviderProps> = ({ children
         voteForRestaurant,
         addRestaurant,
         getRestaurantById,
-        userVotes
+        userVotes,
+        availableTags
       }}
     >
       {children}

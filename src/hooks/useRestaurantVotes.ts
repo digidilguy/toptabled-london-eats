@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Restaurant } from '@/data/restaurants';
 import { useAuth } from '@/context/AuthContext';
@@ -37,6 +38,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         
         // If no data returned from Supabase, use initial data
         if (!data || data.length === 0) {
+          console.log('No restaurants found in database, using initial data');
           return initialRestaurants;
         }
         
@@ -54,32 +56,56 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
   const { data: userVotes = {} } = useQuery({
     queryKey: ['user-votes', user?.id],
     queryFn: async () => {
-      if (!user?.id || typeof user.id !== 'string') return {};
+      // Check if user is authenticated and has a valid UUID
+      if (!user?.id || typeof user.id !== 'string' || !isValidUUID(user.id)) {
+        console.log('User not authenticated or invalid UUID, not fetching votes');
+        return {};
+      }
       
       try {
+        console.log('Fetching votes for user:', user.id);
         const { data, error } = await supabase
           .from('restaurant_votes')
           .select('restaurant_id, vote_type')
           .eq('user_id', user.id);
         
-        if (error) throw error;
+        if (error) {
+          console.error('Error fetching user votes:', error);
+          throw error;
+        }
         
-        return data.reduce((acc, vote) => ({
+        // Convert array to object mapping restaurant_id -> vote_type
+        const voteMap = data.reduce((acc, vote) => ({
           ...acc,
           [vote.restaurant_id]: vote.vote_type
         }), {});
+        
+        console.log('User votes retrieved:', voteMap);
+        return voteMap;
       } catch (error) {
         console.error('Error fetching user votes:', error);
         return {};
       }
     },
-    enabled: !!user?.id && typeof user.id === 'string'
+    enabled: !!user?.id && typeof user.id === 'string' && isValidUUID(user.id)
   });
+
+  // Helper function to validate UUID
+  function isValidUUID(id: string): boolean {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(id);
+  }
 
   // Vote mutation
   const voteMutation = useMutation({
     mutationFn: async ({ restaurantId, voteType }: { restaurantId: string, voteType: 'up' | 'down' }) => {
-      if (!user?.id) throw new Error('Must be logged in to vote');
+      if (!user?.id || !isValidUUID(user.id)) {
+        throw new Error('Must be logged in with a valid user ID to vote');
+      }
+
+      console.log('Voting with user ID:', user.id);
+      console.log('Restaurant ID:', restaurantId);
+      console.log('Vote type:', voteType);
 
       const currentVote = userVotes[restaurantId];
       
@@ -125,6 +151,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
       }
     },
     onError: (error) => {
+      console.error('Voting error:', error);
       toast({
         title: "Error",
         description: error.message,
@@ -185,6 +212,15 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
       toast({
         title: "Authentication required",
         description: "You need to log in to vote for restaurants",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!user?.id || !isValidUUID(user.id)) {
+      toast({
+        title: "Invalid user ID",
+        description: "Your user ID is not valid for voting",
         variant: "destructive",
       });
       return;

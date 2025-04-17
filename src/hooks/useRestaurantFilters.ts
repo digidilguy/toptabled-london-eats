@@ -3,12 +3,14 @@ import { useState, useEffect } from 'react';
 import { Restaurant } from '@/data/restaurants';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { tags as allTags } from '@/data/tags';
 
 export const useRestaurantFilters = (restaurants: Restaurant[]) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTagIds, setActiveTagIds] = useState<string[]>([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>(restaurants);
   const [trendingRestaurants, setTrendingRestaurants] = useState<Restaurant[]>(restaurants.slice(0, 5));
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
   const { isAdmin } = useAuth();
 
   // Initialize from URL params
@@ -38,6 +40,15 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
     
     console.log('Visible restaurants after status filter:', visibleRestaurants);
     
+    // Find all available tags from the current restaurant list
+    const tagSet = new Set<string>();
+    visibleRestaurants.forEach(restaurant => {
+      restaurant.tagIds.forEach(tagId => {
+        tagSet.add(tagId);
+      });
+    });
+    setAvailableTags(Array.from(tagSet));
+
     // Apply tag filters if any are active
     if (activeTagIds.length > 0) {
       visibleRestaurants = visibleRestaurants.filter(restaurant => 
@@ -82,6 +93,7 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
     filteredRestaurants,
     trendingRestaurants,
     toggleTagFilter,
-    clearTagFilters
+    clearTagFilters,
+    availableTags
   };
 };
