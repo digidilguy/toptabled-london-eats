@@ -5,14 +5,30 @@ import { tags } from "@/data/tags";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const RestaurantGrid = () => {
   const { filteredRestaurants, voteForRestaurant, userVotes } = useRestaurants();
   const { isAuthenticated, user } = useAuth();
+  const { toast } = useToast();
 
   console.log("RestaurantGrid rendering with:", filteredRestaurants.length, "restaurants");
   console.log("User votes:", userVotes);
   console.log("Current user:", user);
+  console.log("Is authenticated:", isAuthenticated);
+  
+  const handleVote = (restaurantId: string, voteType: 'up' | 'down') => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication required",
+        description: "You need to log in to vote for restaurants",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    voteForRestaurant(restaurantId, voteType);
+  };
   
   if (filteredRestaurants.length > 0) {
     console.log("Restaurant data sample:", filteredRestaurants[0]);
@@ -43,7 +59,7 @@ const RestaurantGrid = () => {
                 <Button 
                   variant="ghost" 
                   size="icon"
-                  onClick={() => voteForRestaurant(restaurant.id, 'up')}
+                  onClick={() => handleVote(restaurant.id, 'up')}
                   className="text-upvote hover:text-upvote/80"
                   disabled={!isAuthenticated}
                   title={!isAuthenticated ? "Login to vote" : "Upvote"}
@@ -57,7 +73,7 @@ const RestaurantGrid = () => {
                 <Button 
                   variant="ghost" 
                   size="icon"
-                  onClick={() => voteForRestaurant(restaurant.id, 'down')}
+                  onClick={() => handleVote(restaurant.id, 'down')}
                   className="text-downvote hover:text-downvote/80"
                   disabled={!isAuthenticated}
                   title={!isAuthenticated ? "Login to vote" : "Downvote"}

@@ -5,13 +5,12 @@ import { useAuth } from '@/context/AuthContext';
 import AuthDialog from './AuthDialog';
 import { Menu, X, User } from 'lucide-react';
 
-// Remove the import for SubmitRestaurantForm
-// We'll use a render prop pattern instead
-
 const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => void }) => {
   const { isAuthenticated, isAdmin, user, logout } = useAuth();
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  console.log("Navbar auth state:", { isAuthenticated, user });
 
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50">
@@ -40,7 +39,7 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
                 <div className="flex items-center gap-2">
                   <User size={16} className="text-neutral" />
                   <span className="text-sm font-medium">
-                    {user?.name}
+                    {user?.name || user?.email?.split('@')[0]}
                     {isAdmin && <span className="ml-1 text-xs text-primary">(Admin)</span>}
                   </span>
                 </div>
@@ -89,7 +88,7 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
                   <div className="py-2 px-3 flex items-center gap-2">
                     <User size={16} className="text-neutral" />
                     <span className="text-sm font-medium">
-                      {user?.name}
+                      {user?.name || user?.email?.split('@')[0]}
                       {isAdmin && <span className="ml-1 text-xs text-primary">(Admin)</span>}
                     </span>
                   </div>
@@ -125,8 +124,6 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
         isOpen={isAuthDialogOpen} 
         onClose={() => setIsAuthDialogOpen(false)} 
       />
-
-      {/* Remove the direct rendering of SubmitRestaurantForm here */}
     </nav>
   );
 };

@@ -50,9 +50,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { toast } = useToast();
 
   useEffect(() => {
+    console.log("Setting up auth state listener...");
+    
+    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, currentSession) => {
+        console.log('Auth state changed:', event, currentSession?.user);
         setSession(currentSession);
+        
         if (currentSession?.user) {
           const { id, email } = currentSession.user;
           
@@ -65,15 +70,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           };
           
           setAuthUser(user);
-          console.log('Auth state changed:', event, user);
+          console.log('User set after auth change:', user);
         } else {
           setAuthUser(null);
+          console.log('User cleared after auth change');
         }
       }
     );
 
+    // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+      console.log('Existing session check:', currentSession?.user);
       setSession(currentSession);
+      
       if (currentSession?.user) {
         const { id, email } = currentSession.user;
         
@@ -86,11 +95,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
         
         setAuthUser(user);
-        console.log('Existing session found:', user);
+        console.log('User set from existing session:', user);
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      console.log("Cleaning up auth listener");
+      subscription.unsubscribe();
+    };
   }, []);
 
   const mockUsers = [
@@ -151,6 +163,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error("Password is required");
       }
       
+      console.log("Attempting login with email:", cleanEmail);
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email: cleanEmail, 
         password
@@ -165,6 +179,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
         throw error;
       }
+      
+      console.log("Login successful, auth data:", data);
       
       toast({
         title: "Login successful",
@@ -257,6 +273,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw error;
       }
       
+      console.log("Signup successful:", data);
+      
       toast({
         title: "Signup successful",
         description: `Welcome to TopTabled, ${name.trim()}!`,
@@ -268,6 +286,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = async () => {
+    console.log("Logging out...");
     const { error } = await supabase.auth.signOut();
     
     if (error) {
@@ -280,6 +299,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
     
+    // Explicitly clear the auth state
+    setAuthUser(null);
+    setSession(null);
+    
+    console.log("Logged out successfully");
+    
     toast({
       title: "Logged out",
       description: "You have been successfully logged out",
@@ -290,7 +315,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const isAdmin = authUser?.isAdmin || false;
   const isPremium = authUser?.isPremium || false;
 
-  console.log('Auth state:', { isAuthenticated, isAdmin, isPremium });
+  console.log('Auth state in provider:', { isAuthenticated, isAdmin, isPremium, user: authUser });
 
   return (
     <AuthContext.Provider
