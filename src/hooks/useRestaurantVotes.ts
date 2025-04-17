@@ -133,9 +133,8 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
     mutationFn: async (restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded' | 'status' | 'weeklyVoteIncrease'>) => {
       if (!isAuthenticated) throw new Error('Must be logged in to add restaurants');
       
-      const id = restaurantData.name.toLowerCase().replace(/\s+/g, '-');
+      // Now generate a new UUID - Supabase will do this for us with the default gen_random_uuid()
       const newRestaurant = {
-        id,
         name: restaurantData.name,
         google_maps_link: restaurantData.googleMapsLink,
         image_url: restaurantData.imageUrl,
@@ -143,19 +142,16 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         status: isAdmin ? 'approved' : 'pending'
       };
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('restaurants')
-        .insert(newRestaurant);
+        .insert(newRestaurant)
+        .select()
+        .single();
 
       if (error) throw error;
       
       // Return mapped restaurant for UI
-      return mapDbRestaurant({
-        ...newRestaurant,
-        vote_count: 0,
-        date_added: new Date().toISOString().split('T')[0],
-        weekly_vote_increase: 0
-      });
+      return mapDbRestaurant(data);
     },
     onSuccess: (restaurant) => {
       queryClient.invalidateQueries({ queryKey: ['restaurants'] });
