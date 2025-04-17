@@ -1,19 +1,17 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { useAuth } from '@/context/AuthContext';
 import AuthDialog from './AuthDialog';
 import { Menu, X, User } from 'lucide-react';
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+
+// Remove the import for SubmitRestaurantForm
+// We'll use a render prop pattern instead
 
 const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => void }) => {
   const { isAuthenticated, isAdmin, user, logout } = useAuth();
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  useEffect(() => {
-    console.log("Navbar auth state updated:", { isAuthenticated, user });
-  }, [isAuthenticated, user]);
 
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50">
@@ -40,13 +38,9 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
             {isAuthenticated ? (
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
-                  <Avatar className="h-8 w-8 bg-primary/10">
-                    <AvatarFallback className="text-primary">
-                      {user?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
+                  <User size={16} className="text-neutral" />
                   <span className="text-sm font-medium">
-                    {user?.name || user?.email?.split('@')[0]}
+                    {user?.name}
                     {isAdmin && <span className="ml-1 text-xs text-primary">(Admin)</span>}
                   </span>
                 </div>
@@ -93,13 +87,9 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
               {isAuthenticated ? (
                 <>
                   <div className="py-2 px-3 flex items-center gap-2">
-                    <Avatar className="h-6 w-6 bg-primary/10">
-                      <AvatarFallback className="text-primary text-xs">
-                        {user?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
+                    <User size={16} className="text-neutral" />
                     <span className="text-sm font-medium">
-                      {user?.name || user?.email?.split('@')[0]}
+                      {user?.name}
                       {isAdmin && <span className="ml-1 text-xs text-primary">(Admin)</span>}
                     </span>
                   </div>
@@ -135,6 +125,8 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
         isOpen={isAuthDialogOpen} 
         onClose={() => setIsAuthDialogOpen(false)} 
       />
+
+      {/* Remove the direct rendering of SubmitRestaurantForm here */}
     </nav>
   );
 };

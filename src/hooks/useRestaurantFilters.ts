@@ -24,7 +24,6 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
     // Debug information
     console.log('Current restaurants:', restaurants);
     console.log('isAdmin:', isAdmin);
-    console.log('Active tag IDs:', activeTagIds);
     
     // Apply filter for approved restaurants or include pending if admin
     let visibleRestaurants = restaurants.map(r => ({
@@ -42,14 +41,8 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
     // Apply tag filters if any are active
     if (activeTagIds.length > 0) {
       visibleRestaurants = visibleRestaurants.filter(restaurant => 
-        // Check if restaurant has ALL the active tag IDs
-        activeTagIds.every(tagId => {
-          return restaurant.tagIds && restaurant.tagIds.some(id => id === tagId);
-        })
+        activeTagIds.every(tagId => restaurant.tagIds.includes(tagId))
       );
-      
-      console.log('Restaurants after tag filtering:', visibleRestaurants);
-      
       // Update URL when filters change
       setSearchParams({ tags: activeTagIds.join(',') });
     } else {

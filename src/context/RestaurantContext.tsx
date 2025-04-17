@@ -1,8 +1,9 @@
 
 import React, { createContext, useContext } from 'react';
+import { restaurants as initialRestaurants } from '@/data/restaurants';
 import { RestaurantContextType, RestaurantProviderProps } from '@/types/restaurant';
-import { useSupabaseRestaurants } from '@/hooks/useSupabaseRestaurants';
 import { useRestaurantFilters } from '@/hooks/useRestaurantFilters';
+import { useRestaurantVotes } from '@/hooks/useRestaurantVotes';
 
 const RestaurantContext = createContext<RestaurantContextType | undefined>(undefined);
 
@@ -11,7 +12,9 @@ export const RestaurantProvider: React.FC<RestaurantProviderProps> = ({ children
     restaurants,
     userVotes,
     voteForRestaurant,
-  } = useSupabaseRestaurants();
+    addRestaurant,
+    getRestaurantById
+  } = useRestaurantVotes(initialRestaurants);
 
   const {
     activeTagIds,
@@ -31,8 +34,8 @@ export const RestaurantProvider: React.FC<RestaurantProviderProps> = ({ children
         toggleTagFilter,
         clearTagFilters,
         voteForRestaurant,
-        addRestaurant: () => {}, // To be implemented
-        getRestaurantById: (id) => restaurants.find(r => r.id === id),
+        addRestaurant,
+        getRestaurantById,
         userVotes
       }}
     >

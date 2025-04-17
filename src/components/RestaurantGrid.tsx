@@ -3,38 +3,11 @@ import { useRestaurants } from "@/context/RestaurantContext";
 import { MapPin, ThumbsDown, ThumbsUp } from "lucide-react";
 import { tags } from "@/data/tags";
 import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
-import { useAuth } from "@/context/AuthContext";
-import { useToast } from "@/hooks/use-toast";
 
 const RestaurantGrid = () => {
   const { filteredRestaurants, voteForRestaurant, userVotes } = useRestaurants();
-  const { isAuthenticated, user } = useAuth();
-  const { toast } = useToast();
 
   console.log("RestaurantGrid rendering with:", filteredRestaurants.length, "restaurants");
-  console.log("User votes:", userVotes);
-  console.log("Current user:", user);
-  console.log("Is authenticated:", isAuthenticated);
-  
-  const handleVote = (restaurantId: string, voteType: 'up' | 'down') => {
-    if (!isAuthenticated) {
-      toast({
-        title: "Authentication required",
-        description: "You need to log in to vote for restaurants",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    voteForRestaurant(restaurantId, voteType);
-  };
-  
-  if (filteredRestaurants.length > 0) {
-    console.log("Restaurant data sample:", filteredRestaurants[0]);
-    console.log("First restaurant tags:", filteredRestaurants[0].tagIds);
-    console.log("First restaurant tag data:", filteredRestaurants[0].tagData);
-  }
 
   if (!filteredRestaurants.length) {
     return (
@@ -59,10 +32,8 @@ const RestaurantGrid = () => {
                 <Button 
                   variant="ghost" 
                   size="icon"
-                  onClick={() => handleVote(restaurant.id, 'up')}
+                  onClick={() => voteForRestaurant(restaurant.id, 'up')}
                   className="text-upvote hover:text-upvote/80"
-                  disabled={!isAuthenticated}
-                  title={!isAuthenticated ? "Login to vote" : "Upvote"}
                 >
                   <ThumbsUp 
                     size={16} 
@@ -73,10 +44,8 @@ const RestaurantGrid = () => {
                 <Button 
                   variant="ghost" 
                   size="icon"
-                  onClick={() => handleVote(restaurant.id, 'down')}
+                  onClick={() => voteForRestaurant(restaurant.id, 'down')}
                   className="text-downvote hover:text-downvote/80"
-                  disabled={!isAuthenticated}
-                  title={!isAuthenticated ? "Login to vote" : "Downvote"}
                 >
                   <ThumbsDown 
                     size={16} 
@@ -87,30 +56,17 @@ const RestaurantGrid = () => {
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <div className="flex flex-wrap gap-1">
-                {restaurant.tagIds && restaurant.tagIds.length > 0 ? (
-                  restaurant.tagIds.map((tagId, index) => {
-                    // First try to get the tag name from tagData if available
-                    const tagName = restaurant.tagData && restaurant.tagData[index] 
-                      ? restaurant.tagData[index].name 
-                      : null;
-                    
-                    // Fallback to lookup from local tags if needed
-                    const localTag = tags.find(t => t.id === tagId);
-                    const displayName = tagName || (localTag ? localTag.name : tagId);
-                    
-                    return (
-                      <Badge 
-                        key={tagId}
-                        variant="secondary"
-                        className="text-xs px-2 py-0.5 bg-secondary/50 rounded-full text-accent/80"
-                      >
-                        {displayName}
-                      </Badge>
-                    );
-                  })
-                ) : (
-                  <span className="text-xs text-neutral">No tags</span>
-                )}
+                {restaurant.tagIds.map(tagId => {
+                  const tag = tags.find(t => t.id === tagId);
+                  return tag && (
+                    <span 
+                      key={tag.id}
+                      className="text-xs px-2 py-0.5 bg-secondary/50 rounded-full text-accent/80"
+                    >
+                      {tag.name}
+                    </span>
+                  );
+                })}
               </div>
               <a 
                 href={restaurant.googleMapsLink} 
