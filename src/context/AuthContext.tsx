@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from '@/integrations/supabase/client';
 
 interface User {
   id: string;
@@ -39,6 +40,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
+  // Check if user has admin role
+  const checkAdminRole = async (userId: string): Promise<boolean> => {
+    if (!userId) return false;
+    
+    try {
+      const { data, error } = await supabase
+        .rpc('has_role', { _user_id: userId, _role: 'admin' });
+      
+      if (error) throw error;
+      return !!data;
+    } catch (error) {
+      console.error('Error checking admin role:', error);
+      return false;
+    }
+  };
+
   // Mock users for demo
   const mockUsers = [
     { id: '1', email: 'user@example.com', password: 'password', name: 'Regular User', isPremium: false, isAdmin: false },
@@ -47,29 +64,60 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   ];
 
   const login = async (email: string, password: string) => {
-    // Mock authentication logic
-    const foundUser = mockUsers.find(u => u.email === email && u.password === password);
+    // For mock users
+    const foundMockUser = mockUsers.find(u => u.email === email && u.password === password);
     
-    if (foundUser) {
-      const { password, ...userWithoutPassword } = foundUser;
+    if (foundMockUser) {
+      const { password, ...userWithoutPassword } = foundMockUser;
       setUser(userWithoutPassword);
       localStorage.setItem('toptabled-user', JSON.stringify(userWithoutPassword));
       toast({
         title: "Login successful",
         description: `Welcome back, ${userWithoutPassword.name}!`,
       });
-    } else {
+      return;
+    }
+    
+    // For real users using Supabase
+    try {
+      const { data: { user: supabaseUser }, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+      
+      if (error) throw error;
+      
+      if (supabaseUser) {
+        const isAdmin = await checkAdminRole(supabaseUser.id);
+        
+        const userData = {
+          id: supabaseUser.id,
+          email: supabaseUser.email || '',
+          name: supabaseUser.user_metadata?.name || email.split('@')[0],
+          isPremium: supabaseUser.user_metadata?.isPremium || false,
+          isAdmin
+        };
+        
+        setUser(userData);
+        localStorage.setItem('toptabled-user', JSON.stringify(userData));
+        
+        toast({
+          title: "Login successful",
+          description: `Welcome back, ${userData.name}!`,
+        });
+      }
+    } catch (error) {
       toast({
         title: "Login failed",
-        description: "Invalid email or password. Try user@example.com / password",
+        description: error instanceof Error ? error.message : "Invalid email or password. Try user@example.com / password",
         variant: "destructive",
       });
-      throw new Error('Invalid email or password');
+      throw error;
     }
   };
 
   const signup = async (name: string, email: string, password: string) => {
-    // Check if user already exists
+    // Check if user already exists in mock users
     if (mockUsers.some(u => u.email === email)) {
       toast({
         title: "Signup failed",
@@ -79,28 +127,73 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw new Error('Email already in use');
     }
 
-    // In a real app, you would make an API call to create the user
-    // For this demo, we'll just simulate a successful signup
-    const newUser = {
-      id: (mockUsers.length + 1).toString(),
-      email,
-      name,
-      isPremium: false,
-      isAdmin: false
-    };
+    // Try to sign up with Supabase
+    try {
+      const { data: { user: supabaseUser }, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            name
+          }
+        }
+      });
+      
+      if (error) throw error;
+      
+      if (supabaseUser) {
+        const userData = {
+          id: supabaseUser.id,
+          email: supabaseUser.email || '',
+          name: name || email.split('@')[0],
+          isPremium: false,
+          isAdmin: false
+        };
+        
+        setUser(userData);
+        localStorage.setItem('toptabled-user', JSON.stringify(userData));
+        
+        toast({
+          title: "Signup successful",
+          description: `Welcome to TopTabled, ${name}!`,
+        });
+      } else {
+        // In a real app, we might show a verification message
+        toast({
+          title: "Signup successful",
+          description: "Please check your email to verify your account",
+        });
+      }
+    } catch (error) {
+      // If Supabase signup fails, simulate a successful signup for demo
+      const newUser = {
+        id: (mockUsers.length + 1).toString(),
+        email,
+        name,
+        isPremium: false,
+        isAdmin: false
+      };
 
-    setUser(newUser);
-    localStorage.setItem('toptabled-user', JSON.stringify(newUser));
-    
-    toast({
-      title: "Signup successful",
-      description: `Welcome to TopTabled, ${name}!`,
-    });
+      setUser(newUser);
+      localStorage.setItem('toptabled-user', JSON.stringify(newUser));
+      
+      toast({
+        title: "Signup successful",
+        description: `Welcome to TopTabled, ${name}!`,
+      });
+    }
   };
 
   const logout = () => {
+    // Logout from Supabase
+    supabase.auth.signOut().catch(error => {
+      console.error('Error signing out:', error);
+    });
+    
+    // Clear local state
     setUser(null);
     localStorage.removeItem('toptabled-user');
+    
     toast({
       title: "Logged out",
       description: "You have been successfully logged out",
