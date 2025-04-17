@@ -1,10 +1,9 @@
-
 import { useState, useEffect } from 'react';
 import { Restaurant } from '@/data/restaurants';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 
 export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
   const { isAuthenticated, user, isAdmin } = useAuth();
@@ -15,13 +14,24 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
   const { data: restaurants = [] } = useQuery({
     queryKey: ['restaurants'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('restaurants')
-        .select('*')
-        .order('vote_count', { ascending: false });
+      // If Supabase isn't configured, use initial data
+      if (!isSupabaseConfigured()) {
+        console.log('Supabase not configured, using initial data');
+        return initialRestaurants;
+      }
       
-      if (error) throw error;
-      return data as Restaurant[];
+      try {
+        const { data, error } = await supabase
+          .from('restaurants')
+          .select('*')
+          .order('vote_count', { ascending: false });
+        
+        if (error) throw error;
+        return data as Restaurant[];
+      } catch (error) {
+        console.error('Error fetching restaurants:', error);
+        return initialRestaurants;
+      }
     },
     initialData: initialRestaurants
   });
@@ -30,27 +40,33 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
   const { data: userVotes = {} } = useQuery({
     queryKey: ['user-votes', user?.id],
     queryFn: async () => {
-      if (!user?.id) return {};
+      if (!user?.id || !isSupabaseConfigured()) return {};
       
-      const { data, error } = await supabase
-        .from('restaurant_votes')
-        .select('restaurant_id, vote_type')
-        .eq('user_id', user.id);
-      
-      if (error) throw error;
-      
-      return data.reduce((acc, vote) => ({
-        ...acc,
-        [vote.restaurant_id]: vote.vote_type
-      }), {});
+      try {
+        const { data, error } = await supabase
+          .from('restaurant_votes')
+          .select('restaurant_id, vote_type')
+          .eq('user_id', user.id);
+        
+        if (error) throw error;
+        
+        return data.reduce((acc, vote) => ({
+          ...acc,
+          [vote.restaurant_id]: vote.vote_type
+        }), {});
+      } catch (error) {
+        console.error('Error fetching user votes:', error);
+        return {};
+      }
     },
-    enabled: !!user?.id
+    enabled: !!user?.id && isSupabaseConfigured()
   });
 
   // Vote mutation
   const voteMutation = useMutation({
     mutationFn: async ({ restaurantId, voteType }: { restaurantId: string, voteType: 'up' | 'down' }) => {
       if (!user?.id) throw new Error('Must be logged in to vote');
+      if (!isSupabaseConfigured()) throw new Error('Backend not configured');
 
       const currentVote = userVotes[restaurantId];
       
@@ -137,6 +153,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
   const addRestaurantMutation = useMutation({
     mutationFn: async (restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded' | 'status' | 'weeklyVoteIncrease'>) => {
       if (!isAuthenticated) throw new Error('Must be logged in to add restaurants');
+      if (!isSupabaseConfigured()) throw new Error('Backend not configured');
       
       const id = restaurantData.name.toLowerCase().replace(/\s+/g, '-');
       const newRestaurant: Omit<Restaurant, 'voteCount' | 'weeklyVoteIncrease'> = {
@@ -181,10 +198,28 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
       return;
     }
     
+    if (!isSupabaseConfigured()) {
+      toast({
+        title: "Backend not configured",
+        description: "The Supabase backend is not configured. Please connect to Supabase first.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     voteMutation.mutate({ restaurantId, voteType });
   };
 
   const addRestaurant = (restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded' | 'status' | 'weeklyVoteIncrease'>) => {
+    if (!isSupabaseConfigured()) {
+      toast({
+        title: "Backend not configured",
+        description: "The Supabase backend is not configured. Please connect to Supabase first.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     addRestaurantMutation.mutate(restaurantData);
   };
 
