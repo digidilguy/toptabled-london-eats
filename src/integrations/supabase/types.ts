@@ -43,35 +43,44 @@ export type Database = {
       }
       restaurants: {
         Row: {
+          area_tag: string | null
+          awards_tag: string | null
+          cuisine_tag: string | null
           date_added: string
+          dietary_tag: string | null
           google_maps_link: string | null
           id: string
           image_url: string | null
           name: string
           status: string
-          tag_ids: string[]
           vote_count: number
           weekly_vote_increase: number
         }
         Insert: {
+          area_tag?: string | null
+          awards_tag?: string | null
+          cuisine_tag?: string | null
           date_added?: string
+          dietary_tag?: string | null
           google_maps_link?: string | null
           id: string
           image_url?: string | null
           name: string
           status?: string
-          tag_ids?: string[]
           vote_count?: number
           weekly_vote_increase?: number
         }
         Update: {
+          area_tag?: string | null
+          awards_tag?: string | null
+          cuisine_tag?: string | null
           date_added?: string
+          dietary_tag?: string | null
           google_maps_link?: string | null
           id?: string
           image_url?: string | null
           name?: string
           status?: string
-          tag_ids?: string[]
           vote_count?: number
           weekly_vote_increase?: number
         }

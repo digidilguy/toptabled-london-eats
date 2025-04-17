@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Restaurant } from '@/data/restaurants';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { tags as allTags } from '@/data/tags';
+import { tags } from '@/data/tags';
 
 export const useRestaurantFilters = (restaurants: Restaurant[]) => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -43,23 +43,23 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
     // Find all available tags from the current restaurant list
     const tagSet = new Set<string>();
     visibleRestaurants.forEach(restaurant => {
-      if (Array.isArray(restaurant.tagIds)) {
-        restaurant.tagIds.forEach(tagId => {
-          tagSet.add(tagId);
-        });
-      } else {
-        console.warn(`Restaurant ${restaurant.name} has invalid tagIds:`, restaurant.tagIds);
-      }
+      if (restaurant.area_tag) tagSet.add(restaurant.area_tag);
+      if (restaurant.cuisine_tag) tagSet.add(restaurant.cuisine_tag);
+      if (restaurant.awards_tag) tagSet.add(restaurant.awards_tag);
+      if (restaurant.dietary_tag) tagSet.add(restaurant.dietary_tag);
     });
     setAvailableTags(Array.from(tagSet));
     console.log('Available tags:', Array.from(tagSet));
 
-    // Apply tag filters if any are active - using OR logic
+    // Apply tag filters if any are active
     if (activeTagIds.length > 0) {
       visibleRestaurants = visibleRestaurants.filter(restaurant => 
         // Check if the restaurant has ANY of the active tags (OR filter)
         activeTagIds.some(tagId => 
-          Array.isArray(restaurant.tagIds) && restaurant.tagIds.includes(tagId)
+          restaurant.area_tag === tagId ||
+          restaurant.cuisine_tag === tagId ||
+          restaurant.awards_tag === tagId ||
+          restaurant.dietary_tag === tagId
         )
       );
       // Update URL when filters change

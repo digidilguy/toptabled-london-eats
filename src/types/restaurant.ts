@@ -1,4 +1,3 @@
-
 import { Restaurant } from '@/data/restaurants';
 
 export interface RestaurantContextType {
@@ -18,4 +17,19 @@ export interface RestaurantContextType {
 export interface RestaurantProviderProps {
   children: React.ReactNode;
   initialTagIds?: string; // This is no longer used but keeping for backwards compatibility
+}
+
+export interface Restaurant {
+  id: string;
+  name: string;
+  googleMapsLink: string;
+  voteCount: number;
+  dateAdded: string;
+  imageUrl: string;
+  weeklyVoteIncrease?: number;
+  status: 'pending' | 'approved' | 'rejected';
+  area_tag?: string;
+  cuisine_tag?: string;
+  awards_tag?: string;
+  dietary_tag?: string;
 }
