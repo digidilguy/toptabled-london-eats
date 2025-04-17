@@ -44,11 +44,10 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
   };
 
   const validateEmail = (email: string): boolean => {
-    const trimmedEmail = email.trim();
-    if (!trimmedEmail) return false;
+    if (!email || email.trim() === '') return false;
     
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(trimmedEmail);
+    // Basic format check
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   };
 
   const validateSignupForm = (): boolean => {
@@ -58,14 +57,15 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
       password?: string;
     } = {};
     
-    if (!signupName.trim()) {
+    if (!signupName || signupName.trim() === '') {
       errors.name = 'Name is required';
     }
     
-    if (!signupEmail.trim()) {
+    const cleanEmail = signupEmail.trim();
+    if (!cleanEmail) {
       errors.email = 'Email is required';
-    } else if (!validateEmail(signupEmail)) {
-      errors.email = 'Please enter a valid email address';
+    } else if (!validateEmail(cleanEmail)) {
+      errors.email = 'Please enter a valid email address in the format name@example.com';
     }
     
     if (!signupPassword) {
@@ -84,9 +84,10 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
       password?: string;
     } = {};
     
-    if (!loginEmail.trim()) {
+    const cleanEmail = loginEmail.trim();
+    if (!cleanEmail) {
       errors.email = 'Email is required';
-    } else if (!validateEmail(loginEmail)) {
+    } else if (!validateEmail(cleanEmail)) {
       errors.email = 'Please enter a valid email address';
     }
     
@@ -136,6 +137,11 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
     setIsLoading(true);
     
     try {
+      console.log("Form validated, submitting signup with:", {
+        name: signupName.trim(),
+        email: signupEmail.trim().toLowerCase()
+      });
+      
       await signup(signupName, signupEmail, signupPassword);
       handleClose();
       if (onSuccess) {
@@ -252,7 +258,7 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
                   type="email"
                   value={signupEmail}
                   onChange={(e) => setSignupEmail(e.target.value)}
-                  placeholder="you@example.com"
+                  placeholder="you@example.com" 
                   className={validationErrors.email ? "border-red-500" : ""}
                   required
                 />

@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -26,8 +25,10 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Simple email validation function
 const isValidEmail = (email: string): boolean => {
-  const trimmedEmail = email.trim();
-  return !!trimmedEmail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail);
+  if (!email || email.trim() === '') return false;
+  
+  // Basic format check
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -108,18 +109,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     try {
-      const trimmedEmail = email.trim().toLowerCase();
-      
-      if (!trimmedEmail) {
+      if (!email || email.trim() === '') {
         toast({
           title: "Email Required",
-          description: "Please enter an email address",
+          description: "Please enter your email address",
           variant: "destructive",
         });
         throw new Error("Email is required");
       }
       
-      if (!isValidEmail(trimmedEmail)) {
+      const cleanEmail = email.trim().toLowerCase();
+      
+      if (!isValidEmail(cleanEmail)) {
         toast({
           title: "Invalid Email",
           description: "Please enter a valid email address",
@@ -128,12 +129,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error("Email address is invalid");
       }
       
+      if (!password) {
+        toast({
+          title: "Password Required",
+          description: "Please enter your password",
+          variant: "destructive",
+        });
+        throw new Error("Password is required");
+      }
+      
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: trimmedEmail, 
+        email: cleanEmail, 
         password
       });
       
       if (error) {
+        console.error("Supabase login error:", error);
         toast({
           title: "Login failed",
           description: error.message || "Invalid email or password",
@@ -154,10 +165,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signup = async (name: string, email: string, password: string) => {
     try {
-      const trimmedEmail = email.trim().toLowerCase();
-      const trimmedName = name.trim();
-      
-      if (!trimmedName) {
+      if (!name || name.trim() === '') {
         toast({
           title: "Name Required",
           description: "Please enter your name",
@@ -166,23 +174,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error("Name is required");
       }
       
-      if (!trimmedEmail) {
+      if (!email || email.trim() === '') {
         toast({
           title: "Email Required",
-          description: "Please enter an email address",
+          description: "Please enter your email address",
           variant: "destructive",
         });
         throw new Error("Email is required");
       }
       
-      // Add explicit email validation
-      if (!isValidEmail(trimmedEmail)) {
+      const cleanEmail = email.trim().toLowerCase();
+      
+      if (!isValidEmail(cleanEmail)) {
         toast({
           title: "Invalid Email",
-          description: "Please enter a valid email address",
+          description: "Please enter a valid email address in the format name@example.com",
           variant: "destructive",
         });
         throw new Error("Email address is invalid");
+      }
+      
+      if (!password) {
+        toast({
+          title: "Password Required",
+          description: "Please enter a password",
+          variant: "destructive",
+        });
+        throw new Error("Password is required");
       }
       
       if (password.length < 6) {
@@ -194,17 +212,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error("Password too short");
       }
       
+      console.log("Attempting signup with email:", cleanEmail);
+      
       const { data, error } = await supabase.auth.signUp({
-        email: trimmedEmail,
+        email: cleanEmail,
         password,
         options: {
           data: {
-            name: trimmedName
+            name: name.trim()
           }
         }
       });
       
       if (error) {
+        console.error("Supabase signup error:", error);
         toast({
           title: "Signup failed",
           description: error.message || "Could not create account",
@@ -215,7 +236,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       toast({
         title: "Signup successful",
-        description: `Welcome to TopTabled, ${trimmedName}!`,
+        description: `Welcome to TopTabled, ${name.trim()}!`,
       });
     } catch (error) {
       console.error('Signup error:', error);
