@@ -133,8 +133,12 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
     mutationFn: async (restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded' | 'status' | 'weeklyVoteIncrease'>) => {
       if (!isAuthenticated) throw new Error('Must be logged in to add restaurants');
       
-      // Now generate a new UUID - Supabase will do this for us with the default gen_random_uuid()
+      // Generate a new UUID - needed for the database
+      const newUuid = crypto.randomUUID();
+      
+      // Create restaurant object with all required fields including id
       const newRestaurant = {
+        id: newUuid, // Explicitly adding id as it's now required
         name: restaurantData.name,
         google_maps_link: restaurantData.googleMapsLink,
         image_url: restaurantData.imageUrl,
