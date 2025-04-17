@@ -36,17 +36,34 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
     queryKey: ['restaurants'],
     queryFn: async () => {
       try {
+        console.log('Fetching restaurants from Supabase...');
         const { data, error } = await supabase
           .from('restaurants')
           .select('*')
           .order('vote_count', { ascending: false });
         
-        if (error) throw error;
+        if (error) {
+          console.error('Error fetching restaurants:', error);
+          throw error;
+        }
         
-        // If no data returned from Supabase, use initial data
+        console.log('Restaurants retrieved from Supabase:', data);
+        
+        // If no data returned from Supabase, import initial data automatically
         if (!data || data.length === 0) {
-          console.log('No restaurants found in database, using initial data');
-          return initialRestaurants;
+          console.log('No restaurants found in database, importing initial data...');
+          await importInitialData();
+          
+          // Try fetching again after import
+          const { data: refreshedData, error: refreshError } = await supabase
+            .from('restaurants')
+            .select('*')
+            .order('vote_count', { ascending: false });
+            
+          if (refreshError) throw refreshError;
+          console.log('Restaurants after importing initial data:', refreshedData);
+          
+          return refreshedData ? refreshedData.map(mapDbRestaurant) as Restaurant[] : initialRestaurants;
         }
         
         return data.map(mapDbRestaurant) as Restaurant[];
@@ -59,13 +76,28 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
     initialData: initialRestaurants
   });
 
-  // Fetch user votes - fixing the issue with invalid UUID
+  // Fetch user votes 
   const { data: userVotes = {} } = useQuery({
     queryKey: ['user-votes', user?.id],
     queryFn: async () => {
-      // Check if user is authenticated and has a valid UUID
-      if (!isAuthenticated || !user?.id || !isValidUUID(user.id)) {
-        console.log('User not authenticated or invalid UUID, not fetching votes');
+      // For mock users, they have string IDs, not UUIDs
+      const isMockUser = user?.id && ['1', '2', '3'].includes(user.id);
+      
+      // Check if user is authenticated
+      if (!isAuthenticated || !user?.id) {
+        console.log('User not authenticated, not fetching votes');
+        return {};
+      }
+      
+      // Skip Supabase check for mock users
+      if (isMockUser) {
+        console.log('Mock user detected, skipping Supabase vote fetch');
+        return {};
+      }
+      
+      // Only try to fetch from Supabase if it's a valid UUID
+      if (!isValidUUID(user.id)) {
+        console.log('Invalid UUID for user ID:', user.id);
         return {};
       }
       
@@ -94,7 +126,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         return {};
       }
     },
-    enabled: isAuthenticated && !!user?.id && isValidUUID(user.id)
+    enabled: isAuthenticated && !!user?.id
   });
 
   // Vote mutation
@@ -104,15 +136,29 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         throw new Error('Must be logged in to vote');
       }
       
-      if (!user?.id || !isValidUUID(user.id)) {
+      if (!user?.id) {
         throw new Error('Invalid user ID');
       }
-
-      console.log('Voting with user ID:', user.id);
+      
+      // For mock users with string IDs, just simulate voting without Supabase
+      const isMockUser = ['1', '2', '3'].includes(user.id);
+      
+      console.log('Voting with user ID:', user.id, 'Mock user:', isMockUser);
       console.log('Restaurant ID:', restaurantId);
       console.log('Vote type:', voteType);
 
       const currentVote = userVotes[restaurantId];
+      
+      // For mock users, just return a success response
+      if (isMockUser) {
+        // Simulate success
+        return { action: currentVote === voteType ? 'removed' : 'voted', type: voteType };
+      }
+      
+      // For real users, check UUID validity
+      if (!isValidUUID(user.id)) {
+        throw new Error('Your user ID is not a valid UUID');
+      }
       
       // If clicking the same vote type, remove the vote
       if (currentVote === voteType) {
@@ -212,6 +258,42 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
     }
   });
 
+  // Automatically import initial data if no restaurants found
+  const importInitialData = async () => {
+    try {
+      console.log('Importing initial restaurant data to Supabase...');
+      
+      // Map the restaurants to match database structure
+      const dbRestaurants = initialRestaurants.map(restaurant => ({
+        id: restaurant.id,
+        name: restaurant.name,
+        image_url: restaurant.imageUrl,
+        google_maps_link: restaurant.googleMapsLink,
+        vote_count: restaurant.voteCount,
+        weekly_vote_increase: restaurant.weeklyVoteIncrease || 0,
+        date_added: restaurant.dateAdded,
+        tag_ids: restaurant.tagIds,
+        status: restaurant.status || 'approved'
+      }));
+
+      // Insert the restaurants with upsert to handle existing records
+      const { error } = await supabase
+        .from('restaurants')
+        .upsert(dbRestaurants, { 
+          onConflict: 'id',
+          ignoreDuplicates: false 
+        });
+      
+      if (error) throw error;
+      
+      console.log('Initial data imported successfully:', dbRestaurants.length, 'restaurants');
+      return { success: true, count: dbRestaurants.length };
+    } catch (error) {
+      console.error('Error importing initial data:', error);
+      throw error;
+    }
+  };
+
   const voteForRestaurant = (restaurantId: string, voteType: 'up' | 'down') => {
     if (!isAuthenticated) {
       toast({
@@ -222,7 +304,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
       return;
     }
     
-    if (!user?.id || !isValidUUID(user.id)) {
+    if (!user?.id) {
       toast({
         title: "Invalid user ID",
         description: "Your user ID is not valid for voting",
