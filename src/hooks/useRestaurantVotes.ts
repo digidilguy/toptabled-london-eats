@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Restaurant } from '@/data/restaurants';
 import { useAuth } from '@/context/AuthContext';
@@ -35,6 +34,12 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
           .order('vote_count', { ascending: false });
         
         if (error) throw error;
+        
+        // If no data returned from Supabase, use initial data
+        if (!data || data.length === 0) {
+          return initialRestaurants;
+        }
+        
         return data.map(mapDbRestaurant) as Restaurant[];
       } catch (error) {
         console.error('Error fetching restaurants:', error);
@@ -45,11 +50,11 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
     initialData: initialRestaurants
   });
 
-  // Fetch user votes
+  // Fetch user votes - fixing the issue with invalid UUID
   const { data: userVotes = {} } = useQuery({
     queryKey: ['user-votes', user?.id],
     queryFn: async () => {
-      if (!user?.id) return {};
+      if (!user?.id || typeof user.id !== 'string') return {};
       
       try {
         const { data, error } = await supabase
@@ -68,7 +73,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         return {};
       }
     },
-    enabled: !!user?.id
+    enabled: !!user?.id && typeof user.id === 'string'
   });
 
   // Vote mutation
