@@ -1,5 +1,39 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { restaurants as initialRestaurants } from '@/data/restaurants';
+
+// Function to import initial restaurant data
+export const importInitialData = async (initialRestaurants: any[]) => {
+  try {
+    // Map the restaurants to match database structure
+    const dbRestaurants = initialRestaurants.map(restaurant => ({
+      id: restaurant.id,
+      name: restaurant.name,
+      image_url: restaurant.imageUrl,
+      google_maps_link: restaurant.googleMapsLink,
+      vote_count: restaurant.voteCount,
+      weekly_vote_increase: restaurant.weeklyVoteIncrease || 0,
+      date_added: restaurant.dateAdded,
+      tag_ids: restaurant.tagIds,
+      status: restaurant.status || 'approved'
+    }));
+
+    // Insert the restaurants with upsert to handle existing records
+    const { error } = await supabase
+      .from('restaurants')
+      .upsert(dbRestaurants, { 
+        onConflict: 'id',
+        ignoreDuplicates: false 
+      });
+    
+    if (error) throw error;
+    
+    return { success: true, count: dbRestaurants.length };
+  } catch (error) {
+    console.error('Error importing initial data:', error);
+    throw error;
+  }
+};
 
 // Helper function to check if we're connected to Supabase
 export const isSupabaseConfigured = () => {
@@ -28,36 +62,6 @@ export const clearAllDatabaseData = async () => {
     return { success: true };
   } catch (error) {
     console.error('Error clearing database:', error);
-    throw error;
-  }
-};
-
-// Function to import initial restaurant data
-export const importInitialData = async (initialRestaurants: any[]) => {
-  try {
-    // Map the restaurants to match database structure
-    const dbRestaurants = initialRestaurants.map(restaurant => ({
-      id: restaurant.id,
-      name: restaurant.name,
-      image_url: restaurant.imageUrl,
-      google_maps_link: restaurant.googleMapsLink,
-      vote_count: restaurant.voteCount,
-      weekly_vote_increase: restaurant.weeklyVoteIncrease || 0,
-      date_added: restaurant.dateAdded,
-      tag_ids: restaurant.tagIds,
-      status: restaurant.status || 'approved'
-    }));
-
-    // Insert the restaurants
-    const { error } = await supabase
-      .from('restaurants')
-      .upsert(dbRestaurants);
-    
-    if (error) throw error;
-    
-    return { success: true };
-  } catch (error) {
-    console.error('Error importing initial data:', error);
     throw error;
   }
 };
