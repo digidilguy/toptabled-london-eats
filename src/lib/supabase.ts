@@ -1,25 +1,13 @@
 
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
 
-// Try to get environment variables, with fallbacks for development
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://placeholder-url.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'placeholder-key';
-
-// Create a Supabase client (will be a mock client if using placeholder values)
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-// Helper function to check if we're using real credentials
+// Helper function to check if we're connected to Supabase
 export const isSupabaseConfigured = () => {
-  return !!import.meta.env.VITE_SUPABASE_URL && !!import.meta.env.VITE_SUPABASE_ANON_KEY 
-    && import.meta.env.VITE_SUPABASE_URL !== 'https://placeholder-url.supabase.co';
+  return true; // We're using the automatically configured client
 };
 
 // Function to clear all data from the database
 export const clearAllDatabaseData = async () => {
-  if (!isSupabaseConfigured()) {
-    throw new Error('Supabase is not configured with valid credentials');
-  }
-  
   try {
     // First clear restaurant_votes table (has foreign key constraints)
     const { error: votesError } = await supabase
@@ -40,6 +28,36 @@ export const clearAllDatabaseData = async () => {
     return { success: true };
   } catch (error) {
     console.error('Error clearing database:', error);
+    throw error;
+  }
+};
+
+// Function to import initial restaurant data
+export const importInitialData = async (initialRestaurants: any[]) => {
+  try {
+    // Map the restaurants to match database structure
+    const dbRestaurants = initialRestaurants.map(restaurant => ({
+      id: restaurant.id,
+      name: restaurant.name,
+      image_url: restaurant.imageUrl,
+      google_maps_link: restaurant.googleMapsLink,
+      vote_count: restaurant.voteCount,
+      weekly_vote_increase: restaurant.weeklyVoteIncrease || 0,
+      date_added: restaurant.dateAdded,
+      tag_ids: restaurant.tagIds,
+      status: restaurant.status || 'approved'
+    }));
+
+    // Insert the restaurants
+    const { error } = await supabase
+      .from('restaurants')
+      .upsert(dbRestaurants);
+    
+    if (error) throw error;
+    
+    return { success: true };
+  } catch (error) {
+    console.error('Error importing initial data:', error);
     throw error;
   }
 };

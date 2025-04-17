@@ -1,9 +1,23 @@
+
 import { useState, useEffect } from 'react';
 import { Restaurant } from '@/data/restaurants';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
+
+// Map database restaurant to our Restaurant type
+const mapDbRestaurant = (dbRestaurant: any): Restaurant => ({
+  id: dbRestaurant.id,
+  name: dbRestaurant.name,
+  tagIds: dbRestaurant.tag_ids || [],
+  googleMapsLink: dbRestaurant.google_maps_link || '',
+  voteCount: dbRestaurant.vote_count || 0,
+  dateAdded: dbRestaurant.date_added || new Date().toISOString().split('T')[0],
+  imageUrl: dbRestaurant.image_url || 'https://source.unsplash.com/random/300x200/?restaurant,food',
+  weeklyVoteIncrease: dbRestaurant.weekly_vote_increase || 0,
+  status: dbRestaurant.status || 'pending',
+});
 
 export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
   const { isAuthenticated, user, isAdmin } = useAuth();
@@ -14,12 +28,6 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
   const { data: restaurants = [] } = useQuery({
     queryKey: ['restaurants'],
     queryFn: async () => {
-      // If Supabase isn't configured, use initial data
-      if (!isSupabaseConfigured()) {
-        console.log('Supabase not configured, using initial data');
-        return initialRestaurants;
-      }
-      
       try {
         const { data, error } = await supabase
           .from('restaurants')
@@ -27,9 +35,10 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
           .order('vote_count', { ascending: false });
         
         if (error) throw error;
-        return data as Restaurant[];
+        return data.map(mapDbRestaurant) as Restaurant[];
       } catch (error) {
         console.error('Error fetching restaurants:', error);
+        // Use initial data as fallback
         return initialRestaurants;
       }
     },
@@ -40,7 +49,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
   const { data: userVotes = {} } = useQuery({
     queryKey: ['user-votes', user?.id],
     queryFn: async () => {
-      if (!user?.id || !isSupabaseConfigured()) return {};
+      if (!user?.id) return {};
       
       try {
         const { data, error } = await supabase
@@ -59,14 +68,13 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         return {};
       }
     },
-    enabled: !!user?.id && isSupabaseConfigured()
+    enabled: !!user?.id
   });
 
   // Vote mutation
   const voteMutation = useMutation({
     mutationFn: async ({ restaurantId, voteType }: { restaurantId: string, voteType: 'up' | 'down' }) => {
       if (!user?.id) throw new Error('Must be logged in to vote');
-      if (!isSupabaseConfigured()) throw new Error('Backend not configured');
 
       const currentVote = userVotes[restaurantId];
       
@@ -80,28 +88,10 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
           .eq('restaurant_id', restaurantId);
         
         if (deleteError) throw deleteError;
-
-        // Update restaurant vote count
-        const voteChange = voteType === 'up' ? -1 : 1;
-        const { error: updateError } = await supabase
-          .from('restaurants')
-          .update({ 
-            vote_count: voteChange,
-            weekly_vote_increase: voteChange
-          })
-          .eq('id', restaurantId);
-        
-        if (updateError) throw updateError;
-
         return { action: 'removed' };
       }
       
       // If changing vote or voting for the first time
-      const voteChange = currentVote 
-        ? (voteType === 'up' ? 2 : -2) // Changing from down to up (+2) or up to down (-2)
-        : (voteType === 'up' ? 1 : -1); // First time voting
-      
-      // Start transaction
       const { error: voteError } = await supabase
         .from('restaurant_votes')
         .upsert({
@@ -111,17 +101,6 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         });
       
       if (voteError) throw voteError;
-      
-      const { error: updateError } = await supabase
-        .from('restaurants')
-        .update({ 
-          vote_count: voteChange,
-          weekly_vote_increase: voteChange
-        })
-        .eq('id', restaurantId);
-      
-      if (updateError) throw updateError;
-
       return { action: 'voted', type: voteType };
     },
     onSuccess: (result, variables) => {
@@ -153,13 +132,14 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
   const addRestaurantMutation = useMutation({
     mutationFn: async (restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded' | 'status' | 'weeklyVoteIncrease'>) => {
       if (!isAuthenticated) throw new Error('Must be logged in to add restaurants');
-      if (!isSupabaseConfigured()) throw new Error('Backend not configured');
       
       const id = restaurantData.name.toLowerCase().replace(/\s+/g, '-');
-      const newRestaurant: Omit<Restaurant, 'voteCount' | 'weeklyVoteIncrease'> = {
-        ...restaurantData,
+      const newRestaurant = {
         id,
-        dateAdded: new Date().toISOString().split('T')[0],
+        name: restaurantData.name,
+        google_maps_link: restaurantData.googleMapsLink,
+        image_url: restaurantData.imageUrl,
+        tag_ids: restaurantData.tagIds,
         status: isAdmin ? 'approved' : 'pending'
       };
 
@@ -168,7 +148,14 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         .insert(newRestaurant);
 
       if (error) throw error;
-      return newRestaurant;
+      
+      // Return mapped restaurant for UI
+      return mapDbRestaurant({
+        ...newRestaurant,
+        vote_count: 0,
+        date_added: new Date().toISOString().split('T')[0],
+        weekly_vote_increase: 0
+      });
     },
     onSuccess: (restaurant) => {
       queryClient.invalidateQueries({ queryKey: ['restaurants'] });
@@ -198,28 +185,10 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
       return;
     }
     
-    if (!isSupabaseConfigured()) {
-      toast({
-        title: "Backend not configured",
-        description: "The Supabase backend is not configured. Please connect to Supabase first.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
     voteMutation.mutate({ restaurantId, voteType });
   };
 
   const addRestaurant = (restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded' | 'status' | 'weeklyVoteIncrease'>) => {
-    if (!isSupabaseConfigured()) {
-      toast({
-        title: "Backend not configured",
-        description: "The Supabase backend is not configured. Please connect to Supabase first.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
     addRestaurantMutation.mutate(restaurantData);
   };
 
