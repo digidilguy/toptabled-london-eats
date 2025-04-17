@@ -1,61 +1,64 @@
 
-import { useState } from "react";
-import Navbar from "@/components/Navbar";
+import { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Tag } from "@/data/tags";
+import { Restaurant } from "@/data/restaurants";
 import TagFilter from "@/components/TagFilter";
-import { AuthProvider } from "@/context/AuthContext";
-import { RestaurantProvider } from "@/context/RestaurantContext";
+import SubmitRestaurantForm from "@/components/SubmitRestaurantForm";
 import RestaurantGrid from "@/components/RestaurantGrid";
 import TrendingLeaderboard from "@/components/TrendingLeaderboard";
-import SubmitRestaurantForm from "@/components/SubmitRestaurantForm";
+import Navbar from "@/components/Navbar";
+import { RestaurantProvider } from "@/context/RestaurantContext";
 
-const IndexPage = () => {
-  const [isSubmitFormOpen, setIsSubmitFormOpen] = useState(false);
-
+const Index = () => {
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  
   return (
-    <AuthProvider>
-      <RestaurantProvider>
-        <div className="min-h-screen bg-gradient-to-br from-secondary to-white">
-          <Navbar onSubmitRestaurantClick={() => setIsSubmitFormOpen(true)} />
+    <RestaurantProvider>
+      <div className="min-h-screen bg-slate-50">
+        <Navbar onSubmitRestaurantClick={() => setIsSheetOpen(true)} />
+        
+        <main className="container mx-auto px-4 md:px-6 py-8">
+          <h1 className="text-3xl font-bold text-center mb-8">
+            Top Restaurant Recommendations in London
+          </h1>
           
-          <div className="container mx-auto px-4 py-8">
-            <header className="mb-12 text-center">
-              <h1 className="font-serif text-4xl md:text-5xl mb-4 text-accent">
-                Top London Restaurants
-              </h1>
-              <p className="text-neutral max-w-2xl mx-auto text-lg">
-                A curated list of the best restaurants in London, rated by locals and food lovers. 
-                Discover your next favorite spot!
-              </p>
-            </header>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-              <div className="lg:col-span-1">
-                <div className="space-y-6 lg:sticky lg:top-4">
-                  <TrendingLeaderboard />
-                  <TagFilter />
-                </div>
+          <div className="flex flex-col lg:flex-row lg:gap-8">
+            <div className="lg:w-8/12">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                <h2 className="text-xl font-semibold">All Restaurants</h2>
+                <TagFilter className="mt-3 sm:mt-0" />
               </div>
               
-              <div className="lg:col-span-3">
-                <RestaurantGrid />
-              </div>
+              <RestaurantGrid />
+            </div>
+            
+            <div className="lg:w-4/12 mt-8 lg:mt-0">
+              <TrendingLeaderboard />
             </div>
           </div>
-          
-          <footer className="mt-12 py-8 bg-white/50 backdrop-blur-sm border-t">
-            <div className="container mx-auto px-4 text-center text-sm text-neutral">
-              <p>© 2025 LeaderEats – Discover London's best restaurants</p>
+        </main>
+        
+        <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+          <SheetContent className="md:max-w-md overflow-y-auto">
+            <SheetHeader>
+              <SheetTitle>Submit a Restaurant</SheetTitle>
+              <SheetDescription>
+                Share your favorite dining spot with the community.
+              </SheetDescription>
+            </SheetHeader>
+            
+            <div className="py-4">
+              <SubmitRestaurantForm 
+                onSuccess={() => setIsSheetOpen(false)}
+              />
             </div>
-          </footer>
-
-          <SubmitRestaurantForm
-            isOpen={isSubmitFormOpen}
-            onClose={() => setIsSubmitFormOpen(false)}
-          />
-        </div>
-      </RestaurantProvider>
-    </AuthProvider>
+          </SheetContent>
+        </Sheet>
+      </div>
+    </RestaurantProvider>
   );
 };
 
-export default IndexPage;
+export default Index;

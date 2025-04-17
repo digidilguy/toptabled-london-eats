@@ -52,19 +52,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     console.log("Setting up auth state listener...");
     
-    // Set up auth state listener FIRST
+    // Set up auth state listener FIRST (this is critical for proper auth state management)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, currentSession) => {
         console.log('Auth state changed:', event, currentSession?.user);
         setSession(currentSession);
         
         if (currentSession?.user) {
-          const { id, email } = currentSession.user;
+          const { id, email, user_metadata } = currentSession.user;
+          
+          // Extract name from user_metadata or use email as fallback
+          const name = user_metadata?.name || email?.split('@')[0] || 'User';
           
           const user: AuthUser = {
             id,
             email: email || 'unknown',
-            name: email?.split('@')[0] || 'User',
+            name,
             isPremium: email === 'premium@example.com',
             isAdmin: email === 'admin@example.com',
           };
@@ -78,18 +81,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     );
 
-    // THEN check for existing session
+    // THEN check for existing session (this ensures we don't miss any auth events)
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
       console.log('Existing session check:', currentSession?.user);
       setSession(currentSession);
       
       if (currentSession?.user) {
-        const { id, email } = currentSession.user;
+        const { id, email, user_metadata } = currentSession.user;
+        
+        // Extract name from user_metadata or use email as fallback
+        const name = user_metadata?.name || email?.split('@')[0] || 'User';
         
         const user: AuthUser = {
           id,
           email: email || 'unknown',
-          name: email?.split('@')[0] || 'User',
+          name,
           isPremium: email === 'premium@example.com',
           isAdmin: email === 'admin@example.com',
         };
@@ -104,33 +110,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       subscription.unsubscribe();
     };
   }, []);
-
-  const mockUsers = [
-    { 
-      id: '550e8400-e29b-41d4-a716-446655440000', 
-      email: 'user@example.com', 
-      password: 'password', 
-      name: 'Regular User', 
-      isPremium: false, 
-      isAdmin: false 
-    },
-    { 
-      id: '550e8400-e29b-41d4-a716-446655440001', 
-      email: 'premium@example.com', 
-      password: 'password', 
-      name: 'Premium User', 
-      isPremium: true, 
-      isAdmin: false 
-    },
-    { 
-      id: '550e8400-e29b-41d4-a716-446655440002', 
-      email: 'admin@example.com', 
-      password: 'password', 
-      name: 'Admin User', 
-      isPremium: true, 
-      isAdmin: true 
-    }
-  ];
 
   const login = async (email: string, password: string) => {
     try {
@@ -277,7 +256,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       toast({
         title: "Signup successful",
-        description: `Welcome to TopTabled, ${name.trim()}!`,
+        description: `Welcome to LeaderEats, ${name.trim()}!`,
       });
     } catch (error) {
       console.error('Signup error:', error);

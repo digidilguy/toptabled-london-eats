@@ -33,6 +33,7 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
   const { login, signup } = useAuth();
 
   const handleClose = () => {
+    // Clear form values on dialog close
     setLoginEmail('');
     setLoginPassword('');
     setSignupName('');
@@ -124,6 +125,7 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
     
     try {
       await login(loginEmail, loginPassword);
+      console.log("Login successful, closing dialog");
       handleClose();
       if (onSuccess) {
         onSuccess();
@@ -156,6 +158,7 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
       });
       
       await signup(signupName, signupEmail, signupPassword);
+      console.log("Signup successful, closing dialog");
       handleClose();
       if (onSuccess) {
         onSuccess();
@@ -235,10 +238,6 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
                   <AlertDescription className="text-sm ml-2">{error}</AlertDescription>
                 </Alert>
               )}
-              
-              <div className="text-xs text-neutral">
-                Demo accounts: user@example.com / password, admin@example.com / password
-              </div>
               
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Logging in..." : "Log In"}
