@@ -43,11 +43,24 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
     onClose();
   };
 
+  // Enhanced email validation function
   const validateEmail = (email: string): boolean => {
     if (!email || email.trim() === '') return false;
     
     // Basic format check
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+    const validFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+    if (!validFormat) return false;
+    
+    // Extract domain
+    const domain = email.trim().split('@')[1];
+    
+    // Check for commonly rejected test/fake domains
+    const invalidDomains = ['asd.com', 'test.com', 'example.com', 'invalid.com'];
+    if (invalidDomains.includes(domain)) return false;
+    
+    // Ensure domain has a valid TLD
+    const validTLDs = ['.com', '.org', '.net', '.edu', '.gov', '.co', '.io', '.ai', '.dev'];
+    return validTLDs.some(tld => domain.endsWith(tld));
   };
 
   const validateSignupForm = (): boolean => {
@@ -65,7 +78,7 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
     if (!cleanEmail) {
       errors.email = 'Email is required';
     } else if (!validateEmail(cleanEmail)) {
-      errors.email = 'Please enter a valid email address in the format name@example.com';
+      errors.email = 'Please use a valid email with a proper domain (like gmail.com or outlook.com)';
     }
     
     if (!signupPassword) {
@@ -88,7 +101,7 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
     if (!cleanEmail) {
       errors.email = 'Email is required';
     } else if (!validateEmail(cleanEmail)) {
-      errors.email = 'Please enter a valid email address';
+      errors.email = 'Please enter a valid email address with a proper domain';
     }
     
     if (!loginPassword) {
@@ -191,7 +204,7 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
                   type="email"
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
-                  placeholder="you@example.com"
+                  placeholder="you@gmail.com"
                   className={validationErrors.email ? "border-red-500" : ""}
                   required
                 />
@@ -258,7 +271,7 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
                   type="email"
                   value={signupEmail}
                   onChange={(e) => setSignupEmail(e.target.value)}
-                  placeholder="you@example.com" 
+                  placeholder="you@gmail.com" 
                   className={validationErrors.email ? "border-red-500" : ""}
                   required
                 />
@@ -290,6 +303,12 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
                   <AlertDescription className="text-sm ml-2">{error}</AlertDescription>
                 </Alert>
               )}
+              
+              <div className="bg-yellow-50 p-3 rounded-md border border-yellow-200 mb-2">
+                <p className="text-sm text-yellow-800">
+                  <strong>Important:</strong> Use a proper email like <span className="font-mono">yourname@gmail.com</span> or <span className="font-mono">yourname@outlook.com</span>
+                </p>
+              </div>
               
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Creating account..." : "Create Account"}

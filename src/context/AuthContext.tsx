@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,13 +24,25 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Simple email validation function
+// Enhanced email validation function
 const isValidEmail = (email: string): boolean => {
   if (!email || email.trim() === '') return false;
   
   // Basic format check
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-};
+  const validFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  if (!validFormat) return false;
+  
+  // Extract domain
+  const domain = email.trim().split('@')[1];
+  
+  // Check for commonly rejected test/fake domains
+  const invalidDomains = ['asd.com', 'test.com', 'example.com', 'invalid.com'];
+  if (invalidDomains.includes(domain)) return false;
+  
+  // Ensure domain has a valid TLD
+  const validTLDs = ['.com', '.org', '.net', '.edu', '.gov', '.co', '.io', '.ai', '.dev'];
+  return validTLDs.some(tld => domain.endsWith(tld));
+}
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [authUser, setAuthUser] = useState<AuthUser | null>(null);
@@ -123,7 +136,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!isValidEmail(cleanEmail)) {
         toast({
           title: "Invalid Email",
-          description: "Please enter a valid email address",
+          description: "Please enter a valid email address with a proper domain (e.g. gmail.com, outlook.com)",
           variant: "destructive",
         });
         throw new Error("Email address is invalid");
@@ -187,8 +200,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (!isValidEmail(cleanEmail)) {
         toast({
-          title: "Invalid Email",
-          description: "Please enter a valid email address in the format name@example.com",
+          title: "Invalid Email Format",
+          description: "Please use a valid email with a proper domain (e.g. gmail.com, outlook.com)",
           variant: "destructive",
         });
         throw new Error("Email address is invalid");
@@ -226,11 +239,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (error) {
         console.error("Supabase signup error:", error);
-        toast({
-          title: "Signup failed",
-          description: error.message || "Could not create account",
-          variant: "destructive",
-        });
+        
+        // Provide more specific error messages based on the error
+        if (error.message.includes('invalid')) {
+          toast({
+            title: "Signup failed",
+            description: "Please use a valid email address with a common domain (like gmail.com or outlook.com)",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Signup failed",
+            description: error.message || "Could not create account",
+            variant: "destructive",
+          });
+        }
         throw error;
       }
       
