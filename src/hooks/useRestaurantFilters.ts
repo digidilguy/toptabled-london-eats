@@ -43,16 +43,23 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
     // Find all available tags from the current restaurant list
     const tagSet = new Set<string>();
     visibleRestaurants.forEach(restaurant => {
-      restaurant.tagIds.forEach(tagId => {
-        tagSet.add(tagId);
-      });
+      if (Array.isArray(restaurant.tagIds)) {
+        restaurant.tagIds.forEach(tagId => {
+          tagSet.add(tagId);
+        });
+      } else {
+        console.warn(`Restaurant ${restaurant.name} has invalid tagIds:`, restaurant.tagIds);
+      }
     });
     setAvailableTags(Array.from(tagSet));
+    console.log('Available tags:', Array.from(tagSet));
 
     // Apply tag filters if any are active
     if (activeTagIds.length > 0) {
       visibleRestaurants = visibleRestaurants.filter(restaurant => 
-        activeTagIds.every(tagId => restaurant.tagIds.includes(tagId))
+        activeTagIds.every(tagId => 
+          Array.isArray(restaurant.tagIds) && restaurant.tagIds.includes(tagId)
+        )
       );
       // Update URL when filters change
       setSearchParams({ tags: activeTagIds.join(',') });

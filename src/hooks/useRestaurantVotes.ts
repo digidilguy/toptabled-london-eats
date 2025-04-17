@@ -19,6 +19,13 @@ const mapDbRestaurant = (dbRestaurant: any): Restaurant => ({
   status: dbRestaurant.status || 'pending',
 });
 
+// Helper function to validate UUID
+function isValidUUID(id: string | undefined): boolean {
+  if (!id) return false;
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(id);
+}
+
 export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
   const { isAuthenticated, user, isAdmin } = useAuth();
   const { toast } = useToast();
@@ -57,7 +64,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
     queryKey: ['user-votes', user?.id],
     queryFn: async () => {
       // Check if user is authenticated and has a valid UUID
-      if (!user?.id || typeof user.id !== 'string' || !isValidUUID(user.id)) {
+      if (!isAuthenticated || !user?.id || !isValidUUID(user.id)) {
         console.log('User not authenticated or invalid UUID, not fetching votes');
         return {};
       }
@@ -87,20 +94,18 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         return {};
       }
     },
-    enabled: !!user?.id && typeof user.id === 'string' && isValidUUID(user.id)
+    enabled: isAuthenticated && !!user?.id && isValidUUID(user.id)
   });
-
-  // Helper function to validate UUID
-  function isValidUUID(id: string): boolean {
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-    return uuidRegex.test(id);
-  }
 
   // Vote mutation
   const voteMutation = useMutation({
     mutationFn: async ({ restaurantId, voteType }: { restaurantId: string, voteType: 'up' | 'down' }) => {
+      if (!isAuthenticated) {
+        throw new Error('Must be logged in to vote');
+      }
+      
       if (!user?.id || !isValidUUID(user.id)) {
-        throw new Error('Must be logged in with a valid user ID to vote');
+        throw new Error('Invalid user ID');
       }
 
       console.log('Voting with user ID:', user.id);
@@ -154,7 +159,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
       console.error('Voting error:', error);
       toast({
         title: "Error",
-        description: error.message,
+        description: error instanceof Error ? error.message : "An error occurred while voting",
         variant: "destructive",
       });
     }
@@ -201,7 +206,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
     onError: (error) => {
       toast({
         title: "Error",
-        description: error.message,
+        description: error instanceof Error ? error.message : "An error occurred while adding the restaurant",
         variant: "destructive",
       });
     }
