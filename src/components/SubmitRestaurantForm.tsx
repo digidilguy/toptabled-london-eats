@@ -7,13 +7,13 @@ import { Label } from "@/components/ui/label";
 import { useRestaurants } from '@/context/RestaurantContext';
 import { useAuth } from '@/context/AuthContext';
 
-interface SubmitRestaurantFormProps {
+export interface SubmitRestaurantFormProps {
   isOpen?: boolean;
   onClose?: () => void;
   onSuccess?: () => void;
 }
 
-const SubmitRestaurantForm = ({ isOpen = false, onClose = () => {}, onSuccess }: SubmitRestaurantFormProps) => {
+const SubmitRestaurantForm = ({ isOpen = false, onClose = () => {}, onSuccess = () => {} }: SubmitRestaurantFormProps) => {
   const [name, setName] = useState('');
   const [googleMapsLink, setGoogleMapsLink] = useState('');
   const [imageUrl, setImageUrl] = useState('https://source.unsplash.com/random/300x200/?restaurant,food');
@@ -42,9 +42,7 @@ const SubmitRestaurantForm = ({ isOpen = false, onClose = () => {}, onSuccess }:
       });
       
       // Call onSuccess if provided
-      if (onSuccess) {
-        onSuccess();
-      }
+      onSuccess();
       
       handleClose();
     } catch (error) {
