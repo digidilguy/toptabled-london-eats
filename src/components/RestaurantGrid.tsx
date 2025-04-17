@@ -18,6 +18,16 @@ const RestaurantGrid = () => {
     );
   }
 
+  // Function to get all tags for a restaurant
+  const getRestaurantTags = (restaurant) => {
+    const restaurantTags = [];
+    if (restaurant.area_tag) restaurantTags.push(restaurant.area_tag);
+    if (restaurant.cuisine_tag) restaurantTags.push(restaurant.cuisine_tag);
+    if (restaurant.awards_tag) restaurantTags.push(restaurant.awards_tag);
+    if (restaurant.dietary_tag) restaurantTags.push(restaurant.dietary_tag);
+    return restaurantTags;
+  };
+
   return (
     <div className="space-y-4">
       {filteredRestaurants.map((restaurant) => (
@@ -56,7 +66,7 @@ const RestaurantGrid = () => {
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <div className="flex flex-wrap gap-1">
-                {restaurant.tagIds.map(tagId => {
+                {getRestaurantTags(restaurant).map(tagId => {
                   const tag = tags.find(t => t.id === tagId);
                   return tag && (
                     <span 

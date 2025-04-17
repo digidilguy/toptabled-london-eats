@@ -8,8 +8,14 @@ const TrendingLeaderboard = () => {
   const { trendingRestaurants, toggleTagFilter } = useRestaurants();
   
   // Get tag names for a restaurant
-  const getTagNames = (tagIds: string[], limit = 2) => {
-    return tagIds
+  const getTagNames = (restaurant, limit = 2) => {
+    const restaurantTags = [];
+    if (restaurant.area_tag) restaurantTags.push(restaurant.area_tag);
+    if (restaurant.cuisine_tag) restaurantTags.push(restaurant.cuisine_tag);
+    if (restaurant.awards_tag) restaurantTags.push(restaurant.awards_tag);
+    if (restaurant.dietary_tag) restaurantTags.push(restaurant.dietary_tag);
+    
+    return restaurantTags
       .slice(0, limit)
       .map(id => {
         const tag = tags.find(t => t.id === id);
@@ -40,15 +46,24 @@ const TrendingLeaderboard = () => {
                   </span>
                 </div>
                 <div className="flex gap-1 mt-1">
-                  {getTagNames(restaurant.tagIds).map((tag, i) => (
-                    <span 
-                      key={i} 
-                      className="text-xs text-neutral hover:text-accent cursor-pointer"
-                      onClick={() => toggleTagFilter(restaurant.tagIds[i])}
-                    >
-                      {tag}{i < getTagNames(restaurant.tagIds).length - 1 ? ',' : ''}
-                    </span>
-                  ))}
+                  {getTagNames(restaurant).map((tag, i) => {
+                    // Get the tag's ID for toggling
+                    const allRestaurantTags = [];
+                    if (restaurant.area_tag) allRestaurantTags.push(restaurant.area_tag);
+                    if (restaurant.cuisine_tag) allRestaurantTags.push(restaurant.cuisine_tag);
+                    if (restaurant.awards_tag) allRestaurantTags.push(restaurant.awards_tag);
+                    if (restaurant.dietary_tag) allRestaurantTags.push(restaurant.dietary_tag);
+                    
+                    return (
+                      <span 
+                        key={i} 
+                        className="text-xs text-neutral hover:text-accent cursor-pointer"
+                        onClick={() => toggleTagFilter(allRestaurantTags[i])}
+                      >
+                        {tag}{i < getTagNames(restaurant).length - 1 ? ',' : ''}
+                      </span>
+                    );
+                  })}
                 </div>
               </div>
             </li>

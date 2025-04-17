@@ -37,7 +37,7 @@ const SubmitRestaurantForm = ({ isOpen, onClose }: SubmitRestaurantFormProps) =>
         name,
         googleMapsLink,
         imageUrl,
-        tagIds: [] // Empty tags as we removed the tag selection
+        // No longer need tagIds as we now use individual tag columns
       });
       
       handleClose();

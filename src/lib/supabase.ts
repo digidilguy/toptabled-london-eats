@@ -1,6 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { restaurants as initialRestaurants } from '@/data/restaurants';
+import { tags } from '@/data/tags';
 
 // Function to import initial restaurant data
 export const importInitialData = async (initialRestaurants: any[]) => {
@@ -14,10 +15,10 @@ export const importInitialData = async (initialRestaurants: any[]) => {
       vote_count: restaurant.voteCount,
       weekly_vote_increase: restaurant.weeklyVoteIncrease || 0,
       date_added: restaurant.dateAdded,
-      area_tag: restaurant.tagIds.find((t: string) => tags.find(tag => tag.id === t && tag.category === 'area')),
-      cuisine_tag: restaurant.tagIds.find((t: string) => tags.find(tag => tag.id === t && tag.category === 'cuisine')),
-      awards_tag: restaurant.tagIds.find((t: string) => tags.find(tag => tag.id === t && tag.category === 'awards')),
-      dietary_tag: restaurant.tagIds.find((t: string) => tags.find(tag => tag.id === t && tag.category === 'dietary')),
+      area_tag: restaurant.tagIds?.find((t: string) => tags.find(tag => tag.id === t && tag.category === 'area')),
+      cuisine_tag: restaurant.tagIds?.find((t: string) => tags.find(tag => tag.id === t && tag.category === 'cuisine')),
+      awards_tag: restaurant.tagIds?.find((t: string) => tags.find(tag => tag.id === t && tag.category === 'awards')),
+      dietary_tag: restaurant.tagIds?.find((t: string) => tags.find(tag => tag.id === t && tag.category === 'dietary')),
       status: restaurant.status || 'approved'
     }));
 

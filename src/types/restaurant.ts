@@ -1,4 +1,3 @@
-import { Restaurant } from '@/data/restaurants';
 
 export interface RestaurantContextType {
   restaurants: Restaurant[];

@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from 'react';
-import { Restaurant } from '@/data/restaurants';
+import { Restaurant } from '@/types/restaurant';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -10,13 +9,16 @@ import { supabase } from '@/integrations/supabase/client';
 const mapDbRestaurant = (dbRestaurant: any): Restaurant => ({
   id: dbRestaurant.id,
   name: dbRestaurant.name,
-  tagIds: dbRestaurant.tag_ids || [],
   googleMapsLink: dbRestaurant.google_maps_link || '',
   voteCount: dbRestaurant.vote_count || 0,
   dateAdded: dbRestaurant.date_added || new Date().toISOString().split('T')[0],
   imageUrl: dbRestaurant.image_url || 'https://source.unsplash.com/random/300x200/?restaurant,food',
   weeklyVoteIncrease: dbRestaurant.weekly_vote_increase || 0,
   status: dbRestaurant.status || 'pending',
+  area_tag: dbRestaurant.area_tag,
+  cuisine_tag: dbRestaurant.cuisine_tag,
+  awards_tag: dbRestaurant.awards_tag,
+  dietary_tag: dbRestaurant.dietary_tag,
 });
 
 // Helper function to validate UUID
@@ -230,8 +232,11 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         name: restaurantData.name,
         google_maps_link: restaurantData.googleMapsLink,
         image_url: restaurantData.imageUrl,
-        tag_ids: restaurantData.tagIds,
-        status: isAdmin ? 'approved' : 'pending'
+        status: isAdmin ? 'approved' : 'pending',
+        area_tag: restaurantData.area_tag,
+        cuisine_tag: restaurantData.cuisine_tag,
+        awards_tag: restaurantData.awards_tag,
+        dietary_tag: restaurantData.dietary_tag
       };
 
       const { data, error } = await supabase
@@ -277,8 +282,11 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         vote_count: restaurant.voteCount,
         weekly_vote_increase: restaurant.weeklyVoteIncrease || 0,
         date_added: restaurant.dateAdded,
-        tag_ids: restaurant.tagIds,
-        status: restaurant.status || 'approved'
+        status: restaurant.status || 'approved',
+        area_tag: restaurant.area_tag,
+        cuisine_tag: restaurant.cuisine_tag,
+        awards_tag: restaurant.awards_tag,
+        dietary_tag: restaurant.dietary_tag
       }));
 
       // Insert the restaurants with upsert to handle existing records
