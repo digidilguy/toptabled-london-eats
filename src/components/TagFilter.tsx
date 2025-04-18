@@ -3,7 +3,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRestaurants } from "@/context/RestaurantContext";
-import { tags, tagCategories, Tag, TagCategory } from "@/data/tags";
+import { tags, tagCategories } from "@/data/tags";
+import { TagCategory } from "@/types/restaurant";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const TagFilter = () => {

@@ -1,4 +1,4 @@
-import { Tag } from './tags';
+import { Restaurant } from '@/types/restaurant';
 
 export interface Restaurant {
   id: string;
