@@ -12,6 +12,7 @@ import { clearAllDatabaseData, importInitialData } from "./lib/supabase";
 import { toast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { restaurants as initialRestaurants } from "./data/restaurants";
+import { useAuth } from "@/context/AuthContext";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,7 +23,7 @@ const queryClient = new QueryClient({
   },
 });
 
-// Now this component correctly uses useAuth since it's rendered inside AuthProvider
+// DatabaseControls component that will be rendered inside the Router and AuthProvider
 const DatabaseControls = () => {
   const { isAdmin } = useAuth();
   
