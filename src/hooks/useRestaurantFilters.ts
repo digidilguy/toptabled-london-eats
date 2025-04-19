@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Restaurant, TagCategory } from '@/types/restaurant';
 import { useSearchParams } from 'react-router-dom';
@@ -17,15 +16,6 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
   const [trendingRestaurants, setTrendingRestaurants] = useState<Restaurant[]>(restaurants.slice(0, 5));
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const { isAdmin } = useAuth();
-
-  // Initialize from URL params
-  useEffect(() => {
-    const tagsParam = searchParams.get('tags');
-    if (tagsParam) {
-      const tagIds = tagsParam.split(',');
-      setActiveTagIds(tagIds);
-    }
-  }, [searchParams]);
 
   useEffect(() => {
     console.log('Current restaurants:', restaurants);
@@ -46,15 +36,12 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
     // Find all available tags from the current restaurant list
     const tagSet = new Set<string>();
     visibleRestaurants.forEach(restaurant => {
-      // Make sure to check for null or undefined before adding
       if (restaurant.area_tag) tagSet.add(restaurant.area_tag);
       if (restaurant.cuisine_tag) tagSet.add(restaurant.cuisine_tag);
       if (restaurant.awards_tag) tagSet.add(restaurant.awards_tag);
       if (restaurant.dietary_tag) tagSet.add(restaurant.dietary_tag);
     });
     
-    // Log available tags for debugging
-    console.log('Available tags from restaurants:', Array.from(tagSet));
     setAvailableTags(Array.from(tagSet));
 
     // Group active tags by category
@@ -67,7 +54,6 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
     
     // Organize active tags by category
     activeTagIds.forEach(tagId => {
-      // Determine tag category based on which field it matches in restaurants
       for (const restaurant of visibleRestaurants) {
         if (restaurant.area_tag === tagId) {
           tagsByCategory.area.push(tagId);
@@ -88,20 +74,14 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
       }
     });
     
-    // Update state with organized tags
     setActiveTagsByCategory(tagsByCategory);
-    console.log('Active tag filters by category:', tagsByCategory);
-
-    // Apply filters if any are active
+    
+    // Apply filters only to the main restaurant list
     if (activeTagIds.length > 0) {
       visibleRestaurants = visibleRestaurants.filter(restaurant => {
-        // For each category with active filters, check if the restaurant matches ANY tag in that category
-        // AND logic across categories, OR logic within a category
         return Object.entries(tagsByCategory).every(([category, categoryTags]) => {
-          // If no tags in this category, this condition is met
           if (categoryTags.length === 0) return true;
           
-          // OR logic within a category - match ANY tag in this category
           switch (category) {
             case 'area':
               return categoryTags.includes(restaurant.area_tag || '');
@@ -128,8 +108,8 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
     visibleRestaurants.sort((a, b) => b.voteCount - a.voteCount);
     setFilteredRestaurants(visibleRestaurants);
     
-    // Filter trending
-    const trending = visibleRestaurants
+    // Get trending restaurants from the ORIGINAL restaurant list, not the filtered one
+    const trending = restaurants
       .filter(r => r.status === 'approved')
       .sort((a, b) => (b.weeklyVoteIncrease || 0) - (a.weeklyVoteIncrease || 0))
       .slice(0, 5);
