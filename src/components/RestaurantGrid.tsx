@@ -24,13 +24,17 @@ const RestaurantGrid = () => {
     );
   }
 
-  // Function to get all tags for a restaurant
+  // Function to get all tags for a restaurant and filter out null values
   const getRestaurantTags = (restaurant) => {
     const restaurantTags = [];
     if (restaurant.area_tag) restaurantTags.push(restaurant.area_tag);
     if (restaurant.cuisine_tag) restaurantTags.push(restaurant.cuisine_tag);
     if (restaurant.awards_tag) restaurantTags.push(restaurant.awards_tag);
     if (restaurant.dietary_tag) restaurantTags.push(restaurant.dietary_tag);
+    
+    // For debugging
+    console.log("Restaurant tags for", restaurant.name, ":", restaurantTags);
+    
     return restaurantTags;
   };
 

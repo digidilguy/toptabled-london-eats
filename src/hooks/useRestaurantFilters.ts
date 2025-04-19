@@ -41,11 +41,15 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
     // Find all available tags from the current restaurant list
     const tagSet = new Set<string>();
     visibleRestaurants.forEach(restaurant => {
+      // Make sure to check for null or undefined before adding
       if (restaurant.area_tag) tagSet.add(restaurant.area_tag);
       if (restaurant.cuisine_tag) tagSet.add(restaurant.cuisine_tag);
       if (restaurant.awards_tag) tagSet.add(restaurant.awards_tag);
       if (restaurant.dietary_tag) tagSet.add(restaurant.dietary_tag);
     });
+    
+    // Log available tags for debugging
+    console.log('Available tags:', Array.from(tagSet));
     setAvailableTags(Array.from(tagSet));
 
     // Group active tags by category
