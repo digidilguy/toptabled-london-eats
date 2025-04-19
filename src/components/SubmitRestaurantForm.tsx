@@ -19,7 +19,7 @@ const SubmitRestaurantForm = ({ isOpen, onClose }: SubmitRestaurantFormProps) =>
   const [imageUrl, setImageUrl] = useState('https://source.unsplash.com/random/300x200/?restaurant,food');
   const [isLoading, setIsLoading] = useState(false);
   const { addRestaurant } = useRestaurants();
-  const { isAdmin, isAuthenticated } = useAuth();
+  const { isAdmin, isAuthenticated, user } = useAuth();
   const { toast } = useToast();
 
   const handleClose = () => {
@@ -30,7 +30,7 @@ const SubmitRestaurantForm = ({ isOpen, onClose }: SubmitRestaurantFormProps) =>
     onClose();
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!isAuthenticated) {
@@ -54,7 +54,14 @@ const SubmitRestaurantForm = ({ isOpen, onClose }: SubmitRestaurantFormProps) =>
     setIsLoading(true);
     
     try {
-      addRestaurant({
+      console.log('Submitting restaurant from form:', {
+        name,
+        googleMapsLink,
+        imageUrl,
+        userId: user?.id
+      });
+      
+      await addRestaurant({
         name,
         googleMapsLink,
         imageUrl,

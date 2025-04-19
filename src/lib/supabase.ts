@@ -46,6 +46,9 @@ export const submitRestaurant = async (
   isAdmin: boolean
 ) => {
   try {
+    console.log('Submitting restaurant with data:', JSON.stringify(restaurantData));
+    console.log('Is admin:', isAdmin);
+    
     // Generate a new UUID for the restaurant
     const newUuid = crypto.randomUUID();
     
@@ -59,18 +62,24 @@ export const submitRestaurant = async (
       weekly_vote_increase: 0,
       date_added: new Date().toISOString().split('T')[0],
       status: isAdmin ? 'approved' : 'pending',
-      area_tag: restaurantData.area_tag,
-      cuisine_tag: restaurantData.cuisine_tag,
-      awards_tag: restaurantData.awards_tag,
-      dietary_tag: restaurantData.dietary_tag
+      area_tag: restaurantData.area_tag || null,
+      cuisine_tag: restaurantData.cuisine_tag || null,
+      awards_tag: restaurantData.awards_tag || null,
+      dietary_tag: restaurantData.dietary_tag || null,
+      created_by: supabase.auth.getUser().then(response => response.data.user?.id) || null
     };
+
+    console.log('Submitting restaurant object:', JSON.stringify(newRestaurant));
 
     const { data, error } = await supabase
       .from('restaurants')
       .insert(newRestaurant)
       .select();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase insert error details:', error);
+      throw error;
+    }
     
     return { 
       success: true, 
