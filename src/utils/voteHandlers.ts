@@ -41,6 +41,7 @@ export const handleDatabaseVote = async (
     throw new Error('Your user ID is not a valid UUID');
   }
 
+  // If the user is removing their vote (clicking the same type they already voted)
   if (currentVote === voteType) {
     const { error: deleteError } = await supabase
       .from('restaurant_votes')
@@ -52,9 +53,21 @@ export const handleDatabaseVote = async (
     return { action: 'removed', type: voteType };
   }
 
+  // First, ensure any existing vote is removed to prevent constraint violation
+  if (currentVote) {
+    const { error: deleteError } = await supabase
+      .from('restaurant_votes')
+      .delete()
+      .eq('user_id', userId)
+      .eq('restaurant_id', restaurantId);
+
+    if (deleteError) throw deleteError;
+  }
+
+  // Now insert the new vote
   const { error: voteError } = await supabase
     .from('restaurant_votes')
-    .upsert({
+    .insert({
       user_id: userId,
       restaurant_id: restaurantId,
       vote_type: voteType

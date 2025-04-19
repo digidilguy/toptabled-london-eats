@@ -19,10 +19,13 @@ export const useRestaurantVoting = () => {
     let voteDelta = 0;
     
     if (currentVote === voteType) {
+      // User is removing their vote
       voteDelta = voteType === 'up' ? -1 : 1;
     } else if (currentVote) {
+      // User is changing their vote from up to down or vice versa (2 point swing)
       voteDelta = voteType === 'up' ? 2 : -2;
     } else {
+      // User is adding a new vote
       voteDelta = voteType === 'up' ? 1 : -1;
     }
 
@@ -48,12 +51,8 @@ export const useRestaurantVoting = () => {
       };
     });
     
-    queryClient.setQueryData(['user-votes', userVotes], () => newUserVotes);
-
-    toast({
-      title: "Processing vote...",
-      description: "Your vote is being processed",
-    });
+    // Update user votes cache optimistically
+    queryClient.setQueryData(['user-votes'], () => newUserVotes);
 
     try {
       // Execute the vote and ensure we await the promise
@@ -72,6 +71,8 @@ export const useRestaurantVoting = () => {
       });
     } catch (error) {
       console.error('Vote error:', error);
+      
+      // Revert the optimistic update if the operation failed
       queryClient.invalidateQueries({ queryKey: ['restaurants', 'infinite'] });
       queryClient.invalidateQueries({ queryKey: ['user-votes'] });
       
