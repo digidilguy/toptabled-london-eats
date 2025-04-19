@@ -1,3 +1,4 @@
+
 import { useRestaurants } from "@/context/RestaurantContext";
 import { MapPin, ThumbsDown, ThumbsUp } from "lucide-react";
 import { Button } from "./ui/button";
@@ -85,7 +86,7 @@ const RestaurantGrid = () => {
       description: "Your vote is being processed",
     });
 
-    // Then perform the actual vote
+    // Make sure we properly handle the Promise returned by voteForRestaurant
     voteForRestaurant(restaurantId, voteType)
       .then(() => {
         // Show success toast
