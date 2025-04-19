@@ -49,9 +49,10 @@ export const useRestaurantVoting = () => {
     });
 
     try {
+      // Call voteForRestaurant and explicitly await the result
       const result = await voteForRestaurant(restaurantId, voteType);
       
-      // Handle the result properly, checking if it has an action property
+      // Check if result exists and has the correct shape
       if (result && typeof result === 'object' && 'action' in result) {
         toast({
           title: result.action === 'removed' 
@@ -64,6 +65,7 @@ export const useRestaurantVoting = () => {
             : `You have ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
         });
       } else {
+        // Default toast if the result doesn't have the expected shape
         toast({
           title: voteType === 'up' ? "Upvoted!" : "Downvoted!",
           description: `You have ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
