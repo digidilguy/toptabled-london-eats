@@ -8,7 +8,7 @@ import { useInView } from "react-intersection-observer";
 import { useQueryClient } from "@tanstack/react-query";
 
 const RestaurantGrid = () => {
-  const { voteForRestaurant, userVotes, activeTagIds } = useRestaurants();
+  const { voteForRestaurant, userVotes, activeTagIds, activeTagsByCategory } = useRestaurants();
   const { ref: loadMoreRef, inView } = useInView();
   const queryClient = useQueryClient();
 
@@ -18,7 +18,10 @@ const RestaurantGrid = () => {
     hasNextPage,
     isFetchingNextPage,
     status,
-  } = useInfiniteRestaurants({ activeTagIds });
+  } = useInfiniteRestaurants({ 
+    activeTagIds, 
+    activeTagsByCategory 
+  });
 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {

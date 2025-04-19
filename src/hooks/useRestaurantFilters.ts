@@ -96,9 +96,12 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
     if (activeTagIds.length > 0) {
       visibleRestaurants = visibleRestaurants.filter(restaurant => {
         // For each category with active filters, check if the restaurant matches ANY tag in that category
+        // AND logic across categories, OR logic within a category
         return Object.entries(tagsByCategory).every(([category, categoryTags]) => {
+          // If no tags in this category, this condition is met
           if (categoryTags.length === 0) return true;
           
+          // OR logic within a category - match ANY tag in this category
           switch (category) {
             case 'area':
               return categoryTags.includes(restaurant.area_tag || '');

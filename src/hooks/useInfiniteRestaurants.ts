@@ -28,6 +28,8 @@ export const useInfiniteRestaurants = (filters: {
   return useInfiniteQuery({
     queryKey: ['restaurants', 'infinite', filters],
     queryFn: async ({ pageParam = 0 }) => {
+      console.log('Fetching with filters:', filters);
+      
       let query = supabase
         .from('restaurants')
         .select('*')
@@ -46,34 +48,38 @@ export const useInfiniteRestaurants = (filters: {
         );
         
         if (categoriesWithFilters.length > 0) {
-          // Start with all restaurants
-          let filteredQuery = query;
-          
-          // Apply AND filter across categories
+          // Apply AND logic across different categories
           categoriesWithFilters.forEach(category => {
             const tagsInCategory = filters.activeTagsByCategory![category];
             
             // Skip empty categories
             if (!tagsInCategory || tagsInCategory.length === 0) return;
             
-            // Build OR condition for tags within this category
             const tagColumn = `${category}_tag`;
-            const orConditions = tagsInCategory
-              .map(tagId => `${tagColumn}.eq.${tagId}`)
-              .join(',');
             
-            // Apply this category's filter (OR within category)
-            filteredQuery = filteredQuery.or(orConditions);
+            // For multiple tags within a category, use OR logic
+            if (tagsInCategory.length > 1) {
+              // Build OR condition for this category (tags within same category)
+              const orConditions = tagsInCategory.map(tagId => `${tagId}`).join(',');
+              query = query.or(`${tagColumn}.in.(${orConditions})`, { foreignTable: 'restaurants' });
+            } else {
+              // For single tag in a category, simple equals check
+              query = query.eq(tagColumn, tagsInCategory[0]);
+            }
           });
-          
-          query = filteredQuery;
         }
       }
 
+      console.log('Final query:', query);
       const { data, error } = await query;
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching restaurants:', error);
+        throw error;
+      }
+      
       // Map each database restaurant to our Restaurant model
+      console.log('Query returned restaurants:', data?.length || 0);
       return data ? data.map(mapDbRestaurantToModel) : [];
     },
     initialPageParam: 0,
