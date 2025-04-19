@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Restaurant } from '@/types/restaurant';
 import { useAuth } from '@/context/AuthContext';
@@ -304,7 +305,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
       const newRestaurant = {
         id: newUuid, 
         name: restaurantData.name,
-        googleMapsLink: restaurantData.googleMapsLink,
+        google_maps_link: restaurantData.googleMapsLink,
         image_url: restaurantData.imageUrl,
         status: isAdmin ? 'approved' : 'pending',
         area_tag: restaurantData.area_tag,
@@ -352,7 +353,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         id: restaurant.id,
         name: restaurant.name,
         image_url: restaurant.imageUrl,
-        googleMapsLink: restaurant.googleMapsLink,
+        google_maps_link: restaurant.googleMapsLink,
         vote_count: restaurant.voteCount,
         weekly_vote_increase: restaurant.weeklyVoteIncrease || 0,
         date_added: restaurant.dateAdded,
