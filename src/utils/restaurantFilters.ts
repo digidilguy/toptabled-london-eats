@@ -8,8 +8,9 @@ interface FilterConfig {
   activeTagsByCategory?: Record<TagCategory, string[]>;
 }
 
-export const applyRestaurantFilters = (
-  query: SupabaseClient<Database>['from']['<T>'],
+// Use a more specific type for the query parameter
+export const applyRestaurantFilters = <T>(
+  query: ReturnType<SupabaseClient<Database>['from']>,
   filters: FilterConfig
 ) => {
   if (!filters.activeTagIds.length || !filters.activeTagsByCategory) {
