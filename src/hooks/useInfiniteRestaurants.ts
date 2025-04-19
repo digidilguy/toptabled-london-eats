@@ -30,6 +30,7 @@ export const useInfiniteRestaurants = (filters: {
     queryFn: async ({ pageParam = 0 }) => {
       console.log('Fetching with filters:', filters);
       
+      // Start with the base query
       let query = supabase
         .from('restaurants')
         .select('*')
@@ -57,8 +58,10 @@ export const useInfiniteRestaurants = (filters: {
             
             const tagColumn = `${category}_tag`;
             
-            // For multiple tags within a category, use OR logic with .in()
+            // For multiple tags within a category, use OR logic
             if (tagsInCategory.length > 1) {
+              // Use simple .in() method for OR logic within the same category
+              // This avoids the complex type recursion that was causing the error
               query = query.in(tagColumn, tagsInCategory);
             } else {
               // For single tag in a category, use simple equals check
