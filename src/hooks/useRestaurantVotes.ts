@@ -40,8 +40,37 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // State to track mock user votes (for testing only) - Fixed type to be 'up' | 'down'
+  // State to track mock user votes (for testing only)
   const [mockUserVotes, setMockUserVotes] = useState<Record<string, 'up' | 'down'>>({});
+
+  // Load mock votes from localStorage on initial load
+  useEffect(() => {
+    if (isMockUser(user?.id)) {
+      const savedVotes = localStorage.getItem(`mockUserVotes_${user?.id}`);
+      if (savedVotes) {
+        try {
+          const parsedVotes = JSON.parse(savedVotes);
+          // Validate that all votes are either 'up' or 'down'
+          const validVotes: Record<string, 'up' | 'down'> = {};
+          Object.entries(parsedVotes).forEach(([key, value]) => {
+            if (value === 'up' || value === 'down') {
+              validVotes[key] = value as 'up' | 'down';
+            }
+          });
+          setMockUserVotes(validVotes);
+        } catch (error) {
+          console.error('Error parsing saved votes:', error);
+        }
+      }
+    }
+  }, [user?.id]);
+
+  // Save mock votes to localStorage whenever they change
+  useEffect(() => {
+    if (isMockUser(user?.id) && Object.keys(mockUserVotes).length > 0) {
+      localStorage.setItem(`mockUserVotes_${user?.id}`, JSON.stringify(mockUserVotes));
+    }
+  }, [mockUserVotes, user?.id]);
 
   // Fetch restaurants from Supabase
   const { data: restaurants = [], refetch: refetchRestaurants } = useQuery({
@@ -158,7 +187,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
 
       const currentVote = userVotes[restaurantId];
       
-      // Handle votes for mock users (in-memory)
+      // Handle votes for mock users (in-memory and localStorage)
       if (isMockUser(user.id)) {
         console.log('Processing mock user vote');
         
@@ -171,20 +200,16 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
           });
           
           // Update the restaurant directly in memory
-          const restaurantToUpdate = restaurants.find(r => r.id === restaurantId);
-          if (restaurantToUpdate) {
-            // Remove vote (decrease count by 1 for up, increase by 1 for down)
-            const voteChange = voteType === 'up' ? -1 : 1;
-            
-            // Update the vote count directly in cache
-            queryClient.setQueryData(['restaurants'], (oldData: Restaurant[] | undefined) => {
-              return oldData?.map(r => 
-                r.id === restaurantId 
-                  ? { ...r, voteCount: r.voteCount + voteChange } 
-                  : r
-              );
-            });
-          }
+          const voteChange = voteType === 'up' ? -1 : 1;
+          
+          // Update the vote count directly in cache
+          queryClient.setQueryData(['restaurants'], (oldData: Restaurant[] | undefined) => {
+            return oldData?.map(r => 
+              r.id === restaurantId 
+                ? { ...r, voteCount: r.voteCount + voteChange } 
+                : r
+            );
+          });
           
           return { action: 'removed', type: voteType };
         }
