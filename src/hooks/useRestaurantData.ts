@@ -1,7 +1,7 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Restaurant } from '@/types/restaurant';
+import { importInitialData } from '@/lib/supabase';
 
 const mapDbRestaurant = (dbRestaurant: any): Restaurant => ({
   id: dbRestaurant.id,
@@ -31,7 +31,7 @@ export const useRestaurantData = (initialRestaurants: Restaurant[]) => {
         if (error) throw error;
         
         if (!data || data.length === 0) {
-          await importInitialData();
+          await importInitialData(initialRestaurants);
           
           const { data: refreshedData, error: refreshError } = await supabase
             .from('restaurants')
