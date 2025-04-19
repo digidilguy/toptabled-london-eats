@@ -80,7 +80,7 @@ const RestaurantGrid = () => {
     queryClient.setQueryData(['user-votes', userVotes], () => newUserVotes);
 
     // Show loading toast
-    const loadingToast = toast({
+    toast({
       title: "Processing vote...",
       description: "Your vote is being processed",
     });
