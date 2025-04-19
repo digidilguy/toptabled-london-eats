@@ -1,10 +1,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRestaurants } from "@/context/RestaurantContext";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, MapPin } from "lucide-react";
 
 const TrendingLeaderboard = () => {
-  const { trendingRestaurants, toggleTagFilter } = useRestaurants();
+  const { trendingRestaurants } = useRestaurants();
   
   // Get tag names for a restaurant
   const getTagNames = (restaurant, limit = 2) => {
@@ -14,7 +14,6 @@ const TrendingLeaderboard = () => {
     if (restaurant.awards_tag) restaurantTags.push(restaurant.awards_tag);
     if (restaurant.dietary_tag) restaurantTags.push(restaurant.dietary_tag);
     
-    // Convert tag IDs to display names
     return restaurantTags
       .slice(0, limit)
       .map(tagId => tagId.split('-').map(word => 
@@ -24,7 +23,7 @@ const TrendingLeaderboard = () => {
 
   return (
     <Card className="mb-6">
-      <CardHeader className="pb-3">  {/* Reduced bottom padding */}
+      <CardHeader className="pb-3">
         <CardTitle className="text-lg font-bold flex items-center">
           <span className="mr-2">Trending This Week</span>
           <TrendingUp size={18} className="text-upvote" />
@@ -43,25 +42,26 @@ const TrendingLeaderboard = () => {
                     +{restaurant.weeklyVoteIncrease || 0}
                   </span>
                 </div>
-                <div className="flex gap-1 mt-1">
-                  {getTagNames(restaurant).map((tag, i) => {
-                    // Get the tag's ID for toggling
-                    const allRestaurantTags = [];
-                    if (restaurant.area_tag) allRestaurantTags.push(restaurant.area_tag);
-                    if (restaurant.cuisine_tag) allRestaurantTags.push(restaurant.cuisine_tag);
-                    if (restaurant.awards_tag) allRestaurantTags.push(restaurant.awards_tag);
-                    if (restaurant.dietary_tag) allRestaurantTags.push(restaurant.dietary_tag);
-                    
-                    return (
+                <div className="flex flex-wrap items-center gap-2 mt-1">
+                  <div className="flex gap-1">
+                    {getTagNames(restaurant).map((tag, i) => (
                       <span 
                         key={i} 
-                        className="text-xs text-neutral hover:text-accent cursor-pointer"
-                        onClick={() => toggleTagFilter(allRestaurantTags[i])}
+                        className="text-xs text-neutral"
                       >
                         {tag}{i < getTagNames(restaurant).length - 1 ? ',' : ''}
                       </span>
-                    );
-                  })}
+                    ))}
+                  </div>
+                  <a 
+                    href={restaurant.googleMapsLink} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 transition-colors"
+                  >
+                    <MapPin size={14} />
+                    <span>View on Maps</span>
+                  </a>
                 </div>
               </div>
             </li>
