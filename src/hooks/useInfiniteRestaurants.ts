@@ -1,9 +1,8 @@
-
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Restaurant } from '@/types/restaurant';
 
-const RESTAURANTS_PER_PAGE = 12;
+const RESTAURANTS_PER_PAGE = 24;
 
 // Helper function to map database response to our Restaurant type
 const mapDbRestaurantToModel = (dbRestaurant: any): Restaurant => ({

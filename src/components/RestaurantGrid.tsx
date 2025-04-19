@@ -2,7 +2,7 @@
 import { useRestaurants } from "@/context/RestaurantContext";
 import { MapPin, ThumbsDown, ThumbsUp } from "lucide-react";
 import { Button } from "./ui/button";
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect } from "react";
 import { useInfiniteRestaurants } from "@/hooks/useInfiniteRestaurants";
 import { useInView } from "react-intersection-observer";
 
