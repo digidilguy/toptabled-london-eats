@@ -48,7 +48,7 @@ export const useInfiniteRestaurants = (filters: {
         );
         
         if (categoriesWithFilters.length > 0) {
-          // Apply AND logic across different categories
+          // Apply AND logic across different categories by chaining .and() for each category
           categoriesWithFilters.forEach(category => {
             const tagsInCategory = filters.activeTagsByCategory![category];
             
@@ -59,9 +59,8 @@ export const useInfiniteRestaurants = (filters: {
             
             // For multiple tags within a category, use OR logic
             if (tagsInCategory.length > 1) {
-              // Build OR condition for this category (tags within same category)
-              const orConditions = tagsInCategory.map(tagId => `${tagId}`).join(',');
-              query = query.or(`${tagColumn}.in.(${orConditions})`, { foreignTable: 'restaurants' });
+              // Use .in() for OR logic within the same category
+              query = query.in(tagColumn, tagsInCategory);
             } else {
               // For single tag in a category, simple equals check
               query = query.eq(tagColumn, tagsInCategory[0]);
