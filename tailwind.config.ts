@@ -25,11 +25,11 @@ export default {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         primary: {
-          DEFAULT: '#8B5CF6', // Vivid Purple
+          DEFAULT: '#34A853', // Google's Green
           foreground: '#FFFFFF'
         },
         secondary: {
-          DEFAULT: '#D6BCFA', // Soft Purple
+          DEFAULT: '#D3E4FD', // Soft Blue
           foreground: '#403E43'
         },
         destructive: {
@@ -41,8 +41,8 @@ export default {
           foreground: 'hsl(var(--muted-foreground))'
         },
         accent: {
-          DEFAULT: '#F97316', // Bright Orange
-          foreground: '#FFFFFF'
+          DEFAULT: '#FDE1D3', // Soft Peach
+          foreground: '#403E43'
         },
         popover: {
           DEFAULT: 'hsl(var(--popover))',
@@ -55,8 +55,8 @@ export default {
         upvote: '#34A853', // Google's green
         downvote: '#EA4335', // Google's red
         neutral: {
-          DEFAULT: '#8E9196', // Neutral Gray
-          foreground: '#403E43'
+          DEFAULT: '#555555', // Dark Gray
+          foreground: '#FFFFFF'
         }
       },
       backgroundImage: {
