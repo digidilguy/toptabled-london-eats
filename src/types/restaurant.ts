@@ -1,3 +1,4 @@
+import React from 'react';
 
 export type TagCategory = 'area' | 'cuisine' | 'awards' | 'dietary';
 
@@ -21,7 +22,10 @@ export interface RestaurantContextType {
   availableTags: string[];
   toggleTagFilter: (tagId: string) => void;
   clearTagFilters: () => void;
-  voteForRestaurant: (restaurantId: string, voteType: 'up' | 'down') => void;
+  voteForRestaurant: (restaurantId: string, voteType: 'up' | 'down') => Promise<{
+    action: 'removed' | 'voted';
+    type: 'up' | 'down';
+  }>;
   addRestaurant: (restaurant: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded' | 'status' | 'weeklyVoteIncrease'>) => void;
   getRestaurantById: (id: string) => Restaurant | undefined;
   userVotes: Record<string, 'up' | 'down'>;
