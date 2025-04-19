@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,13 +5,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import { AuthProvider } from "@/context/AuthContext";
+import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { clearAllDatabaseData, importInitialData } from "./lib/supabase";
 import { toast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { restaurants as initialRestaurants } from "./data/restaurants";
-import { useAuth } from "@/context/AuthContext";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,7 +21,6 @@ const queryClient = new QueryClient({
   },
 });
 
-// DatabaseControls component that will be rendered inside the Router and AuthProvider
 const DatabaseControls = () => {
   const { isAdmin } = useAuth();
   
@@ -36,7 +33,6 @@ const DatabaseControls = () => {
         title: "Database cleared",
         description: "All data has been removed from the database",
       });
-      // Refresh the page to show the changes
       window.location.reload();
     } catch (error) {
       toast({
@@ -54,7 +50,6 @@ const DatabaseControls = () => {
         title: "Data imported",
         description: "Initial restaurant data has been imported",
       });
-      // Refresh the page to show the changes
       window.location.reload();
     } catch (error) {
       toast({
@@ -103,7 +98,6 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Index />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
           <DatabaseControls />
