@@ -5,6 +5,22 @@ import { Restaurant } from '@/types/restaurant';
 
 const RESTAURANTS_PER_PAGE = 12;
 
+// Helper function to map database response to our Restaurant type
+const mapDbRestaurantToModel = (dbRestaurant: any): Restaurant => ({
+  id: dbRestaurant.id,
+  name: dbRestaurant.name,
+  googleMapsLink: dbRestaurant.google_maps_link || '',
+  voteCount: dbRestaurant.vote_count || 0,
+  dateAdded: dbRestaurant.date_added || '',
+  imageUrl: dbRestaurant.image_url || '',
+  weeklyVoteIncrease: dbRestaurant.weekly_vote_increase || 0,
+  status: dbRestaurant.status || 'pending',
+  area_tag: dbRestaurant.area_tag,
+  cuisine_tag: dbRestaurant.cuisine_tag,
+  awards_tag: dbRestaurant.awards_tag,
+  dietary_tag: dbRestaurant.dietary_tag,
+});
+
 export const useInfiniteRestaurants = (filters: { activeTagIds: string[] }) => {
   return useInfiniteQuery({
     queryKey: ['restaurants', 'infinite', filters],
@@ -28,7 +44,8 @@ export const useInfiniteRestaurants = (filters: { activeTagIds: string[] }) => {
       const { data, error } = await query;
       
       if (error) throw error;
-      return data as Restaurant[];
+      // Map each database restaurant to our Restaurant model
+      return data ? data.map(mapDbRestaurantToModel) : [];
     },
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {

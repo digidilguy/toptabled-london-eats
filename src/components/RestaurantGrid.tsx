@@ -1,3 +1,4 @@
+
 import { useRestaurants } from "@/context/RestaurantContext";
 import { MapPin, ThumbsDown, ThumbsUp } from "lucide-react";
 import { Button } from "./ui/button";
@@ -23,7 +24,7 @@ const RestaurantGrid = () => {
     }
   }, [inView, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  if (status === 'loading') {
+  if (status === 'pending') {
     return (
       <div className="text-center py-12 px-4 rounded-lg border border-neutral/10 bg-white/50 backdrop-blur-sm">
         <h3 className="text-xl font-medium mb-2">Loading restaurants...</h3>
