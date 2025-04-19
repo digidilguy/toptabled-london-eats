@@ -22,11 +22,11 @@ const TrendingLeaderboard = () => {
   };
 
   return (
-    <Card className="mb-6">
-      <CardHeader className="pb-3">
+    <Card className="mb-6 border border-secondary shadow-sm">
+      <CardHeader className="pb-3 bg-gradient-to-r from-primary/5 to-secondary/30">
         <CardTitle className="text-lg font-bold flex items-center">
           <span className="mr-2">Trending This Week</span>
-          <TrendingUp size={18} className="text-upvote" />
+          <TrendingUp size={18} className="text-primary" />
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -47,7 +47,7 @@ const TrendingLeaderboard = () => {
                     {getTagNames(restaurant).map((tag, i) => (
                       <span 
                         key={i} 
-                        className="text-xs text-neutral"
+                        className="text-xs text-neutral-foreground/80"
                       >
                         {tag}{i < getTagNames(restaurant).length - 1 ? ',' : ''}
                       </span>
@@ -57,7 +57,7 @@ const TrendingLeaderboard = () => {
                     href={restaurant.googleMapsLink} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-xs text-neutral hover:text-neutral/80 transition-colors"
+                    className="flex items-center gap-1 text-xs text-accent hover:text-accent/80 transition-colors"
                   >
                     <MapPin size={14} />
                     <span>View on Maps</span>

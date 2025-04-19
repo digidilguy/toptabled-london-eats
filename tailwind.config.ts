@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -25,12 +26,12 @@ export default {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         primary: {
-          DEFAULT: '#34A853', // Google's Green
+          DEFAULT: '#635BFF', // Stripe's purple
           foreground: '#FFFFFF'
         },
         secondary: {
-          DEFAULT: '#D3E4FD', // Soft Blue
-          foreground: '#403E43'
+          DEFAULT: '#E0E4FF', // Light purple
+          foreground: '#1A1F36'
         },
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',
@@ -41,8 +42,8 @@ export default {
           foreground: 'hsl(var(--muted-foreground))'
         },
         accent: {
-          DEFAULT: '#FDE1D3', // Soft Peach
-          foreground: '#403E43'
+          DEFAULT: '#FF5AAC', // Lovable-inspired pink
+          foreground: '#FFFFFF'
         },
         popover: {
           DEFAULT: 'hsl(var(--popover))',
@@ -52,10 +53,10 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))'
         },
-        upvote: '#34A853', // Google's green
-        downvote: '#EA4335', // Google's red
+        upvote: '#24B47E', // Stripe's green
+        downvote: '#FF4757', // Bright red
         neutral: {
-          DEFAULT: '#555555', // Dark Gray
+          DEFAULT: '#1A1F36', // Stripe's dark blue
           foreground: '#FFFFFF'
         }
       },
