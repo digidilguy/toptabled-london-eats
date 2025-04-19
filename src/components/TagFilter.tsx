@@ -1,24 +1,46 @@
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRestaurants } from "@/context/RestaurantContext";
-import { tags, tagCategories } from "@/data/tags";
+import { tagCategories } from "@/data/tagCategories";
 import { TagCategory } from "@/types/restaurant";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const TagFilter = () => {
-  const { activeTagIds, toggleTagFilter, clearTagFilters, availableTags } = useRestaurants();
+  const { activeTagIds, toggleTagFilter, clearTagFilters, availableTags, restaurants } = useRestaurants();
   
   console.log('TagFilter - available tags:', availableTags);
   console.log('TagFilter - active tag IDs:', activeTagIds);
+
+  const getTagsForCategory = (category: TagCategory) => {
+    const tagColumnMap = {
+      'area': 'area_tag',
+      'cuisine': 'cuisine_tag',
+      'awards': 'awards_tag',
+      'dietary': 'dietary_tag'
+    };
+
+    const columnName = tagColumnMap[category];
+    const uniqueTags = new Set<string>();
+    
+    restaurants.forEach(restaurant => {
+      const tagValue = restaurant[columnName as keyof typeof restaurant];
+      if (tagValue) {
+        uniqueTags.add(tagValue);
+      }
+    });
+
+    return Array.from(uniqueTags).map(tagId => ({
+      id: tagId,
+      name: tagId.split('-').map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)
+      ).join(' '),
+      category
+    }));
+  };
   
   const renderTagsByCategory = (category: TagCategory) => {
-    // Get all valid tags for this category that are available in current restaurants
-    const categoryTags = tags.filter(tag => 
-      tag.category === category && 
-      availableTags.includes(tag.id)
-    );
+    const categoryTags = getTagsForCategory(category);
     
     console.log(`Tags for category ${category}:`, categoryTags);
     
@@ -45,8 +67,12 @@ const TagFilter = () => {
   const hasActiveFilters = activeTagIds.length > 0;
   
   const getSelectedTagNames = () => {
+    const allTags = tagCategories.flatMap(category => 
+      getTagsForCategory(category.id as TagCategory)
+    );
+    
     return activeTagIds.map(id => {
-      const tag = tags.find(t => t.id === id);
+      const tag = allTags.find(t => t.id === id);
       return tag ? tag.name : '';
     }).filter(Boolean);
   };

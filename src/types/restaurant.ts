@@ -1,4 +1,3 @@
-
 export type TagCategory = 'area' | 'cuisine' | 'awards' | 'dietary';
 
 export interface TagCategoryDefinition {
