@@ -48,7 +48,7 @@ export const useInfiniteRestaurants = (filters: {
         );
         
         if (categoriesWithFilters.length > 0) {
-          // Apply AND logic across different categories by chaining .and() for each category
+          // Apply AND logic across different categories
           categoriesWithFilters.forEach(category => {
             const tagsInCategory = filters.activeTagsByCategory![category];
             
@@ -57,12 +57,11 @@ export const useInfiniteRestaurants = (filters: {
             
             const tagColumn = `${category}_tag`;
             
-            // For multiple tags within a category, use OR logic
+            // For multiple tags within a category, use OR logic with .in()
             if (tagsInCategory.length > 1) {
-              // Use .in() for OR logic within the same category
               query = query.in(tagColumn, tagsInCategory);
             } else {
-              // For single tag in a category, simple equals check
+              // For single tag in a category, use simple equals check
               query = query.eq(tagColumn, tagsInCategory[0]);
             }
           });
