@@ -25,11 +25,11 @@ export default {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         primary: {
-          DEFAULT: '#7E69AB', // Deep Purple
+          DEFAULT: '#8B5CF6', // Vivid Purple
           foreground: '#FFFFFF'
         },
         secondary: {
-          DEFAULT: '#F2FCE2', // Soft Green
+          DEFAULT: '#D6BCFA', // Soft Purple
           foreground: '#403E43'
         },
         destructive: {
@@ -41,7 +41,7 @@ export default {
           foreground: 'hsl(var(--muted-foreground))'
         },
         accent: {
-          DEFAULT: '#FEC6A1', // Soft Orange
+          DEFAULT: '#F97316', // Bright Orange
           foreground: '#FFFFFF'
         },
         popover: {
@@ -54,7 +54,10 @@ export default {
         },
         upvote: '#34A853', // Google's green
         downvote: '#EA4335', // Google's red
-        neutral: '#403E43' // Charcoal Gray
+        neutral: {
+          DEFAULT: '#8E9196', // Neutral Gray
+          foreground: '#403E43'
+        }
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
