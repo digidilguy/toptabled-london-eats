@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Restaurant } from '@/types/restaurant';
 import { useAuth } from '@/context/AuthContext';
@@ -40,8 +39,8 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // State to track mock user votes (for testing only)
-  const [mockUserVotes, setMockUserVotes] = useState<Record<string, string>>({});
+  // State to track mock user votes (for testing only) - Fixed type to be 'up' | 'down'
+  const [mockUserVotes, setMockUserVotes] = useState<Record<string, 'up' | 'down'>>({});
 
   // Fetch restaurants from Supabase
   const { data: restaurants = [], refetch: refetchRestaurants } = useQuery({
@@ -123,10 +122,13 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         }
         
         // Convert array to object mapping restaurant_id -> vote_type
-        const voteMap = data.reduce((acc, vote) => ({
-          ...acc,
-          [vote.restaurant_id]: vote.vote_type
-        }), {});
+        const voteMap: Record<string, 'up' | 'down'> = {};
+        data.forEach(vote => {
+          // Ensure vote_type is only 'up' or 'down'
+          if (vote.vote_type === 'up' || vote.vote_type === 'down') {
+            voteMap[vote.restaurant_id] = vote.vote_type;
+          }
+        });
         
         console.log('User votes retrieved:', voteMap);
         return voteMap;
@@ -302,7 +304,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
       const newRestaurant = {
         id: newUuid, 
         name: restaurantData.name,
-        google_maps_link: restaurantData.googleMapsLink,
+        googleMapsLink: restaurantData.googleMapsLink,
         image_url: restaurantData.imageUrl,
         status: isAdmin ? 'approved' : 'pending',
         area_tag: restaurantData.area_tag,
@@ -350,7 +352,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         id: restaurant.id,
         name: restaurant.name,
         image_url: restaurant.imageUrl,
-        google_maps_link: restaurant.googleMapsLink,
+        googleMapsLink: restaurant.googleMapsLink,
         vote_count: restaurant.voteCount,
         weekly_vote_increase: restaurant.weeklyVoteIncrease || 0,
         date_added: restaurant.dateAdded,
