@@ -21,6 +21,57 @@ const mapDbRestaurantToModel = (dbRestaurant: any): Restaurant => ({
   dietary_tag: dbRestaurant.dietary_tag,
 });
 
+// Extract query logic to separate function with explicit return type
+const fetchRestaurants = async (
+  pageParam: number,
+  filters: { 
+    activeTagIds: string[], 
+    activeTagsByCategory?: Record<TagCategory, string[]> 
+  }
+) => {
+  console.log('Fetching with filters:', filters);
+  
+  // Create the base query
+  const query = supabase
+    .from('restaurants')
+    .select('*')
+    .order('vote_count', { ascending: false })
+    .range(
+      pageParam * RESTAURANTS_PER_PAGE, 
+      (pageParam + 1) * RESTAURANTS_PER_PAGE - 1
+    );
+
+  // Apply filters if any are active
+  if (filters.activeTagIds.length > 0 && filters.activeTagsByCategory) {
+    const categories = Object.keys(filters.activeTagsByCategory) as TagCategory[];
+    
+    categories.forEach(category => {
+      const tagsInCategory = filters.activeTagsByCategory![category];
+      
+      if (!tagsInCategory || tagsInCategory.length === 0) return;
+      
+      const tagColumn = `${category}_tag`;
+      
+      if (tagsInCategory.length > 1) {
+        query.in(tagColumn, tagsInCategory);
+      } else if (tagsInCategory.length === 1) {
+        query.eq(tagColumn, tagsInCategory[0]);
+      }
+    });
+  }
+
+  console.log('Final query:', query);
+  const { data, error } = await query;
+  
+  if (error) {
+    console.error('Error fetching restaurants:', error);
+    throw error;
+  }
+  
+  console.log('Query returned restaurants:', data?.length || 0);
+  return data ? data.map(mapDbRestaurantToModel) : [];
+};
+
 export const useInfiniteRestaurants = (filters: { 
   activeTagIds: string[], 
   activeTagsByCategory?: Record<TagCategory, string[]> 
@@ -28,55 +79,8 @@ export const useInfiniteRestaurants = (filters: {
   return useInfiniteQuery({
     queryKey: ['restaurants', 'infinite', filters],
     queryFn: async ({ pageParam = 0 }) => {
-      console.log('Fetching with filters:', filters);
-      
-      // Build filter conditions separately before creating the query
-      const filterConditions: Record<string, unknown> = {};
-      
-      if (filters.activeTagIds.length > 0 && filters.activeTagsByCategory) {
-        const categories = Object.keys(filters.activeTagsByCategory) as TagCategory[];
-        
-        categories.forEach(category => {
-          const tagsInCategory = filters.activeTagsByCategory![category];
-          
-          if (!tagsInCategory || tagsInCategory.length === 0) return;
-          
-          const tagColumn = `${category}_tag`;
-          filterConditions[tagColumn] = tagsInCategory.length === 1 
-            ? tagsInCategory[0]  // Use eq for single value
-            : tagsInCategory;    // Use in for multiple values
-        });
-      }
-      
-      // Create the base query with pagination
-      const query = supabase
-        .from('restaurants')
-        .select('*')
-        .order('vote_count', { ascending: false })
-        .range(
-          pageParam * RESTAURANTS_PER_PAGE, 
-          (pageParam + 1) * RESTAURANTS_PER_PAGE - 1
-        );
-
-      // Apply all filter conditions at once
-      Object.entries(filterConditions).forEach(([column, value]) => {
-        if (Array.isArray(value)) {
-          query.in(column, value);
-        } else {
-          query.eq(column, value);
-        }
-      });
-
-      console.log('Final query:', query);
-      const { data, error } = await query;
-      
-      if (error) {
-        console.error('Error fetching restaurants:', error);
-        throw error;
-      }
-      
-      console.log('Query returned restaurants:', data?.length || 0);
-      return data ? data.map(mapDbRestaurantToModel) : [];
+      // Call the extracted function with correct parameters
+      return fetchRestaurants(pageParam, filters);
     },
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
