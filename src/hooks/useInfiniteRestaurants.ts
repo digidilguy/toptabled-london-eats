@@ -1,4 +1,3 @@
-
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Restaurant, TagCategory } from '@/types/restaurant';
@@ -54,13 +53,13 @@ export const useInfiniteRestaurants = (filters: {
           
           const tagColumn = `${category}_tag`;
           
-          // Handle multiple tags within same category using a fixed array to avoid TypeScript recursion
-          if (tagsInCategory.length > 1) {
-            // Convert to a simple string array to avoid TypeScript recursion
-            const tagArray: string[] = Array.from(tagsInCategory);
-            query = query.in(tagColumn, tagArray);
-          } else if (tagsInCategory.length === 1) {
-            query = query.eq(tagColumn, tagsInCategory[0]);
+          // Explicitly type the array and use spread operator to avoid recursion
+          const tagValues: string[] = [...tagsInCategory];
+          
+          if (tagValues.length > 1) {
+            query = query.in(tagColumn, tagValues);
+          } else if (tagValues.length === 1) {
+            query = query.eq(tagColumn, tagValues[0]);
           }
         });
       }
