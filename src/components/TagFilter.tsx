@@ -10,12 +10,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const TagFilter = () => {
   const { activeTagIds, toggleTagFilter, clearTagFilters, availableTags } = useRestaurants();
   
+  console.log('TagFilter - available tags:', availableTags);
+  console.log('TagFilter - active tag IDs:', activeTagIds);
+  
   const renderTagsByCategory = (category: TagCategory) => {
-    // Filter tags by category and availability in current restaurants
+    // Get all valid tags for this category that are available in current restaurants
     const categoryTags = tags.filter(tag => 
       tag.category === category && 
       availableTags.includes(tag.id)
     );
+    
+    console.log(`Tags for category ${category}:`, categoryTags);
     
     if (categoryTags.length === 0) {
       return <p className="text-xs text-neutral-400 italic">No {category} tags available</p>;

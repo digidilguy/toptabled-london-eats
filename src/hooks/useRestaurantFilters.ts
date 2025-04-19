@@ -49,7 +49,7 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
     });
     
     // Log available tags for debugging
-    console.log('Available tags:', Array.from(tagSet));
+    console.log('Available tags from restaurants:', Array.from(tagSet));
     setAvailableTags(Array.from(tagSet));
 
     // Group active tags by category
@@ -64,9 +64,19 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
       return acc;
     }, {} as Record<TagCategory, string[]>);
 
+    console.log('Active tag filters by category:', activeTagsByCategory);
+
     // Apply filters if any are active
     if (activeTagIds.length > 0) {
       visibleRestaurants = visibleRestaurants.filter(restaurant => {
+        // Log individual restaurant tags for debugging
+        console.log(`Filtering ${restaurant.name}:`, {
+          area: restaurant.area_tag,
+          cuisine: restaurant.cuisine_tag,
+          awards: restaurant.awards_tag,
+          dietary: restaurant.dietary_tag
+        });
+        
         // For each category with active filters, check if the restaurant matches ANY tag in that category
         return Object.entries(activeTagsByCategory).every(([category, categoryTags]) => {
           if (categoryTags.length === 0) return true;
