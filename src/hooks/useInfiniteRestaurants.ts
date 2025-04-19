@@ -1,7 +1,7 @@
 
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Restaurant } from '@/types/restaurant';
+import { Restaurant, TagCategory } from '@/types/restaurant';
 
 const RESTAURANTS_PER_PAGE = 24;
 
@@ -21,7 +21,10 @@ const mapDbRestaurantToModel = (dbRestaurant: any): Restaurant => ({
   dietary_tag: dbRestaurant.dietary_tag,
 });
 
-export const useInfiniteRestaurants = (filters: { activeTagIds: string[] }) => {
+export const useInfiniteRestaurants = (filters: { 
+  activeTagIds: string[], 
+  activeTagsByCategory?: Record<TagCategory, string[]> 
+}) => {
   return useInfiniteQuery({
     queryKey: ['restaurants', 'infinite', filters],
     queryFn: async ({ pageParam = 0 }) => {
@@ -35,14 +38,36 @@ export const useInfiniteRestaurants = (filters: { activeTagIds: string[] }) => {
         );
 
       // Apply tag filters if any are active
-      if (filters.activeTagIds.length > 0) {
-        // Create a filter condition that matches any of the selected tags
-        // in any of the tag columns
-        const filterConditions = filters.activeTagIds.map(tagId => {
-          return `area_tag.eq.${tagId},cuisine_tag.eq.${tagId},awards_tag.eq.${tagId},dietary_tag.eq.${tagId}`;
-        }).join(',');
+      if (filters.activeTagIds.length > 0 && filters.activeTagsByCategory) {
+        // Get all categories with active filters
+        const categories = Object.keys(filters.activeTagsByCategory) as TagCategory[];
+        const categoriesWithFilters = categories.filter(
+          category => filters.activeTagsByCategory![category]?.length > 0
+        );
         
-        query = query.or(filterConditions);
+        if (categoriesWithFilters.length > 0) {
+          // Start with all restaurants
+          let filteredQuery = query;
+          
+          // Apply AND filter across categories
+          categoriesWithFilters.forEach(category => {
+            const tagsInCategory = filters.activeTagsByCategory![category];
+            
+            // Skip empty categories
+            if (!tagsInCategory || tagsInCategory.length === 0) return;
+            
+            // Build OR condition for tags within this category
+            const tagColumn = `${category}_tag`;
+            const orConditions = tagsInCategory
+              .map(tagId => `${tagColumn}.eq.${tagId}`)
+              .join(',');
+            
+            // Apply this category's filter (OR within category)
+            filteredQuery = filteredQuery.or(orConditions);
+          });
+          
+          query = filteredQuery;
+        }
       }
 
       const { data, error } = await query;

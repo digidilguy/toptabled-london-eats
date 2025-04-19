@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext } from 'react';
 import { restaurants as initialRestaurants } from '@/data/restaurants';
-import { RestaurantContextType, RestaurantProviderProps } from '@/types/restaurant';
+import { RestaurantContextType, RestaurantProviderProps, TagCategory } from '@/types/restaurant';
 import { useRestaurantFilters } from '@/hooks/useRestaurantFilters';
 import { useRestaurantVotes } from '@/hooks/useRestaurantVotes';
 
@@ -18,6 +18,7 @@ export const RestaurantProvider: React.FC<RestaurantProviderProps> = ({ children
 
   const {
     activeTagIds,
+    activeTagsByCategory,
     filteredRestaurants,
     trendingRestaurants,
     toggleTagFilter,
@@ -32,6 +33,7 @@ export const RestaurantProvider: React.FC<RestaurantProviderProps> = ({ children
         trendingRestaurants,
         filteredRestaurants,
         activeTagIds,
+        activeTagsByCategory,
         toggleTagFilter,
         clearTagFilters,
         voteForRestaurant,

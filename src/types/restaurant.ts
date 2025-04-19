@@ -1,3 +1,4 @@
+
 export type TagCategory = 'area' | 'cuisine' | 'awards' | 'dietary';
 
 export interface TagCategoryDefinition {
@@ -16,6 +17,7 @@ export interface RestaurantContextType {
   trendingRestaurants: Restaurant[];
   filteredRestaurants: Restaurant[];
   activeTagIds: string[];
+  activeTagsByCategory: Record<TagCategory, string[]>;
   availableTags: string[];
   toggleTagFilter: (tagId: string) => void;
   clearTagFilters: () => void;

@@ -7,6 +7,12 @@ import { useAuth } from '@/context/AuthContext';
 export const useRestaurantFilters = (restaurants: Restaurant[]) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTagIds, setActiveTagIds] = useState<string[]>([]);
+  const [activeTagsByCategory, setActiveTagsByCategory] = useState<Record<TagCategory, string[]>>({
+    area: [],
+    cuisine: [],
+    awards: [],
+    dietary: []
+  });
   const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>(restaurants);
   const [trendingRestaurants, setTrendingRestaurants] = useState<Restaurant[]>(restaurants.slice(0, 5));
   const [availableTags, setAvailableTags] = useState<string[]>([]);
@@ -52,55 +58,45 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
     setAvailableTags(Array.from(tagSet));
 
     // Group active tags by category
-    const activeTagsByCategory = activeTagIds.reduce((acc, tagId) => {
+    const tagsByCategory: Record<TagCategory, string[]> = {
+      area: [],
+      cuisine: [],
+      awards: [],
+      dietary: []
+    };
+    
+    // Organize active tags by category
+    activeTagIds.forEach(tagId => {
       // Determine tag category based on which field it matches in restaurants
-      let category: TagCategory | null = null;
-      
-      // Check if this tag exists in any restaurant
       for (const restaurant of visibleRestaurants) {
         if (restaurant.area_tag === tagId) {
-          category = 'area';
+          tagsByCategory.area.push(tagId);
           break;
         } 
         if (restaurant.cuisine_tag === tagId) {
-          category = 'cuisine';
+          tagsByCategory.cuisine.push(tagId);
           break;
         }
         if (restaurant.awards_tag === tagId) {
-          category = 'awards';
+          tagsByCategory.awards.push(tagId);
           break;
         }
         if (restaurant.dietary_tag === tagId) {
-          category = 'dietary';
+          tagsByCategory.dietary.push(tagId);
           break;
         }
       }
-      
-      if (category) {
-        if (!acc[category]) {
-          acc[category] = [];
-        }
-        acc[category].push(tagId);
-      }
-      
-      return acc;
-    }, {} as Record<TagCategory, string[]>);
-
-    console.log('Active tag filters by category:', activeTagsByCategory);
+    });
+    
+    // Update state with organized tags
+    setActiveTagsByCategory(tagsByCategory);
+    console.log('Active tag filters by category:', tagsByCategory);
 
     // Apply filters if any are active
     if (activeTagIds.length > 0) {
       visibleRestaurants = visibleRestaurants.filter(restaurant => {
-        // Log individual restaurant tags for debugging
-        console.log(`Filtering ${restaurant.name}:`, {
-          area: restaurant.area_tag,
-          cuisine: restaurant.cuisine_tag,
-          awards: restaurant.awards_tag,
-          dietary: restaurant.dietary_tag
-        });
-        
         // For each category with active filters, check if the restaurant matches ANY tag in that category
-        return Object.entries(activeTagsByCategory).every(([category, categoryTags]) => {
+        return Object.entries(tagsByCategory).every(([category, categoryTags]) => {
           if (categoryTags.length === 0) return true;
           
           switch (category) {
@@ -152,6 +148,7 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
 
   return {
     activeTagIds,
+    activeTagsByCategory,
     filteredRestaurants,
     trendingRestaurants,
     toggleTagFilter,
