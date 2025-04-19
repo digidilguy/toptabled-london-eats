@@ -1,4 +1,3 @@
-
 import { useRestaurants } from "@/context/RestaurantContext";
 import { MapPin, ThumbsDown, ThumbsUp } from "lucide-react";
 import { Button } from "./ui/button";
@@ -81,13 +80,26 @@ const RestaurantGrid = () => {
     queryClient.setQueryData(['user-votes', userVotes], () => newUserVotes);
 
     // Show loading toast
-    const toastId = toast({
+    const loadingToast = toast({
       title: "Processing vote...",
       description: "Your vote is being processed",
     });
 
     // Then perform the actual vote
     voteForRestaurant(restaurantId, voteType)
+      .then(() => {
+        // Show success toast
+        toast({
+          title: currentVote === voteType 
+            ? "Vote removed" 
+            : voteType === 'up' 
+              ? "Upvoted!" 
+              : "Downvoted!",
+          description: currentVote === voteType
+            ? "Your vote has been removed"
+            : `You have ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
+        });
+      })
       .catch(error => {
         console.error('Vote error:', error);
         // Revert optimistic update on error
@@ -98,20 +110,6 @@ const RestaurantGrid = () => {
           title: "Error",
           description: "An error occurred while voting. Please try again.",
           variant: "destructive",
-        });
-      })
-      .finally(() => {
-        // Dismiss loading toast
-        toast({
-          id: toastId,
-          title: currentVote === voteType 
-            ? "Vote removed" 
-            : voteType === 'up' 
-              ? "Upvoted!" 
-              : "Downvoted!",
-          description: currentVote === voteType
-            ? "Your vote has been removed"
-            : `You have ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
         });
       });
   };

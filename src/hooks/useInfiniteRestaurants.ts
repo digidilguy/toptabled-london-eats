@@ -54,11 +54,12 @@ export const useInfiniteRestaurants = (filters: {
           
           const tagColumn = `${category}_tag`;
           
-          // Fixed approach to avoid deep type instantiation
+          // Fix for deep type instantiation issue
           if (tagsInCategory.length > 1) {
-            // Convert to string[] explicitly to avoid TypeScript error
-            const tagValues: string[] = [...tagsInCategory];
-            query = query.in(tagColumn, tagValues);
+            // Use a fixed array to avoid deep type recursion
+            const tagArray: string[] = [];
+            tagsInCategory.forEach(tag => tagArray.push(tag));
+            query = query.in(tagColumn, tagArray);
           } else {
             query = query.eq(tagColumn, tagsInCategory[0]);
           }

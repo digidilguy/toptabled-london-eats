@@ -6,7 +6,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { submitRestaurant } from '@/lib/supabase';
 
-// Map database restaurant to our Restaurant type
 const mapDbRestaurant = (dbRestaurant: any): Restaurant => ({
   id: dbRestaurant.id,
   name: dbRestaurant.name,
@@ -22,14 +21,12 @@ const mapDbRestaurant = (dbRestaurant: any): Restaurant => ({
   dietary_tag: dbRestaurant.dietary_tag,
 });
 
-// Helper function to validate UUID
 function isValidUUID(id: string | undefined): boolean {
   if (!id) return false;
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   return uuidRegex.test(id);
 }
 
-// Helper function to check if user is a mock user (using string IDs like '1', '2', '3')
 function isMockUser(userId: string | undefined): boolean {
   if (!userId) return false;
   return ['1', '2', '3', '4', '5'].includes(userId);
@@ -40,17 +37,14 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // State to track mock user votes (for testing only)
   const [mockUserVotes, setMockUserVotes] = useState<Record<string, 'up' | 'down'>>({});
 
-  // Load mock votes from localStorage on initial load
   useEffect(() => {
     if (isMockUser(user?.id)) {
       const savedVotes = localStorage.getItem(`mockUserVotes_${user?.id}`);
       if (savedVotes) {
         try {
           const parsedVotes = JSON.parse(savedVotes);
-          // Validate that all votes are either 'up' or 'down'
           const validVotes: Record<string, 'up' | 'down'> = {};
           Object.entries(parsedVotes).forEach(([key, value]) => {
             if (value === 'up' || value === 'down') {
@@ -65,14 +59,12 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
     }
   }, [user?.id]);
 
-  // Save mock votes to localStorage whenever they change
   useEffect(() => {
     if (isMockUser(user?.id) && Object.keys(mockUserVotes).length > 0) {
       localStorage.setItem(`mockUserVotes_${user?.id}`, JSON.stringify(mockUserVotes));
     }
   }, [mockUserVotes, user?.id]);
 
-  // Fetch restaurants from Supabase
   const { data: restaurants = [], refetch: refetchRestaurants } = useQuery({
     queryKey: ['restaurants'],
     queryFn: async () => {
@@ -90,12 +82,10 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         
         console.log('Restaurants retrieved from Supabase:', data);
         
-        // If no data returned from Supabase, import initial data automatically
         if (!data || data.length === 0) {
           console.log('No restaurants found in database, importing initial data...');
           await importInitialData();
           
-          // Try fetching again after import
           const { data: refreshedData, error: refreshError } = await supabase
             .from('restaurants')
             .select('*')
@@ -110,30 +100,25 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         return data.map(mapDbRestaurant) as Restaurant[];
       } catch (error) {
         console.error('Error fetching restaurants:', error);
-        // Use initial data as fallback
         return initialRestaurants;
       }
     },
     initialData: initialRestaurants
   });
 
-  // Fetch user votes 
   const { data: userVotes = {}, refetch: refetchUserVotes } = useQuery({
     queryKey: ['user-votes', user?.id],
     queryFn: async () => {
-      // Check if user is authenticated
       if (!isAuthenticated || !user?.id) {
         console.log('User not authenticated, not fetching votes');
         return {};
       }
       
-      // For mock users, return from local state instead of Supabase
       if (isMockUser(user.id)) {
         console.log('Mock user detected, using mock vote storage');
         return mockUserVotes;
       }
       
-      // Only try to fetch from Supabase if it's a valid UUID
       if (!isValidUUID(user.id)) {
         console.log('Invalid UUID for user ID:', user.id);
         return {};
@@ -151,10 +136,8 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
           throw error;
         }
         
-        // Convert array to object mapping restaurant_id -> vote_type
         const voteMap: Record<string, 'up' | 'down'> = {};
         data.forEach(vote => {
-          // Ensure vote_type is only 'up' or 'down'
           if (vote.vote_type === 'up' || vote.vote_type === 'down') {
             voteMap[vote.restaurant_id] = vote.vote_type;
           }
@@ -170,7 +153,6 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
     enabled: isAuthenticated && !!user?.id
   });
 
-  // Vote mutation
   const voteMutation = useMutation({
     mutationFn: async ({ restaurantId, voteType }: { restaurantId: string, voteType: 'up' | 'down' }) => {
       if (!isAuthenticated) {
@@ -187,11 +169,9 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
 
       const currentVote = userVotes[restaurantId];
       
-      // Handle votes for mock users (in-memory and localStorage)
       if (isMockUser(user.id)) {
         console.log('Processing mock user vote');
         
-        // If clicking the same vote type, remove the vote
         if (currentVote === voteType) {
           setMockUserVotes(prev => {
             const newVotes = { ...prev };
@@ -199,10 +179,8 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
             return newVotes;
           });
           
-          // Update the restaurant directly in memory
           const voteChange = voteType === 'up' ? -1 : 1;
           
-          // Update the vote count directly in cache
           queryClient.setQueryData(['restaurants'], (oldData: Restaurant[] | undefined) => {
             return oldData?.map(r => 
               r.id === restaurantId 
@@ -214,11 +192,9 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
           return { action: 'removed', type: voteType };
         }
         
-        // If changing vote, first remove the previous vote impact
         if (currentVote) {
           const prevVoteChange = currentVote === 'up' ? -1 : 1;
           
-          // Update the vote count directly in cache to remove previous vote
           queryClient.setQueryData(['restaurants'], (oldData: Restaurant[] | undefined) => {
             return oldData?.map(r => 
               r.id === restaurantId 
@@ -228,16 +204,13 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
           });
         }
         
-        // Now add the new vote
         setMockUserVotes(prev => ({
           ...prev,
           [restaurantId]: voteType
         }));
         
-        // Update the restaurant directly in memory
         const voteChange = voteType === 'up' ? 1 : -1;
         
-        // Update the vote count directly in cache
         queryClient.setQueryData(['restaurants'], (oldData: Restaurant[] | undefined) => {
           return oldData?.map(r => 
             r.id === restaurantId 
@@ -249,51 +222,41 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         return { action: 'voted', type: voteType };
       }
       
-      // Real users with Supabase
-      else {
-        // Only validate UUID for real users, not mock users
-        if (!isValidUUID(user.id)) {
-          console.error('Invalid UUID for real user:', user.id);
-          throw new Error('Your user ID is not a valid UUID');
-        }
-        
-        // If clicking the same vote type, remove the vote
-        if (currentVote === voteType) {
-          // Delete the vote
-          const { error: deleteError } = await supabase
-            .from('restaurant_votes')
-            .delete()
-            .eq('user_id', user.id)
-            .eq('restaurant_id', restaurantId);
-          
-          if (deleteError) throw deleteError;
-          return { action: 'removed', type: voteType };
-        }
-        
-        // If changing vote or voting for the first time
-        const { error: voteError } = await supabase
-          .from('restaurant_votes')
-          .upsert({
-            user_id: user.id,
-            restaurant_id: restaurantId,
-            vote_type: voteType
-          });
-        
-        if (voteError) throw voteError;
-        
-        return { action: 'voted', type: voteType };
+      if (!isValidUUID(user.id)) {
+        console.error('Invalid UUID for real user:', user.id);
+        throw new Error('Your user ID is not a valid UUID');
       }
+      
+      if (currentVote === voteType) {
+        const { error: deleteError } = await supabase
+          .from('restaurant_votes')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('restaurant_id', restaurantId);
+        
+        if (deleteError) throw deleteError;
+        return { action: 'removed', type: voteType };
+      }
+      
+      const { error: voteError } = await supabase
+        .from('restaurant_votes')
+        .upsert({
+          user_id: user.id,
+          restaurant_id: restaurantId,
+          vote_type: voteType
+        });
+      
+      if (voteError) throw voteError;
+      
+      return { action: 'voted', type: voteType };
     },
     onSuccess: (result, variables) => {
-      // Refetch restaurants to get updated vote counts
       if (isMockUser(user?.id)) {
-        // For mock users, no need to refetch as we updated the cache directly
       } else {
-        // For real users, refetch to get updated vote counts from trigger
         setTimeout(() => {
           refetchRestaurants();
           refetchUserVotes();
-        }, 500); // Small delay to ensure DB trigger has time to run
+        }, 500);
       }
       
       if (result.action === 'removed') {
@@ -318,7 +281,6 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
     }
   });
 
-  // Add restaurant mutation
   const addRestaurantMutation = useMutation({
     mutationFn: async (restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded' | 'weeklyVoteIncrease' | 'status'>) => {
       if (!isAuthenticated) throw new Error('Must be logged in to add restaurants');
@@ -350,12 +312,10 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
     }
   });
 
-  // Automatically import initial data if no restaurants found
   const importInitialData = async () => {
     try {
       console.log('Importing initial restaurant data to Supabase...');
       
-      // Map the restaurants to match database structure
       const dbRestaurants = initialRestaurants.map(restaurant => ({
         id: restaurant.id,
         name: restaurant.name,
@@ -371,7 +331,6 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         dietary_tag: restaurant.dietary_tag
       }));
 
-      // Insert the restaurants with upsert to handle existing records
       const { error } = await supabase
         .from('restaurants')
         .upsert(dbRestaurants, { 
@@ -380,12 +339,9 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         });
       
       if (error) {
-        // If there's an error here, it might be due to RLS. 
-        // Let's try to use the importInitialData function from lib/supabase
         console.error('Error importing initial data directly:', error);
         console.log('Trying to import using lib/supabase function...');
         
-        // Use the importInitialData function from lib/supabase
         const { importInitialData: libImportInitialData } = await import('@/lib/supabase');
         await libImportInitialData(initialRestaurants);
       }
@@ -417,7 +373,6 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
       return Promise.reject(new Error("Invalid user ID"));
     }
     
-    // Return the promise from the mutation
     return new Promise((resolve, reject) => {
       voteMutation.mutate(
         { restaurantId, voteType },
