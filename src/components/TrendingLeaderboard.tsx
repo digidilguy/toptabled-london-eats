@@ -2,7 +2,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRestaurants } from "@/context/RestaurantContext";
 import { TrendingUp } from "lucide-react";
-import { tags } from "@/data/tags";
 
 const TrendingLeaderboard = () => {
   const { trendingRestaurants, toggleTagFilter } = useRestaurants();
@@ -15,13 +14,12 @@ const TrendingLeaderboard = () => {
     if (restaurant.awards_tag) restaurantTags.push(restaurant.awards_tag);
     if (restaurant.dietary_tag) restaurantTags.push(restaurant.dietary_tag);
     
+    // Convert tag IDs to display names
     return restaurantTags
       .slice(0, limit)
-      .map(id => {
-        const tag = tags.find(t => t.id === id);
-        return tag ? tag.name : '';
-      })
-      .filter(Boolean);
+      .map(tagId => tagId.split('-').map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)
+      ).join(' '));
   };
 
   return (

@@ -1,9 +1,9 @@
 
 import { useRestaurants } from "@/context/RestaurantContext";
 import { MapPin, ThumbsDown, ThumbsUp } from "lucide-react";
-import { tags } from "@/data/tags";
 import { Button } from "./ui/button";
 import { useEffect } from "react";
+import { Tag } from "@/types/tags";
 
 const RestaurantGrid = () => {
   const { filteredRestaurants, voteForRestaurant, userVotes } = useRestaurants();
@@ -36,6 +36,13 @@ const RestaurantGrid = () => {
     console.log("Restaurant tags for", restaurant.name, ":", restaurantTags);
     
     return restaurantTags;
+  };
+
+  // Convert tag ID to display name
+  const getTagDisplayName = (tagId: string) => {
+    return tagId.split('-').map(word => 
+      word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ');
   };
 
   return (
@@ -80,17 +87,14 @@ const RestaurantGrid = () => {
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <div className="flex flex-wrap gap-1">
-                {getRestaurantTags(restaurant).map(tagId => {
-                  const tag = tags.find(t => t.id === tagId);
-                  return tag && (
-                    <span 
-                      key={tag.id}
-                      className="text-xs px-2 py-0.5 bg-secondary/50 rounded-full text-accent/80"
-                    >
-                      {tag.name}
-                    </span>
-                  );
-                })}
+                {getRestaurantTags(restaurant).map(tagId => (
+                  <span 
+                    key={tagId}
+                    className="text-xs px-2 py-0.5 bg-secondary/50 rounded-full text-accent/80"
+                  >
+                    {getTagDisplayName(tagId)}
+                  </span>
+                ))}
               </div>
               <a 
                 href={restaurant.googleMapsLink} 

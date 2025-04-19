@@ -1,3 +1,4 @@
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -25,7 +26,7 @@ const TagFilter = () => {
     
     restaurants.forEach(restaurant => {
       const tagValue = restaurant[columnName as keyof typeof restaurant];
-      if (tagValue) {
+      if (tagValue && typeof tagValue === 'string') {
         uniqueTags.add(tagValue);
       }
     });

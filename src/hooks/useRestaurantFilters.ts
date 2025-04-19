@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { Restaurant, TagCategory } from '@/types/restaurant';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { tags } from '@/data/tags';
 
 export const useRestaurantFilters = (restaurants: Restaurant[]) => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -54,13 +53,36 @@ export const useRestaurantFilters = (restaurants: Restaurant[]) => {
 
     // Group active tags by category
     const activeTagsByCategory = activeTagIds.reduce((acc, tagId) => {
-      const tag = tags.find(t => t.id === tagId);
-      if (tag) {
-        if (!acc[tag.category]) {
-          acc[tag.category] = [];
+      // Determine tag category based on which field it matches in restaurants
+      let category: TagCategory | null = null;
+      
+      // Check if this tag exists in any restaurant
+      for (const restaurant of visibleRestaurants) {
+        if (restaurant.area_tag === tagId) {
+          category = 'area';
+          break;
+        } 
+        if (restaurant.cuisine_tag === tagId) {
+          category = 'cuisine';
+          break;
         }
-        acc[tag.category].push(tagId);
+        if (restaurant.awards_tag === tagId) {
+          category = 'awards';
+          break;
+        }
+        if (restaurant.dietary_tag === tagId) {
+          category = 'dietary';
+          break;
+        }
       }
+      
+      if (category) {
+        if (!acc[category]) {
+          acc[category] = [];
+        }
+        acc[category].push(tagId);
+      }
+      
       return acc;
     }, {} as Record<TagCategory, string[]>);
 
