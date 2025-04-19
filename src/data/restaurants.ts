@@ -1,4 +1,6 @@
-import { Restaurant } from '@/types/restaurant';
+
+// Remove the conflicting import and only use the local interface
+// We'll export this interface for use elsewhere
 
 export interface Restaurant {
   id: string;

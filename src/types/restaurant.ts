@@ -1,3 +1,4 @@
+
 export type TagCategory = 'area' | 'cuisine' | 'awards' | 'dietary';
 
 export interface TagCategoryDefinition {
@@ -30,6 +31,7 @@ export interface RestaurantProviderProps {
   initialTagIds?: string; // This is no longer used but keeping for backwards compatibility
 }
 
+// Restaurant interface that matches the one in restaurants.ts
 export interface Restaurant {
   id: string;
   name: string;

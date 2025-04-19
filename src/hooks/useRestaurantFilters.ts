@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Restaurant } from '@/data/restaurants';
+import { Restaurant } from '@/types/restaurant';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { tags } from '@/data/tags';
