@@ -26,11 +26,11 @@ export default {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         primary: {
-          DEFAULT: '#635BFF', // Stripe's purple
+          DEFAULT: '#635BFF', // Stripe's signature purple
           foreground: '#FFFFFF'
         },
         secondary: {
-          DEFAULT: '#E0E4FF', // Light purple
+          DEFAULT: '#E0E4FF', // Light ethereal purple
           foreground: '#1A1F36'
         },
         destructive: {
@@ -42,7 +42,7 @@ export default {
           foreground: 'hsl(var(--muted-foreground))'
         },
         accent: {
-          DEFAULT: '#FF5AAC', // Lovable-inspired pink
+          DEFAULT: '#FF5AAC', // Lovable's signature pink
           foreground: '#FFFFFF'
         },
         popover: {
@@ -53,8 +53,8 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))'
         },
-        upvote: '#24B47E', // Stripe's green
-        downvote: '#FF4757', // Bright red
+        upvote: '#24B47E', // Stripe's success green
+        downvote: '#FF4757', // Bright red for contrast
         neutral: {
           DEFAULT: '#1A1F36', // Stripe's dark blue
           foreground: '#FFFFFF'
