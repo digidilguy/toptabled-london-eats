@@ -54,15 +54,10 @@ export const useInfiniteRestaurants = (filters: {
           
           const tagColumn = `${category}_tag`;
           
-          // Fix: Use a simple string array to avoid deep type instantiation
+          // Handle multiple tags within same category
           if (tagsInCategory.length > 1) {
-            // Create a hardcoded string array to avoid TypeScript recursion issues
-            const tagIds: string[] = [];
-            for (let i = 0; i < tagsInCategory.length; i++) {
-              tagIds.push(tagsInCategory[i]);
-            }
-            // Use the simple array for the query
-            query = query.in(tagColumn, tagIds);
+            // Use string literals array instead of reference to avoid deep type instantiation
+            query = query.in(tagColumn, [...tagsInCategory]);
           } else if (tagsInCategory.length === 1) {
             query = query.eq(tagColumn, tagsInCategory[0]);
           }
