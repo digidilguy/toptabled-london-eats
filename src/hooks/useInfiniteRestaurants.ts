@@ -58,11 +58,11 @@ export const useInfiniteRestaurants = (filters: {
             
             const tagColumn = `${category}_tag`;
             
-            // For multiple tags within a category, use OR logic
             if (tagsInCategory.length > 1) {
-              // Use simple .in() method for OR logic within the same category
-              // This avoids the complex type recursion that was causing the error
-              query = query.in(tagColumn, tagsInCategory);
+              // Create an array to hold tag values for this category
+              const tagValues = tagsInCategory.map(tag => tag);
+              // Use a simple equals check with the predefined array
+              query = query.in(tagColumn, tagValues);
             } else {
               // For single tag in a category, use simple equals check
               query = query.eq(tagColumn, tagsInCategory[0]);
