@@ -354,7 +354,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
     }
   };
 
-  const voteForRestaurant = (restaurantId: string, voteType: 'up' | 'down') => {
+  const voteForRestaurant = (restaurantId: string, voteType: 'up' | 'down'): Promise<any> => {
     if (!isAuthenticated) {
       toast({
         title: "Authentication required",
