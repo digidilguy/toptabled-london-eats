@@ -59,10 +59,9 @@ export const useInfiniteRestaurants = (filters: {
             const tagColumn = `${category}_tag`;
             
             if (tagsInCategory.length > 1) {
-              // Create an array to hold tag values for this category
-              const tagValues = tagsInCategory.map(tag => tag);
-              // Use a simple equals check with the predefined array
-              query = query.in(tagColumn, tagValues);
+              // Fix: Directly pass the array of tags to in() method
+              // This avoids the type recursion issue that was causing the error
+              query = query.in(tagColumn, tagsInCategory);
             } else {
               // For single tag in a category, use simple equals check
               query = query.eq(tagColumn, tagsInCategory[0]);
