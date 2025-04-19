@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Restaurant } from '@/types/restaurant';
 import { useAuth } from '@/context/AuthContext';
@@ -31,7 +32,7 @@ function isValidUUID(id: string | undefined): boolean {
 // Helper function to check if user is a mock user (using string IDs like '1', '2', '3')
 function isMockUser(userId: string | undefined): boolean {
   if (!userId) return false;
-  return ['1', '2', '3'].includes(userId);
+  return ['1', '2', '3', '4', '5'].includes(userId);
 }
 
 export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
@@ -151,45 +152,50 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
 
       const currentVote = userVotes[restaurantId];
       
-      // For mock users, just return a success response without interacting with Supabase
+      // For mock users, implement in-memory voting without Supabase
       if (isMockUser(user.id)) {
         console.log('Processing mock user vote');
-        // Simulate success response
+        
+        // Return a success response for mock users without checking UUID validity
         return { 
           action: currentVote === voteType ? 'removed' : 'voted', 
           type: voteType 
         };
       }
       
-      // For real users, check UUID validity
-      if (!isValidUUID(user.id)) {
+      // Only validate UUID for real users, not mock users
+      if (!isMockUser(user.id) && !isValidUUID(user.id)) {
         console.error('Invalid UUID for real user:', user.id);
         throw new Error('Your user ID is not a valid UUID');
       }
       
-      // If clicking the same vote type, remove the vote
-      if (currentVote === voteType) {
-        // Delete the vote
-        const { error: deleteError } = await supabase
-          .from('restaurant_votes')
-          .delete()
-          .eq('user_id', user.id)
-          .eq('restaurant_id', restaurantId);
+      // Only proceed with Supabase operations for real users with valid UUIDs
+      if (!isMockUser(user.id)) {
+        // If clicking the same vote type, remove the vote
+        if (currentVote === voteType) {
+          // Delete the vote
+          const { error: deleteError } = await supabase
+            .from('restaurant_votes')
+            .delete()
+            .eq('user_id', user.id)
+            .eq('restaurant_id', restaurantId);
+          
+          if (deleteError) throw deleteError;
+          return { action: 'removed' };
+        }
         
-        if (deleteError) throw deleteError;
-        return { action: 'removed' };
+        // If changing vote or voting for the first time
+        const { error: voteError } = await supabase
+          .from('restaurant_votes')
+          .upsert({
+            user_id: user.id,
+            restaurant_id: restaurantId,
+            vote_type: voteType
+          });
+        
+        if (voteError) throw voteError;
       }
       
-      // If changing vote or voting for the first time
-      const { error: voteError } = await supabase
-        .from('restaurant_votes')
-        .upsert({
-          user_id: user.id,
-          restaurant_id: restaurantId,
-          vote_type: voteType
-        });
-      
-      if (voteError) throw voteError;
       return { action: 'voted', type: voteType };
     },
     onSuccess: (result, variables) => {

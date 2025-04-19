@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from '@/integrations/supabase/client';
@@ -27,7 +26,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const { toast } = useToast();
 
-  // Check if user is logged in on mount
   useEffect(() => {
     const storedUser = localStorage.getItem('toptabled-user');
     if (storedUser) {
@@ -40,7 +38,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  // Check if user has admin role
   const checkAdminRole = async (userId: string): Promise<boolean> => {
     if (!userId) return false;
     
@@ -56,15 +53,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Mock users for demo
   const mockUsers = [
     { id: '1', email: 'user@example.com', password: 'password', name: 'Regular User', isPremium: false, isAdmin: false },
     { id: '2', email: 'premium@example.com', password: 'password', name: 'Premium User', isPremium: true, isAdmin: false },
-    { id: '3', email: 'admin@example.com', password: 'password', name: 'Admin User', isPremium: true, isAdmin: true }
+    { id: '3', email: 'admin@example.com', password: 'password', name: 'Admin User', isPremium: true, isAdmin: true },
+    { id: '4', email: 'user2@example.com', password: 'password', name: 'Second User', isPremium: false, isAdmin: false },
+    { id: '5', email: 'user3@example.com', password: 'password', name: 'Third User', isPremium: false, isAdmin: false }
   ];
 
   const login = async (email: string, password: string) => {
-    // For mock users
     const foundMockUser = mockUsers.find(u => u.email === email && u.password === password);
     
     if (foundMockUser) {
@@ -78,7 +75,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
     
-    // For real users using Supabase
     try {
       const { data: { user: supabaseUser }, error } = await supabase.auth.signInWithPassword({
         email,
@@ -117,7 +113,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signup = async (name: string, email: string, password: string) => {
-    // Check if user already exists in mock users
     if (mockUsers.some(u => u.email === email)) {
       toast({
         title: "Signup failed",
@@ -127,7 +122,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw new Error('Email already in use');
     }
 
-    // Try to sign up with Supabase
     try {
       const { data: { user: supabaseUser }, error } = await supabase.auth.signUp({
         email,
@@ -158,14 +152,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           description: `Welcome to TopTabled, ${name}!`,
         });
       } else {
-        // In a real app, we might show a verification message
         toast({
           title: "Signup successful",
           description: "Please check your email to verify your account",
         });
       }
     } catch (error) {
-      // If Supabase signup fails, simulate a successful signup for demo
       const newUser = {
         id: (mockUsers.length + 1).toString(),
         email,
@@ -185,12 +177,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
-    // Logout from Supabase
     supabase.auth.signOut().catch(error => {
       console.error('Error signing out:', error);
     });
     
-    // Clear local state
     setUser(null);
     localStorage.removeItem('toptabled-user');
     
