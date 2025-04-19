@@ -1,17 +1,15 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { useAuth } from '@/context/AuthContext';
 import AuthDialog from './AuthDialog';
 import { Menu, X, User } from 'lucide-react';
 
-// Remove the import for SubmitRestaurantForm
-// We'll use a render prop pattern instead
-
 const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => void }) => {
   const { isAuthenticated, isAdmin, user, logout } = useAuth();
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const displayName = user?.email?.split('@')[0] || 'User';
 
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50">
@@ -24,7 +22,6 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
             </a>
           </div>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-4">
             {isAuthenticated && (
               <Button 
@@ -40,7 +37,7 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
                 <div className="flex items-center gap-2">
                   <User size={16} className="text-neutral" />
                   <span className="text-sm font-medium">
-                    {user?.name}
+                    {displayName}
                     {isAdmin && <span className="ml-1 text-xs text-primary">(Admin)</span>}
                   </span>
                 </div>
@@ -53,7 +50,6 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
             )}
           </div>
 
-          {/* Mobile menu button */}
           <div className="md:hidden">
             <Button 
               variant="ghost" 
@@ -65,7 +61,6 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
           </div>
         </div>
 
-        {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="md:hidden pt-4 pb-3 border-t mt-3">
             <div className="flex flex-col gap-2">
@@ -89,7 +84,7 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
                   <div className="py-2 px-3 flex items-center gap-2">
                     <User size={16} className="text-neutral" />
                     <span className="text-sm font-medium">
-                      {user?.name}
+                      {displayName}
                       {isAdmin && <span className="ml-1 text-xs text-primary">(Admin)</span>}
                     </span>
                   </div>
@@ -125,8 +120,6 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
         isOpen={isAuthDialogOpen} 
         onClose={() => setIsAuthDialogOpen(false)} 
       />
-
-      {/* Remove the direct rendering of SubmitRestaurantForm here */}
     </nav>
   );
 };
