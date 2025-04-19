@@ -33,6 +33,7 @@ export const useRestaurantVoting = () => {
       newUserVotes[restaurantId] = voteType;
     }
 
+    // Immediately update the UI optimistically
     queryClient.setQueryData(['restaurants', 'infinite', { activeTagIds }], (oldData: any) => {
       if (!oldData) return oldData;
       return {
@@ -55,32 +56,27 @@ export const useRestaurantVoting = () => {
     });
 
     try {
-      // Execute the vote and store the promise result
-      const votePromise = voteForRestaurant(restaurantId, voteType);
+      // Execute the vote
+      const result = await voteForRestaurant(restaurantId, voteType);
       
-      // Only proceed if the promise returns a result
-      if (votePromise instanceof Promise) {
-        const result = await votePromise;
-        
-        // Check if result exists and has the expected shape
-        if (result && typeof result === 'object' && 'action' in result) {
-          toast({
-            title: result.action === 'removed' 
-              ? "Vote removed" 
-              : voteType === 'up' 
-                ? "Upvoted!" 
-                : "Downvoted!",
-            description: result.action === 'removed'
-              ? "Your vote has been removed"
-              : `You have ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
-          });
-        } else {
-          // Default toast if the result doesn't have the expected shape
-          toast({
-            title: voteType === 'up' ? "Upvoted!" : "Downvoted!",
-            description: `You have ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
-          });
-        }
+      // Check if result exists and has the expected shape
+      if (result && typeof result === 'object' && 'action' in result) {
+        toast({
+          title: result.action === 'removed' 
+            ? "Vote removed" 
+            : voteType === 'up' 
+              ? "Upvoted!" 
+              : "Downvoted!",
+          description: result.action === 'removed'
+            ? "Your vote has been removed"
+            : `You have ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
+        });
+      } else {
+        // Default toast if the result doesn't have the expected shape
+        toast({
+          title: voteType === 'up' ? "Upvoted!" : "Downvoted!",
+          description: `You have ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
+        });
       }
     } catch (error) {
       console.error('Vote error:', error);
