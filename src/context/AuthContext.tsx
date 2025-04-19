@@ -1,111 +1,93 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from '@/integrations/supabase/client';
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  isPremium: boolean;
-  isAdmin: boolean;
-}
+import { User, Session } from '@supabase/supabase-js';
+import { useNavigate } from 'react-router-dom';
 
 interface AuthContextType {
   user: User | null;
+  session: Session | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
   isPremium: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('toptabled-user');
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        console.error('Failed to parse stored user:', error);
-        localStorage.removeItem('toptabled-user');
+    // Set up initial session and user
+    const initializeSession = async () => {
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      setSession(currentSession);
+      setUser(currentSession?.user || null);
+
+      if (currentSession?.user) {
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', currentSession.user.id)
+          .single();
+
+        setIsAdmin(roleData?.role === 'admin');
       }
-    }
+    };
+
+    initializeSession();
+
+    // Set up auth state change listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, newSession) => {
+      setSession(newSession);
+      setUser(newSession?.user || null);
+
+      if (newSession?.user) {
+        supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', newSession.user.id)
+          .single()
+          .then(({ data: roleData }) => {
+            setIsAdmin(roleData?.role === 'admin');
+          });
+      } else {
+        setIsAdmin(false);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
-  const checkAdminRole = async (userId: string): Promise<boolean> => {
-    if (!userId) return false;
-    
-    try {
-      const { data, error } = await supabase
-        .rpc('has_role', { _user_id: userId, _role: 'admin' });
-      
-      if (error) throw error;
-      return !!data;
-    } catch (error) {
-      console.error('Error checking admin role:', error);
-      return false;
-    }
-  };
-
-  const mockUsers = [
-    { id: '1', email: 'user@example.com', password: 'password', name: 'Regular User', isPremium: false, isAdmin: false },
-    { id: '2', email: 'premium@example.com', password: 'password', name: 'Premium User', isPremium: true, isAdmin: false },
-    { id: '3', email: 'admin@example.com', password: 'password', name: 'Admin User', isPremium: true, isAdmin: true },
-    { id: '4', email: 'user2@example.com', password: 'password', name: 'Second User', isPremium: false, isAdmin: false },
-    { id: '5', email: 'user3@example.com', password: 'password', name: 'Third User', isPremium: false, isAdmin: false }
-  ];
-
   const login = async (email: string, password: string) => {
-    const foundMockUser = mockUsers.find(u => u.email === email && u.password === password);
-    
-    if (foundMockUser) {
-      const { password, ...userWithoutPassword } = foundMockUser;
-      setUser(userWithoutPassword);
-      localStorage.setItem('toptabled-user', JSON.stringify(userWithoutPassword));
-      toast({
-        title: "Login successful",
-        description: `Welcome back, ${userWithoutPassword.name}!`,
-      });
-      return;
-    }
-    
     try {
-      const { data: { user: supabaseUser }, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
-      
+
       if (error) throw error;
-      
-      if (supabaseUser) {
-        const isAdmin = await checkAdminRole(supabaseUser.id);
-        
-        const userData = {
-          id: supabaseUser.id,
-          email: supabaseUser.email || '',
-          name: supabaseUser.user_metadata?.name || email.split('@')[0],
-          isPremium: supabaseUser.user_metadata?.isPremium || false,
-          isAdmin
-        };
-        
-        setUser(userData);
-        localStorage.setItem('toptabled-user', JSON.stringify(userData));
-        
-        toast({
-          title: "Login successful",
-          description: `Welcome back, ${userData.name}!`,
-        });
-      }
+
+      toast({
+        title: "Login successful",
+        description: `Welcome back, ${data.user?.email}!`,
+      });
+
+      navigate('/');
     } catch (error) {
       toast({
         title: "Login failed",
-        description: error instanceof Error ? error.message : "Invalid email or password. Try user@example.com / password",
+        description: error instanceof Error ? error.message : "Invalid credentials",
         variant: "destructive",
       });
       throw error;
@@ -113,90 +95,74 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signup = async (name: string, email: string, password: string) => {
-    if (mockUsers.some(u => u.email === email)) {
-      toast({
-        title: "Signup failed",
-        description: "Email already in use",
-        variant: "destructive",
-      });
-      throw new Error('Email already in use');
-    }
-
     try {
-      const { data: { user: supabaseUser }, error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
-            name
+            name: name
           }
         }
       });
-      
+
       if (error) throw error;
-      
-      if (supabaseUser) {
-        const userData = {
-          id: supabaseUser.id,
-          email: supabaseUser.email || '',
-          name: name || email.split('@')[0],
-          isPremium: false,
-          isAdmin: false
-        };
-        
-        setUser(userData);
-        localStorage.setItem('toptabled-user', JSON.stringify(userData));
-        
+
+      if (data.user) {
+        // Insert default user role
+        await supabase
+          .from('user_roles')
+          .insert({ 
+            user_id: data.user.id, 
+            role: 'user' 
+          });
+
         toast({
           title: "Signup successful",
-          description: `Welcome to TopTabled, ${name}!`,
+          description: `Welcome to the app, ${name}!`,
         });
-      } else {
-        toast({
-          title: "Signup successful",
-          description: "Please check your email to verify your account",
-        });
+
+        navigate('/');
       }
     } catch (error) {
-      const newUser = {
-        id: (mockUsers.length + 1).toString(),
-        email,
-        name,
-        isPremium: false,
-        isAdmin: false
-      };
-
-      setUser(newUser);
-      localStorage.setItem('toptabled-user', JSON.stringify(newUser));
-      
       toast({
-        title: "Signup successful",
-        description: `Welcome to TopTabled, ${name}!`,
+        title: "Signup failed",
+        description: error instanceof Error ? error.message : "Registration unsuccessful",
+        variant: "destructive",
       });
+      throw error;
     }
   };
 
-  const logout = () => {
-    supabase.auth.signOut().catch(error => {
-      console.error('Error signing out:', error);
-    });
-    
-    setUser(null);
-    localStorage.removeItem('toptabled-user');
-    
-    toast({
-      title: "Logged out",
-      description: "You have been successfully logged out",
-    });
+  const logout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) throw error;
+
+      toast({
+        title: "Logged out",
+        description: "You have been successfully logged out",
+      });
+
+      navigate('/');
+    } catch (error) {
+      toast({
+        title: "Logout failed",
+        description: error instanceof Error ? error.message : "Could not log out",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
+        session,
         isAuthenticated: !!user,
-        isAdmin: user?.isAdmin || false,
-        isPremium: user?.isPremium || false,
+        isAdmin,
+        isPremium: false, // You can extend this later
         login,
         signup,
         logout
