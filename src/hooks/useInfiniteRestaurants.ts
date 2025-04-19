@@ -36,9 +36,13 @@ export const useInfiniteRestaurants = (filters: { activeTagIds: string[] }) => {
 
       // Apply tag filters if any are active
       if (filters.activeTagIds.length > 0) {
-        query = filters.activeTagIds.reduce((acc, tagId) => {
-          return acc.or(`area_tag.eq.${tagId},cuisine_tag.eq.${tagId},awards_tag.eq.${tagId},dietary_tag.eq.${tagId}`);
-        }, query);
+        // Create a filter condition that matches any of the selected tags
+        // in any of the tag columns
+        const filterConditions = filters.activeTagIds.map(tagId => {
+          return `area_tag.eq.${tagId},cuisine_tag.eq.${tagId},awards_tag.eq.${tagId},dietary_tag.eq.${tagId}`;
+        }).join(',');
+        
+        query = query.or(filterConditions);
       }
 
       const { data, error } = await query;
