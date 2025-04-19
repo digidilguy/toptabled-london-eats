@@ -54,12 +54,11 @@ export const useInfiniteRestaurants = (filters: {
           
           const tagColumn = `${category}_tag`;
           
-          // Handle multiple tags within same category
+          // Handle multiple tags within same category using a fixed array to avoid TypeScript recursion
           if (tagsInCategory.length > 1) {
-            // Create a hardcoded array to avoid TypeScript recursion issues
-            const tagIds: string[] = [];
-            tagsInCategory.forEach(tag => tagIds.push(tag));
-            query = query.in(tagColumn, tagIds);
+            // Convert to a simple string array to avoid TypeScript recursion
+            const tagArray: string[] = Array.from(tagsInCategory);
+            query = query.in(tagColumn, tagArray);
           } else if (tagsInCategory.length === 1) {
             query = query.eq(tagColumn, tagsInCategory[0]);
           }

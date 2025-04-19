@@ -56,28 +56,20 @@ export const useRestaurantVoting = () => {
     });
 
     try {
-      // Execute the vote
-      const result = await voteForRestaurant(restaurantId, voteType);
+      // Execute the vote and ensure we await the promise
+      const result: VoteResult = await voteForRestaurant(restaurantId, voteType);
       
-      // Check if result exists and has the expected shape
-      if (result && typeof result === 'object' && 'action' in result) {
-        toast({
-          title: result.action === 'removed' 
-            ? "Vote removed" 
-            : voteType === 'up' 
-              ? "Upvoted!" 
-              : "Downvoted!",
-          description: result.action === 'removed'
-            ? "Your vote has been removed"
-            : `You have ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
-        });
-      } else {
-        // Default toast if the result doesn't have the expected shape
-        toast({
-          title: voteType === 'up' ? "Upvoted!" : "Downvoted!",
-          description: `You have ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
-        });
-      }
+      // Now we can safely check the result
+      toast({
+        title: result.action === 'removed' 
+          ? "Vote removed" 
+          : voteType === 'up' 
+            ? "Upvoted!" 
+            : "Downvoted!",
+        description: result.action === 'removed'
+          ? "Your vote has been removed"
+          : `You have ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
+      });
     } catch (error) {
       console.error('Vote error:', error);
       queryClient.invalidateQueries({ queryKey: ['restaurants', 'infinite'] });
