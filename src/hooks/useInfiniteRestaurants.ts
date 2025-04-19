@@ -44,30 +44,23 @@ export const useInfiniteRestaurants = (filters: {
       if (filters.activeTagIds.length > 0 && filters.activeTagsByCategory) {
         // Get all categories with active filters
         const categories = Object.keys(filters.activeTagsByCategory) as TagCategory[];
-        const categoriesWithFilters = categories.filter(
-          category => filters.activeTagsByCategory![category]?.length > 0
-        );
         
-        if (categoriesWithFilters.length > 0) {
-          // Apply AND logic across different categories
-          categoriesWithFilters.forEach(category => {
-            const tagsInCategory = filters.activeTagsByCategory![category];
-            
-            // Skip empty categories
-            if (!tagsInCategory || tagsInCategory.length === 0) return;
-            
-            const tagColumn = `${category}_tag`;
-            
-            if (tagsInCategory.length > 1) {
-              // Fix: Directly pass the array of tags to in() method
-              // This avoids the type recursion issue that was causing the error
-              query = query.in(tagColumn, tagsInCategory);
-            } else {
-              // For single tag in a category, use simple equals check
-              query = query.eq(tagColumn, tagsInCategory[0]);
-            }
-          });
-        }
+        // Apply AND logic across different categories
+        categories.forEach(category => {
+          const tagsInCategory = filters.activeTagsByCategory![category];
+          
+          // Skip empty categories
+          if (!tagsInCategory || tagsInCategory.length === 0) return;
+          
+          const tagColumn = `${category}_tag`;
+          
+          // Use a type-safe approach for filtering
+          if (tagsInCategory.length > 1) {
+            query = query.in(tagColumn, tagsInCategory as string[]);
+          } else {
+            query = query.eq(tagColumn, tagsInCategory[0]);
+          }
+        });
       }
 
       console.log('Final query:', query);
