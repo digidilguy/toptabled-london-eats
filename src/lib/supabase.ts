@@ -42,7 +42,7 @@ export const importInitialData = async (initialRestaurants: any[]) => {
 
 // Function to submit a new restaurant (with RLS bypass for admins if needed)
 export const submitRestaurant = async (
-  restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded' | 'weeklyVoteIncrease'>, 
+  restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded' | 'weeklyVoteIncrease' | 'status'>, 
   isAdmin: boolean
 ) => {
   try {

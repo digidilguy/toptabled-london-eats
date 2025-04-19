@@ -320,7 +320,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
 
   // Add restaurant mutation
   const addRestaurantMutation = useMutation({
-    mutationFn: async (restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded' | 'status' | 'weeklyVoteIncrease'>) => {
+    mutationFn: async (restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded' | 'weeklyVoteIncrease' | 'status'>) => {
       if (!isAuthenticated) throw new Error('Must be logged in to add restaurants');
       
       try {
@@ -420,7 +420,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
     voteMutation.mutate({ restaurantId, voteType });
   };
 
-  const addRestaurant = (restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded' | 'status' | 'weeklyVoteIncrease'>) => {
+  const addRestaurant = (restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded' | 'weeklyVoteIncrease' | 'status'>) => {
     addRestaurantMutation.mutate(restaurantData);
   };
 
