@@ -40,8 +40,11 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // State to track mock user votes (for testing only)
+  const [mockUserVotes, setMockUserVotes] = useState<Record<string, string>>({});
+
   // Fetch restaurants from Supabase
-  const { data: restaurants = [] } = useQuery({
+  const { data: restaurants = [], refetch: refetchRestaurants } = useQuery({
     queryKey: ['restaurants'],
     queryFn: async () => {
       try {
@@ -86,7 +89,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
   });
 
   // Fetch user votes 
-  const { data: userVotes = {} } = useQuery({
+  const { data: userVotes = {}, refetch: refetchUserVotes } = useQuery({
     queryKey: ['user-votes', user?.id],
     queryFn: async () => {
       // Check if user is authenticated
@@ -95,10 +98,10 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         return {};
       }
       
-      // Skip Supabase check for mock users
+      // For mock users, return from local state instead of Supabase
       if (isMockUser(user.id)) {
-        console.log('Mock user detected, skipping Supabase vote fetch');
-        return {};
+        console.log('Mock user detected, using mock vote storage');
+        return mockUserVotes;
       }
       
       // Only try to fetch from Supabase if it's a valid UUID
@@ -152,25 +155,80 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
 
       const currentVote = userVotes[restaurantId];
       
-      // For mock users, implement in-memory voting without Supabase
+      // Handle votes for mock users (in-memory)
       if (isMockUser(user.id)) {
         console.log('Processing mock user vote');
         
-        // Return a success response for mock users without checking UUID validity
-        return { 
-          action: currentVote === voteType ? 'removed' : 'voted', 
-          type: voteType 
-        };
+        // If clicking the same vote type, remove the vote
+        if (currentVote === voteType) {
+          setMockUserVotes(prev => {
+            const newVotes = { ...prev };
+            delete newVotes[restaurantId];
+            return newVotes;
+          });
+          
+          // Update the restaurant directly in memory
+          const restaurantToUpdate = restaurants.find(r => r.id === restaurantId);
+          if (restaurantToUpdate) {
+            // Remove vote (decrease count by 1 for up, increase by 1 for down)
+            const voteChange = voteType === 'up' ? -1 : 1;
+            
+            // Update the vote count directly in cache
+            queryClient.setQueryData(['restaurants'], (oldData: Restaurant[] | undefined) => {
+              return oldData?.map(r => 
+                r.id === restaurantId 
+                  ? { ...r, voteCount: r.voteCount + voteChange } 
+                  : r
+              );
+            });
+          }
+          
+          return { action: 'removed', type: voteType };
+        }
+        
+        // If changing vote, first remove the previous vote impact
+        if (currentVote) {
+          const prevVoteChange = currentVote === 'up' ? -1 : 1;
+          
+          // Update the vote count directly in cache to remove previous vote
+          queryClient.setQueryData(['restaurants'], (oldData: Restaurant[] | undefined) => {
+            return oldData?.map(r => 
+              r.id === restaurantId 
+                ? { ...r, voteCount: r.voteCount + prevVoteChange } 
+                : r
+            );
+          });
+        }
+        
+        // Now add the new vote
+        setMockUserVotes(prev => ({
+          ...prev,
+          [restaurantId]: voteType
+        }));
+        
+        // Update the restaurant directly in memory
+        const voteChange = voteType === 'up' ? 1 : -1;
+        
+        // Update the vote count directly in cache
+        queryClient.setQueryData(['restaurants'], (oldData: Restaurant[] | undefined) => {
+          return oldData?.map(r => 
+            r.id === restaurantId 
+              ? { ...r, voteCount: r.voteCount + voteChange } 
+              : r
+          );
+        });
+        
+        return { action: 'voted', type: voteType };
       }
       
-      // Only validate UUID for real users, not mock users
-      if (!isMockUser(user.id) && !isValidUUID(user.id)) {
-        console.error('Invalid UUID for real user:', user.id);
-        throw new Error('Your user ID is not a valid UUID');
-      }
-      
-      // Only proceed with Supabase operations for real users with valid UUIDs
-      if (!isMockUser(user.id)) {
+      // Real users with Supabase
+      else {
+        // Only validate UUID for real users, not mock users
+        if (!isValidUUID(user.id)) {
+          console.error('Invalid UUID for real user:', user.id);
+          throw new Error('Your user ID is not a valid UUID');
+        }
+        
         // If clicking the same vote type, remove the vote
         if (currentVote === voteType) {
           // Delete the vote
@@ -181,7 +239,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
             .eq('restaurant_id', restaurantId);
           
           if (deleteError) throw deleteError;
-          return { action: 'removed' };
+          return { action: 'removed', type: voteType };
         }
         
         // If changing vote or voting for the first time
@@ -194,13 +252,21 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
           });
         
         if (voteError) throw voteError;
+        
+        return { action: 'voted', type: voteType };
       }
-      
-      return { action: 'voted', type: voteType };
     },
     onSuccess: (result, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['restaurants'] });
-      queryClient.invalidateQueries({ queryKey: ['user-votes'] });
+      // Refetch restaurants to get updated vote counts
+      if (isMockUser(user?.id)) {
+        // For mock users, no need to refetch as we updated the cache directly
+      } else {
+        // For real users, refetch to get updated vote counts from trigger
+        setTimeout(() => {
+          refetchRestaurants();
+          refetchUserVotes();
+        }, 500); // Small delay to ensure DB trigger has time to run
+      }
       
       if (result.action === 'removed') {
         toast({
@@ -234,7 +300,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
       
       // Create restaurant object with all required fields including id
       const newRestaurant = {
-        id: newUuid, // Explicitly adding id as it's now required
+        id: newUuid, 
         name: restaurantData.name,
         google_maps_link: restaurantData.googleMapsLink,
         image_url: restaurantData.imageUrl,

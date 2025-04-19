@@ -3,11 +3,17 @@ import { useRestaurants } from "@/context/RestaurantContext";
 import { MapPin, ThumbsDown, ThumbsUp } from "lucide-react";
 import { tags } from "@/data/tags";
 import { Button } from "./ui/button";
+import { useEffect } from "react";
 
 const RestaurantGrid = () => {
   const { filteredRestaurants, voteForRestaurant, userVotes } = useRestaurants();
 
   console.log("RestaurantGrid rendering with:", filteredRestaurants.length, "restaurants");
+  
+  useEffect(() => {
+    console.log("Current restaurant data:", filteredRestaurants);
+    console.log("Current user votes:", userVotes);
+  }, [filteredRestaurants, userVotes]);
 
   if (!filteredRestaurants.length) {
     return (
