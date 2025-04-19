@@ -5,10 +5,12 @@ import { Button } from "./ui/button";
 import { useEffect } from "react";
 import { useInfiniteRestaurants } from "@/hooks/useInfiniteRestaurants";
 import { useInView } from "react-intersection-observer";
+import { useQueryClient } from "@tanstack/react-query";
 
 const RestaurantGrid = () => {
   const { voteForRestaurant, userVotes, activeTagIds } = useRestaurants();
   const { ref: loadMoreRef, inView } = useInView();
+  const queryClient = useQueryClient();
 
   const {
     data,
@@ -23,6 +25,46 @@ const RestaurantGrid = () => {
       fetchNextPage();
     }
   }, [inView, fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  // Handle voting with optimistic updates
+  const handleVote = (restaurantId: string, voteType: 'up' | 'down') => {
+    // Determine what the new vote count should be based on current user vote state
+    const currentVote = userVotes[restaurantId];
+    let voteDelta = 0;
+    
+    if (currentVote === voteType) {
+      // User is removing their vote
+      voteDelta = voteType === 'up' ? -1 : 1;
+    } else if (currentVote) {
+      // User is changing their vote (e.g., from up to down)
+      voteDelta = voteType === 'up' ? 2 : -2;
+    } else {
+      // User is voting for the first time
+      voteDelta = voteType === 'up' ? 1 : -1;
+    }
+
+    // Immediately update the UI with optimistic update
+    queryClient.setQueryData(['restaurants', 'infinite', { activeTagIds }], (oldData: any) => {
+      if (!oldData) return oldData;
+      
+      return {
+        ...oldData,
+        pages: oldData.pages.map((page: any) => 
+          page.map((restaurant: any) => 
+            restaurant.id === restaurantId 
+              ? { 
+                  ...restaurant, 
+                  voteCount: restaurant.voteCount + voteDelta 
+                } 
+              : restaurant
+          )
+        )
+      };
+    });
+
+    // Then perform the actual vote
+    voteForRestaurant(restaurantId, voteType);
+  };
 
   if (status === 'pending') {
     return (
@@ -60,9 +102,6 @@ const RestaurantGrid = () => {
     if (restaurant.awards_tag) restaurantTags.push(restaurant.awards_tag);
     if (restaurant.dietary_tag) restaurantTags.push(restaurant.dietary_tag);
     
-    // For debugging
-    console.log("Restaurant tags for", restaurant.name, ":", restaurantTags);
-    
     return restaurantTags;
   };
 
@@ -87,7 +126,7 @@ const RestaurantGrid = () => {
                 <Button 
                   variant="ghost" 
                   size="icon"
-                  onClick={() => voteForRestaurant(restaurant.id, 'up')}
+                  onClick={() => handleVote(restaurant.id, 'up')}
                   className={userVotes[restaurant.id] === 'up' 
                     ? "text-upvote hover:text-upvote/80" 
                     : "text-muted-foreground hover:text-upvote/80"}
@@ -101,7 +140,7 @@ const RestaurantGrid = () => {
                 <Button 
                   variant="ghost" 
                   size="icon"
-                  onClick={() => voteForRestaurant(restaurant.id, 'down')}
+                  onClick={() => handleVote(restaurant.id, 'down')}
                   className={userVotes[restaurant.id] === 'down' 
                     ? "text-downvote hover:text-downvote/80" 
                     : "text-muted-foreground hover:text-downvote/80"}
