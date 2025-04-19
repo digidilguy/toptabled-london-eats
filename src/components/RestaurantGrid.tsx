@@ -1,21 +1,48 @@
-
 import { useRestaurants } from "@/context/RestaurantContext";
 import { MapPin, ThumbsDown, ThumbsUp } from "lucide-react";
 import { Button } from "./ui/button";
-import { useEffect } from "react";
-import { Tag } from "@/types/tags";
+import { useEffect, useRef, useCallback } from "react";
+import { useInfiniteRestaurants } from "@/hooks/useInfiniteRestaurants";
+import { useInView } from "react-intersection-observer";
 
 const RestaurantGrid = () => {
-  const { filteredRestaurants, voteForRestaurant, userVotes } = useRestaurants();
+  const { voteForRestaurant, userVotes, activeTagIds } = useRestaurants();
+  const { ref: loadMoreRef, inView } = useInView();
 
-  console.log("RestaurantGrid rendering with:", filteredRestaurants.length, "restaurants");
-  
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+  } = useInfiniteRestaurants({ activeTagIds });
+
   useEffect(() => {
-    console.log("Current restaurant data:", filteredRestaurants);
-    console.log("Current user votes:", userVotes);
-  }, [filteredRestaurants, userVotes]);
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  if (!filteredRestaurants.length) {
+  if (status === 'loading') {
+    return (
+      <div className="text-center py-12 px-4 rounded-lg border border-neutral/10 bg-white/50 backdrop-blur-sm">
+        <h3 className="text-xl font-medium mb-2">Loading restaurants...</h3>
+      </div>
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <div className="text-center py-12 px-4 rounded-lg border border-neutral/10 bg-white/50 backdrop-blur-sm">
+        <h3 className="text-xl font-medium mb-2">Error loading restaurants</h3>
+        <p className="text-neutral">Please try again later.</p>
+      </div>
+    );
+  }
+
+  const allRestaurants = data?.pages.flatMap(page => page) ?? [];
+
+  if (!allRestaurants.length) {
     return (
       <div className="text-center py-12 px-4 rounded-lg border border-neutral/10 bg-white/50 backdrop-blur-sm">
         <h3 className="text-xl font-medium mb-2">No restaurants found</h3>
@@ -47,7 +74,7 @@ const RestaurantGrid = () => {
 
   return (
     <div className="space-y-4">
-      {filteredRestaurants.map((restaurant) => (
+      {allRestaurants.map((restaurant) => (
         <div 
           key={restaurant.id}
           className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
@@ -109,6 +136,17 @@ const RestaurantGrid = () => {
           </div>
         </div>
       ))}
+      
+      {/* Loading indicator */}
+      <div ref={loadMoreRef} className="py-4 text-center">
+        {isFetchingNextPage ? (
+          <p className="text-neutral">Loading more restaurants...</p>
+        ) : hasNextPage ? (
+          <p className="text-neutral">Scroll to load more</p>
+        ) : (
+          <p className="text-neutral">No more restaurants to load</p>
+        )}
+      </div>
     </div>
   );
 };
