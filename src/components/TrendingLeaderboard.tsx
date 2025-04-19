@@ -57,7 +57,7 @@ const TrendingLeaderboard = () => {
                     href={restaurant.googleMapsLink} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 transition-colors"
+                    className="flex items-center gap-1 text-xs text-neutral hover:text-neutral/80 transition-colors"
                   >
                     <MapPin size={14} />
                     <span>View on Maps</span>
