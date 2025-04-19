@@ -15,16 +15,24 @@ export const tags: Tag[] = [
   { id: 'soho', name: 'Soho', category: 'area' },
   { id: 'shoreditch', name: 'Shoreditch', category: 'area' },
   { id: 'city', name: 'City', category: 'area' },
+  { id: 'exmouth market', name: 'Exmouth Market', category: 'area' },
   
   // Cuisine tags
   { id: 'indian', name: 'Indian', category: 'cuisine' },
   { id: 'italian', name: 'Italian', category: 'cuisine' },
   { id: 'taiwanese', name: 'Taiwanese', category: 'cuisine' },
+  { id: 'finnish', name: 'Finnish', category: 'cuisine' },
+  { id: 'spanish', name: 'Spanish', category: 'cuisine' },
+  { id: 'bbq', name: 'BBQ', category: 'cuisine' },
+  { id: 'sri-lankan', name: 'Sri Lankan', category: 'cuisine' },
   
   // Awards tags
   { id: 'bib-gourmand', name: 'Bib Gourmand', category: 'awards' },
   { id: 'michelin-1-star', name: 'Michelin 1 Star', category: 'awards' },
   { id: 'michelin-2-star', name: 'Michelin 2 Star', category: 'awards' },
+  { id: 'casual', name: 'Casual', category: 'awards' },
+  { id: 'trendy', name: 'Trendy', category: 'awards' },
+  { id: 'upscale', name: 'Upscale', category: 'awards' },
   
   // Dietary tags
   { id: 'vegetarian', name: 'Vegetarian', category: 'dietary' },
