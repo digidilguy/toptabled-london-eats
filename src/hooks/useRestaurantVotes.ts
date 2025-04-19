@@ -1,10 +1,10 @@
-
 import { useState, useEffect } from 'react';
 import { Restaurant } from '@/types/restaurant';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { submitRestaurant } from '@/lib/supabase';
 
 // Map database restaurant to our Restaurant type
 const mapDbRestaurant = (dbRestaurant: any): Restaurant => ({
@@ -323,32 +323,14 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
     mutationFn: async (restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded' | 'status' | 'weeklyVoteIncrease'>) => {
       if (!isAuthenticated) throw new Error('Must be logged in to add restaurants');
       
-      // Generate a new UUID - needed for the database
-      const newUuid = crypto.randomUUID();
-      
-      // Create restaurant object with all required fields including id
-      const newRestaurant = {
-        id: newUuid, 
-        name: restaurantData.name,
-        google_maps_link: restaurantData.googleMapsLink,
-        image_url: restaurantData.imageUrl,
-        status: isAdmin ? 'approved' : 'pending',
-        area_tag: restaurantData.area_tag,
-        cuisine_tag: restaurantData.cuisine_tag,
-        awards_tag: restaurantData.awards_tag,
-        dietary_tag: restaurantData.dietary_tag
-      };
-
-      const { data, error } = await supabase
-        .from('restaurants')
-        .insert(newRestaurant)
-        .select()
-        .single();
-
-      if (error) throw error;
-      
-      // Return mapped restaurant for UI
-      return mapDbRestaurant(data);
+      try {
+        const result = await submitRestaurant(restaurantData, isAdmin);
+        if (!result.restaurant) throw new Error('Failed to add restaurant');
+        return mapDbRestaurant(result.restaurant);
+      } catch (error) {
+        console.error('Error submitting restaurant:', error);
+        throw error;
+      }
     },
     onSuccess: (restaurant) => {
       queryClient.invalidateQueries({ queryKey: ['restaurants'] });
@@ -450,3 +432,16 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
     getRestaurantById: (id: string) => restaurants.find(restaurant => restaurant.id === id)
   };
 };
+
+async function importInitialData() {
+  try {
+    console.log('Importing initial restaurant data to Supabase...');
+    const { importInitialData: libImportInitialData } = await import('@/lib/supabase');
+    const initialData = (await import('@/data/restaurants')).restaurants;
+    await libImportInitialData(initialData);
+    console.log('Initial data imported successfully');
+  } catch (error) {
+    console.error('Error importing initial data:', error);
+    throw error;
+  }
+}

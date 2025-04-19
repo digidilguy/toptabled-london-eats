@@ -1,11 +1,12 @@
 
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRestaurants } from '@/context/RestaurantContext';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from "@/hooks/use-toast";
 
 interface SubmitRestaurantFormProps {
   isOpen: boolean;
@@ -18,7 +19,8 @@ const SubmitRestaurantForm = ({ isOpen, onClose }: SubmitRestaurantFormProps) =>
   const [imageUrl, setImageUrl] = useState('https://source.unsplash.com/random/300x200/?restaurant,food');
   const [isLoading, setIsLoading] = useState(false);
   const { addRestaurant } = useRestaurants();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isAuthenticated } = useAuth();
+  const { toast } = useToast();
 
   const handleClose = () => {
     // Reset form state
@@ -30,6 +32,25 @@ const SubmitRestaurantForm = ({ isOpen, onClose }: SubmitRestaurantFormProps) =>
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication required",
+        description: "You must be logged in to submit a restaurant",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!name || !googleMapsLink) {
+      toast({
+        title: "Missing information",
+        description: "Please fill out all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsLoading(true);
     
     try {
@@ -37,12 +58,23 @@ const SubmitRestaurantForm = ({ isOpen, onClose }: SubmitRestaurantFormProps) =>
         name,
         googleMapsLink,
         imageUrl,
-        // No longer need tagIds as we now use individual tag columns
+      });
+      
+      toast({
+        title: isAdmin ? "Restaurant added" : "Restaurant submitted for review",
+        description: isAdmin 
+          ? `${name} has been added to the list` 
+          : `${name} has been submitted and will be reviewed by an admin`,
       });
       
       handleClose();
     } catch (error) {
       console.error('Error adding restaurant:', error);
+      toast({
+        title: "Error",
+        description: "There was an error submitting the restaurant. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -55,11 +87,16 @@ const SubmitRestaurantForm = ({ isOpen, onClose }: SubmitRestaurantFormProps) =>
           <DialogTitle>
             {isAdmin ? 'Add a New Restaurant' : 'Submit a Restaurant'}
           </DialogTitle>
+          <DialogDescription>
+            {isAdmin 
+              ? "Add a new restaurant to the database" 
+              : "Submit a restaurant for review by our admins"}
+          </DialogDescription>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           <div className="space-y-2">
-            <Label htmlFor="restaurant-name">Restaurant Name</Label>
+            <Label htmlFor="restaurant-name">Restaurant Name *</Label>
             <Input 
               id="restaurant-name"
               value={name}
@@ -70,7 +107,7 @@ const SubmitRestaurantForm = ({ isOpen, onClose }: SubmitRestaurantFormProps) =>
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="google-maps-link">Google Maps Link</Label>
+            <Label htmlFor="google-maps-link">Google Maps Link *</Label>
             <Input 
               id="google-maps-link"
               value={googleMapsLink}

@@ -2,6 +2,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { restaurants as initialRestaurants } from '@/data/restaurants';
 import { tags } from '@/data/tags';
+import { Restaurant } from '@/types/restaurant';
 
 // Function to import initial restaurant data
 export const importInitialData = async (initialRestaurants: any[]) => {
@@ -35,6 +36,48 @@ export const importInitialData = async (initialRestaurants: any[]) => {
     return { success: true, count: dbRestaurants.length };
   } catch (error) {
     console.error('Error importing initial data:', error);
+    throw error;
+  }
+};
+
+// Function to submit a new restaurant (with RLS bypass for admins if needed)
+export const submitRestaurant = async (
+  restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded' | 'weeklyVoteIncrease'>, 
+  isAdmin: boolean
+) => {
+  try {
+    // Generate a new UUID for the restaurant
+    const newUuid = crypto.randomUUID();
+    
+    // Create restaurant object with all required fields
+    const newRestaurant = {
+      id: newUuid,
+      name: restaurantData.name,
+      google_maps_link: restaurantData.googleMapsLink,
+      image_url: restaurantData.imageUrl,
+      vote_count: 0,
+      weekly_vote_increase: 0,
+      date_added: new Date().toISOString().split('T')[0],
+      status: isAdmin ? 'approved' : 'pending',
+      area_tag: restaurantData.area_tag,
+      cuisine_tag: restaurantData.cuisine_tag,
+      awards_tag: restaurantData.awards_tag,
+      dietary_tag: restaurantData.dietary_tag
+    };
+
+    const { data, error } = await supabase
+      .from('restaurants')
+      .insert(newRestaurant)
+      .select();
+
+    if (error) throw error;
+    
+    return { 
+      success: true, 
+      restaurant: data && data.length > 0 ? data[0] : null 
+    };
+  } catch (error) {
+    console.error('Error submitting restaurant:', error);
     throw error;
   }
 };
