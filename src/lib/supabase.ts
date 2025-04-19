@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { restaurants as initialRestaurants } from '@/data/restaurants';
 import { tags } from '@/data/tags';
@@ -49,6 +48,10 @@ export const submitRestaurant = async (
     console.log('Submitting restaurant with data:', JSON.stringify(restaurantData));
     console.log('Is admin:', isAdmin);
     
+    // Get the current user's ID
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('No authenticated user found');
+    
     // Generate a new UUID for the restaurant
     const newUuid = crypto.randomUUID();
     
@@ -66,7 +69,7 @@ export const submitRestaurant = async (
       cuisine_tag: restaurantData.cuisine_tag || null,
       awards_tag: restaurantData.awards_tag || null,
       dietary_tag: restaurantData.dietary_tag || null,
-      created_by: supabase.auth.getUser().then(response => response.data.user?.id) || null
+      created_by: user.id
     };
 
     console.log('Submitting restaurant object:', JSON.stringify(newRestaurant));

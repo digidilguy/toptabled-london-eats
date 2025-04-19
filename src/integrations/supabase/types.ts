@@ -45,6 +45,7 @@ export type Database = {
         Row: {
           area_tag: string | null
           awards_tag: string | null
+          created_by: string | null
           cuisine_tag: string | null
           date_added: string
           dietary_tag: string | null
@@ -59,6 +60,7 @@ export type Database = {
         Insert: {
           area_tag?: string | null
           awards_tag?: string | null
+          created_by?: string | null
           cuisine_tag?: string | null
           date_added?: string
           dietary_tag?: string | null
@@ -73,6 +75,7 @@ export type Database = {
         Update: {
           area_tag?: string | null
           awards_tag?: string | null
+          created_by?: string | null
           cuisine_tag?: string | null
           date_added?: string
           dietary_tag?: string | null
