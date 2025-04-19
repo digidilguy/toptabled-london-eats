@@ -54,11 +54,11 @@ export const useInfiniteRestaurants = (filters: {
           
           const tagColumn = `${category}_tag`;
           
-          // Fixed type issue by explicitly handling array as a normal array
+          // Handle arrays with explicit typing to avoid deep recursion
           if (tagsInCategory.length > 1) {
-            // Create concrete array of string literals instead of inferred type
-            const tagArray: string[] = [...tagsInCategory];
-            query = query.in(tagColumn, tagArray);
+            // Create a new array with a simple string[] type
+            const tagValues: string[] = Array.from(tagsInCategory);
+            query = query.in(tagColumn, tagValues);
           } else if (tagsInCategory.length === 1) {
             query = query.eq(tagColumn, tagsInCategory[0]);
           }
