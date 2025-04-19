@@ -12,7 +12,7 @@ interface VoteResult {
 export const useRestaurantVoting = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const { userVotes, voteForRestaurant, activeTagIds } = useRestaurants();
+  const { userVotes, voteForRestaurant, activeTagIds, activeTagsByCategory } = useRestaurants();
 
   const handleVote = async (restaurantId: string, voteType: 'up' | 'down') => {
     const currentVote = userVotes[restaurantId];
@@ -34,7 +34,7 @@ export const useRestaurantVoting = () => {
     }
 
     // Immediately update the UI optimistically
-    queryClient.setQueryData(['restaurants', 'infinite', { activeTagIds }], (oldData: any) => {
+    queryClient.setQueryData(['restaurants', 'infinite', { activeTagIds, activeTagsByCategory }], (oldData: any) => {
       if (!oldData) return oldData;
       return {
         ...oldData,
