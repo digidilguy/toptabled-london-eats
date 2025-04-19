@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -26,12 +25,12 @@ export default {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         primary: {
-          DEFAULT: '#1A3A5A', // Deep navy blue
+          DEFAULT: '#7E69AB', // Deep Purple
           foreground: '#FFFFFF'
         },
         secondary: {
-          DEFAULT: '#E6E9F0', // Soft grayish blue
-          foreground: '#1A3A5A'
+          DEFAULT: '#F2FCE2', // Soft Green
+          foreground: '#403E43'
         },
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',
@@ -42,7 +41,7 @@ export default {
           foreground: 'hsl(var(--muted-foreground))'
         },
         accent: {
-          DEFAULT: '#34495E', // Slightly lighter navy
+          DEFAULT: '#FEC6A1', // Soft Orange
           foreground: '#FFFFFF'
         },
         popover: {
@@ -55,7 +54,7 @@ export default {
         },
         upvote: '#34A853', // Google's green
         downvote: '#EA4335', // Google's red
-        neutral: '#8E9196' // Soft gray
+        neutral: '#403E43' // Charcoal Gray
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
