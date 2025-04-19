@@ -405,7 +405,7 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         description: "You need to log in to vote for restaurants",
         variant: "destructive",
       });
-      return;
+      return Promise.reject(new Error("Authentication required"));
     }
     
     if (!user?.id) {
@@ -414,10 +414,19 @@ export const useRestaurantVotes = (initialRestaurants: Restaurant[]) => {
         description: "Your user ID is not valid for voting",
         variant: "destructive",
       });
-      return;
+      return Promise.reject(new Error("Invalid user ID"));
     }
     
-    voteMutation.mutate({ restaurantId, voteType });
+    // Return the promise from the mutation
+    return new Promise((resolve, reject) => {
+      voteMutation.mutate(
+        { restaurantId, voteType },
+        {
+          onSuccess: (data) => resolve(data),
+          onError: (error) => reject(error)
+        }
+      );
+    });
   };
 
   const addRestaurant = (restaurantData: Omit<Restaurant, 'id' | 'voteCount' | 'dateAdded' | 'weeklyVoteIncrease' | 'status'>) => {

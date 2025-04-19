@@ -54,9 +54,11 @@ export const useInfiniteRestaurants = (filters: {
           
           const tagColumn = `${category}_tag`;
           
-          // Use a type-safe approach for filtering
+          // Fixed approach to avoid deep type instantiation
           if (tagsInCategory.length > 1) {
-            query = query.in(tagColumn, tagsInCategory as string[]);
+            // Convert to string[] explicitly to avoid TypeScript error
+            const tagValues: string[] = [...tagsInCategory];
+            query = query.in(tagColumn, tagValues);
           } else {
             query = query.eq(tagColumn, tagsInCategory[0]);
           }

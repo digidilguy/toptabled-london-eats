@@ -6,11 +6,13 @@ import { useEffect } from "react";
 import { useInfiniteRestaurants } from "@/hooks/useInfiniteRestaurants";
 import { useInView } from "react-intersection-observer";
 import { useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 
 const RestaurantGrid = () => {
   const { voteForRestaurant, userVotes, activeTagIds, activeTagsByCategory } = useRestaurants();
   const { ref: loadMoreRef, inView } = useInView();
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const {
     data,
@@ -46,6 +48,16 @@ const RestaurantGrid = () => {
       voteDelta = voteType === 'up' ? 1 : -1;
     }
 
+    // Create optimistic update for user votes
+    const newUserVotes = { ...userVotes };
+    if (currentVote === voteType) {
+      // Removing vote
+      delete newUserVotes[restaurantId];
+    } else {
+      // Adding or changing vote
+      newUserVotes[restaurantId] = voteType;
+    }
+
     // Immediately update the UI with optimistic update
     queryClient.setQueryData(['restaurants', 'infinite', { activeTagIds }], (oldData: any) => {
       if (!oldData) return oldData;
@@ -64,9 +76,44 @@ const RestaurantGrid = () => {
         )
       };
     });
+    
+    // Also update userVotes in the cache
+    queryClient.setQueryData(['user-votes', userVotes], () => newUserVotes);
+
+    // Show loading toast
+    const toastId = toast({
+      title: "Processing vote...",
+      description: "Your vote is being processed",
+    });
 
     // Then perform the actual vote
-    voteForRestaurant(restaurantId, voteType);
+    voteForRestaurant(restaurantId, voteType)
+      .catch(error => {
+        console.error('Vote error:', error);
+        // Revert optimistic update on error
+        queryClient.invalidateQueries({ queryKey: ['restaurants', 'infinite'] });
+        queryClient.invalidateQueries({ queryKey: ['user-votes'] });
+        
+        toast({
+          title: "Error",
+          description: "An error occurred while voting. Please try again.",
+          variant: "destructive",
+        });
+      })
+      .finally(() => {
+        // Dismiss loading toast
+        toast({
+          id: toastId,
+          title: currentVote === voteType 
+            ? "Vote removed" 
+            : voteType === 'up' 
+              ? "Upvoted!" 
+              : "Downvoted!",
+          description: currentVote === voteType
+            ? "Your vote has been removed"
+            : `You have ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
+        });
+      });
   };
 
   if (status === 'pending') {
