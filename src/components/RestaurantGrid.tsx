@@ -49,7 +49,9 @@ const RestaurantGrid = () => {
                   variant="ghost" 
                   size="icon"
                   onClick={() => voteForRestaurant(restaurant.id, 'up')}
-                  className="text-upvote hover:text-upvote/80"
+                  className={userVotes[restaurant.id] === 'up' 
+                    ? "text-upvote hover:text-upvote/80" 
+                    : "text-muted-foreground hover:text-upvote/80"}
                 >
                   <ThumbsUp 
                     size={16} 
@@ -61,7 +63,9 @@ const RestaurantGrid = () => {
                   variant="ghost" 
                   size="icon"
                   onClick={() => voteForRestaurant(restaurant.id, 'down')}
-                  className="text-downvote hover:text-downvote/80"
+                  className={userVotes[restaurant.id] === 'down' 
+                    ? "text-downvote hover:text-downvote/80" 
+                    : "text-muted-foreground hover:text-downvote/80"}
                 >
                   <ThumbsDown 
                     size={16} 
