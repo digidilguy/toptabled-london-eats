@@ -50,16 +50,25 @@ export const useRestaurantVoting = () => {
 
     try {
       const result = await voteForRestaurant(restaurantId, voteType);
-      toast({
-        title: result.action === 'removed' 
-          ? "Vote removed" 
-          : voteType === 'up' 
-            ? "Upvoted!" 
-            : "Downvoted!",
-        description: result.action === 'removed'
-          ? "Your vote has been removed"
-          : `You have ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
-      });
+      
+      // Handle the result properly, checking if it has an action property
+      if (result && typeof result === 'object' && 'action' in result) {
+        toast({
+          title: result.action === 'removed' 
+            ? "Vote removed" 
+            : voteType === 'up' 
+              ? "Upvoted!" 
+              : "Downvoted!",
+          description: result.action === 'removed'
+            ? "Your vote has been removed"
+            : `You have ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
+        });
+      } else {
+        toast({
+          title: voteType === 'up' ? "Upvoted!" : "Downvoted!",
+          description: `You have ${voteType === 'up' ? 'upvoted' : 'downvoted'} this restaurant`,
+        });
+      }
     } catch (error) {
       console.error('Vote error:', error);
       queryClient.invalidateQueries({ queryKey: ['restaurants', 'infinite'] });
