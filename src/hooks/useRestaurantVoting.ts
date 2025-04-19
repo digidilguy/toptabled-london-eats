@@ -3,6 +3,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useRestaurants } from "@/context/RestaurantContext";
 
+// Define the expected return type from voteForRestaurant
+interface VoteResult {
+  action: 'removed' | 'voted';
+  type: 'up' | 'down';
+}
+
 export const useRestaurantVoting = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -49,11 +55,11 @@ export const useRestaurantVoting = () => {
     });
 
     try {
-      // Call voteForRestaurant and explicitly await the result
-      const result = await voteForRestaurant(restaurantId, voteType);
+      // Call voteForRestaurant and ensure we properly type the result
+      const result = await voteForRestaurant(restaurantId, voteType) as VoteResult | undefined;
       
-      // Check if result exists and has the correct shape
-      if (result && typeof result === 'object' && 'action' in result) {
+      // Check if result exists and has the expected shape
+      if (result && 'action' in result) {
         toast({
           title: result.action === 'removed' 
             ? "Vote removed" 
