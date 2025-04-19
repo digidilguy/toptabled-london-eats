@@ -1,3 +1,4 @@
+
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Restaurant, TagCategory } from '@/types/restaurant';
@@ -29,8 +30,26 @@ export const useInfiniteRestaurants = (filters: {
     queryFn: async ({ pageParam = 0 }) => {
       console.log('Fetching with filters:', filters);
       
-      // Start with the base query
-      let query = supabase
+      // Build filter conditions separately before creating the query
+      const filterConditions: Record<string, unknown> = {};
+      
+      if (filters.activeTagIds.length > 0 && filters.activeTagsByCategory) {
+        const categories = Object.keys(filters.activeTagsByCategory) as TagCategory[];
+        
+        categories.forEach(category => {
+          const tagsInCategory = filters.activeTagsByCategory![category];
+          
+          if (!tagsInCategory || tagsInCategory.length === 0) return;
+          
+          const tagColumn = `${category}_tag`;
+          filterConditions[tagColumn] = tagsInCategory.length === 1 
+            ? tagsInCategory[0]  // Use eq for single value
+            : tagsInCategory;    // Use in for multiple values
+        });
+      }
+      
+      // Create the base query with pagination
+      const query = supabase
         .from('restaurants')
         .select('*')
         .order('vote_count', { ascending: false })
@@ -39,30 +58,14 @@ export const useInfiniteRestaurants = (filters: {
           (pageParam + 1) * RESTAURANTS_PER_PAGE - 1
         );
 
-      // Apply tag filters if any are active
-      if (filters.activeTagIds.length > 0 && filters.activeTagsByCategory) {
-        // Get all categories with active filters
-        const categories = Object.keys(filters.activeTagsByCategory) as TagCategory[];
-        
-        // Apply AND logic across different categories
-        categories.forEach(category => {
-          const tagsInCategory = filters.activeTagsByCategory![category];
-          
-          // Skip empty categories
-          if (!tagsInCategory || tagsInCategory.length === 0) return;
-          
-          const tagColumn = `${category}_tag`;
-          
-          // Explicitly type the array and use spread operator to avoid recursion
-          const tagValues: string[] = [...tagsInCategory];
-          
-          if (tagValues.length > 1) {
-            query = query.in(tagColumn, tagValues);
-          } else if (tagValues.length === 1) {
-            query = query.eq(tagColumn, tagValues[0]);
-          }
-        });
-      }
+      // Apply all filter conditions at once
+      Object.entries(filterConditions).forEach(([column, value]) => {
+        if (Array.isArray(value)) {
+          query.in(column, value);
+        } else {
+          query.eq(column, value);
+        }
+      });
 
       console.log('Final query:', query);
       const { data, error } = await query;
@@ -72,7 +75,6 @@ export const useInfiniteRestaurants = (filters: {
         throw error;
       }
       
-      // Map each database restaurant to our Restaurant model
       console.log('Query returned restaurants:', data?.length || 0);
       return data ? data.map(mapDbRestaurantToModel) : [];
     },
