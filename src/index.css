@@ -84,7 +84,7 @@
 
 /* Rounded tab styles for the filter */
 [role="tablist"][data-orientation="horizontal"] {
-  @apply rounded-full;
+  @apply rounded-full min-w-full flex-nowrap;
 }
 
 /* Tab styling for the rounded filter tabs */
