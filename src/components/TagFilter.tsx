@@ -112,12 +112,12 @@ const TagFilter = () => {
         )}
         
         <Tabs defaultValue="area" className="w-full">
-          <TabsList className="grid grid-cols-4 w-full mb-2 bg-accent/50">
+          <TabsList className="mb-4 flex w-full overflow-x-auto space-x-1 rounded-full bg-background p-1">
             {tagCategories.map(category => (
               <TabsTrigger 
                 key={category.id} 
                 value={category.id}
-                className="text-xs px-2 py-1.5 data-[state=active]:bg-white data-[state=active]:text-background"
+                className="rounded-full flex-1 px-3 py-2"
               >
                 {category.name}
               </TabsTrigger>
@@ -125,7 +125,7 @@ const TagFilter = () => {
           </TabsList>
           
           {tagCategories.map(category => (
-            <TabsContent key={category.id} value={category.id}>
+            <TabsContent key={category.id} value={category.id} className="p-1">
               {renderTagsByCategory(category.id as TagCategory)}
             </TabsContent>
           ))}

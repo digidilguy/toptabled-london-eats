@@ -81,3 +81,17 @@
 [data-state="inactive"] {
   @apply text-white bg-transparent;
 }
+
+/* Rounded tab styles for the filter */
+[role="tablist"][data-orientation="horizontal"] {
+  @apply rounded-full;
+}
+
+/* Tab styling for the rounded filter tabs */
+[role="tab"][data-state="active"] {
+  @apply bg-white text-background font-medium;
+}
+
+[role="tab"][data-state="inactive"] {
+  @apply text-white bg-transparent hover:bg-white/10;
+}
