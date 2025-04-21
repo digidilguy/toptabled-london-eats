@@ -18,7 +18,9 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <a href="/" className="flex items-center">
-              <span className="text-xl font-bold text-white">LeaderEats</span>
+              <span className="text-xl font-bold text-white border-2 border-[#D946EF] rounded-md px-3 py-1">
+                LeaderEats
+              </span>
               <span className="text-xs ml-2 bg-green-500 text-white px-1.5 py-0.5 rounded">London</span>
             </a>
           </div>
@@ -130,3 +132,4 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
 };
 
 export default Navbar;
+
