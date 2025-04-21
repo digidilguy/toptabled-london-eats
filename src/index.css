@@ -5,8 +5,8 @@
 
 @layer base {
   :root {
-    /* Foundation: deep, luxurious darks & cool accents */
-    --background: 240 8% 7%;    /* rgb(17, 17, 20) Very dark blackish background */
+    /* Background is now blackish (was rgb(17, 17, 20)), now rgb(10,10,10) */
+    --background: 0 0% 5%;      /* rgb(13, 13, 13) True blackish background */
     --foreground: 0 0% 100%;
     --card: 240 7% 14%;          /* #23232a */
     --card-foreground: 0 0% 100%;
@@ -92,7 +92,7 @@
 
 /* Overall page background */
 .food-pattern-bg {
-  background-color: #110f16; /* Dark blackish base for clear contrast */
+  background-color: #0d0d0d; /* True blackish base for clear contrast */
   background-image: none;
 }
 

@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -86,7 +87,7 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-bold">
-            Welcome to TopTabled
+            LeaderEats
           </DialogTitle>
         </DialogHeader>
         
@@ -131,11 +132,13 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
                 <p className="text-red-500 text-sm">{error}</p>
               )}
               
-              <div className="text-xs text-neutral">
-                Demo accounts: user@example.com / password, admin@example.com / password
-              </div>
+              {/* Removed demo accounts section as requested */}
               
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button 
+                type="submit" 
+                className="w-full text-white" 
+                disabled={isLoading}
+              >
                 {isLoading ? "Logging in..." : "Log In"}
               </Button>
             </form>
@@ -184,7 +187,11 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
                 <p className="text-red-500 text-sm">{error}</p>
               )}
               
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button 
+                type="submit" 
+                className="w-full text-white"
+                disabled={isLoading}
+              >
                 {isLoading ? "Creating account..." : "Create Account"}
               </Button>
             </form>
