@@ -97,10 +97,10 @@
 
 /* Basic background color for the food pattern */
 .food-pattern-bg {
-  background-color: hsl(var(--background));
-  background-image: url('data:image/svg+xml;utf8,<svg width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 17.5L11.5 11L16 15.5L23 8.5" stroke="white" stroke-width="2" opacity="0.06" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 8.5H23V13" stroke="white" stroke-width="2" opacity="0.06" stroke-linecap="round" stroke-linejoin="round"/></svg>');
-  background-size: 64px 64px;
+  background-color: hsl(var(--background)); /* this is #181820 */
+  background-image: url('data:image/svg+xml;utf8,<svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 10L7.5 5.5L10 8L14 3.5" stroke="white" stroke-width="1.5" opacity="0.04" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 3.5H14V7" stroke="white" stroke-width="1.5" opacity="0.04" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+  background-size: 32px 32px;
   background-repeat: repeat;
   background-position: center;
-  /* The stencil uses white with 6% opacity—extremely subtle */
+  /* Smaller stencil with very low opacity */
 }
