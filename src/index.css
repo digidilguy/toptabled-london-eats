@@ -97,9 +97,9 @@
 
 /* Food pattern background: lips variations only, faint & spread out */
 .food-pattern-bg {
-  /* SVG background: only lips shapes (4 variations), pastel & faint */
-  background-image: url("data:image/svg+xml;utf8,<svg width='110' height='55' viewBox='0 0 110 55' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M23 34 Q30 42 39 34 Q44 36 54 36 Q64 36 69 34 Q78 42 85 34 Q69 22 54 28 Q39 22 23 34Z' fill='%23FFDEE2' fill-opacity='0.14'/><path d='M9 13 Q16 20 25 14 Q30 16 39 16 Q48 16 53 13 Q62 20 68 13 Q53 4 39 9 Q25 4 9 13Z' fill='%23D946EF' fill-opacity='0.09'/><path d='M60 43 Q68 48 78 43 Q82 45 90 45 Q98 44 101 41 Q107 45 109 39 Q104 31 94 35 Q82 31 70 39 Q60 31 53 39 Z' fill='%23ea384c' fill-opacity='0.10'/><path d='M35 50 Q44 54 54 50 Q58 52 66 52 Q74 50 77 48 Q83 52 84 46 Q78 40 66 44 Q54 40 41 46 Q35 40 30 46 Z' fill='%23FDE1D3' fill-opacity='0.07'/></svg>");
-  background-size: 340px 170px;
+  /* SVG background: fewer lips shapes (3 variations), pastel & faint with bigger spacing */
+  background-image: url("data:image/svg+xml;utf8,<svg width='140' height='70' viewBox='0 0 140 70' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M30 44 Q40 54 52 44 Q58 48 69 48 Q79 48 85 44 Q97 54 107 44 Q85 27 69 35 Q52 27 30 44Z' fill='%23FFDEE2' fill-opacity='0.14'/><path d='M17 17 Q26 26 40 17 Q47 19 58 19 Q69 19 74 17 Q85 26 94 17 Q74 7 58 12 Q40 7 17 17Z' fill='%239b87f5' fill-opacity='0.10'/><path d='M95 54 Q105 60 117 54 Q123 56 134 56 Q145 55 151 51 Q158 56 160 49 Q152 38 135 44 Q117 38 95 54Z' fill='%23D946EF' fill-opacity='0.09'/></svg>");
+  background-size: 420px 210px;
   background-repeat: repeat;
   background-position: center;
   /* Ensure it sits on top of the dark solid background */
