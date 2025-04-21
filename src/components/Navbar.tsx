@@ -13,7 +13,7 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
   const displayName = user?.email?.split('@')[0] || 'User';
 
   return (
-    <nav className="bg-black shadow-sm sticky top-0 z-50 border-b border-border">
+    <nav className="sticky top-0 z-50 border-b border-border bg-background shadow-sm">
       <div className="container mx-auto px-4 md:px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
