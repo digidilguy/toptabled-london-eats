@@ -19,11 +19,10 @@ const IndexPage = () => {
         <div className="container mx-auto px-4 py-8">
           <header className="mb-12 text-center">
             <h1 className="font-serif text-4xl md:text-5xl mb-4 text-white">
-              Top London Restaurants
+              LeaderEats
             </h1>
             <p className="text-white max-w-2xl mx-auto text-lg">
-              A curated list of the best restaurants in London, rated by locals and food lovers. 
-              Discover your next favorite spot!
+              Discover London’s top restaurants, ranked by locals — and vote for your favorites to make your voice heard!
             </p>
           </header>
           
@@ -57,3 +56,4 @@ const IndexPage = () => {
 };
 
 export default IndexPage;
+
