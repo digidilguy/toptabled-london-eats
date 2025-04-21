@@ -22,23 +22,23 @@ const TrendingLeaderboard = () => {
   };
 
   return (
-    <Card className="mb-6 border border-accent/10 shadow-sm bg-card">
-      <CardHeader className="pb-3 bg-card rounded-t-2xl">
+    <Card className="mb-6 border border-accent/10 shadow-sm bg-[#1A1F2C]">
+      <CardHeader className="pb-3 bg-[#1A1F2C] rounded-t-2xl">
         <CardTitle className="text-lg font-bold flex items-center text-white">
           <span className="mr-2">Trending This Week</span>
           <TrendingUp size={18} className="text-green" />
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="bg-[#1A1F2C]">
         <ul className="space-y-3">
           {trendingRestaurants.map((restaurant, index) => (
             <li key={restaurant.id} className="flex items-center gap-3">
-              <span className="font-bold text-lg text-green w-6">{index + 1}</span>
+              <span className="font-bold text-lg text-white w-6">{index + 1}</span>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
                   <span className="font-medium text-white">{restaurant.name}</span>
                   <span className="text-sm font-medium flex items-center gap-1 text-green">
-                    <TrendingUp size={14} />
+                    <TrendingUp size={14} className="text-green" />
                     +{restaurant.weeklyVoteIncrease || 0}
                   </span>
                 </div>
@@ -47,7 +47,7 @@ const TrendingLeaderboard = () => {
                     {getTagNames(restaurant).map((tag, i) => (
                       <span 
                         key={i} 
-                        className="text-xs text-neutral-foreground/80"
+                        className="text-xs text-white/80"
                       >
                         {tag}{i < getTagNames(restaurant).length - 1 ? ',' : ''}
                       </span>
@@ -59,7 +59,7 @@ const TrendingLeaderboard = () => {
                     rel="noopener noreferrer"
                     className="flex items-center gap-1 text-xs text-white/70 hover:text-white transition-colors"
                   >
-                    <MapPin size={14} className="text-white" />
+                    <MapPin size={14} className="text-white/70 group-hover:text-white" />
                     <span>View on Maps</span>
                   </a>
                 </div>

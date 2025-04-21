@@ -40,8 +40,8 @@ const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
               onClick={() => handleVote(restaurant.id, "up")}
               className={
                 userVotes[restaurant.id] === "up"
-                  ? "text-green animate-vote-pulse"
-                  : "text-green/70 hover:text-green"
+                  ? "text-green animate-vote-pulse hover:bg-green/10"
+                  : "text-green/70 hover:text-green hover:bg-green/10"
               }
             >
               <ThumbsUp
@@ -60,16 +60,16 @@ const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
               onClick={() => handleVote(restaurant.id, "down")}
               className={
                 userVotes[restaurant.id] === "down"
-                  ? "text-green animate-vote-pulse"
-                  : "text-green/70 hover:text-green"
+                  ? "text-red-500 animate-vote-pulse hover:bg-red-500/10"
+                  : "text-red-500/80 hover:text-red-500 hover:bg-red-500/10"
               }
             >
               <ThumbsDown
                 size={16}
                 className={
                   userVotes[restaurant.id] === "down"
-                    ? "fill-current text-green"
-                    : "text-green"
+                    ? "fill-current text-red-500"
+                    : "text-red-500"
                 }
               />
             </Button>
@@ -90,9 +90,9 @@ const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
             href={restaurant.googleMapsLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-xs text-white/70 hover:text-white transition-colors"
+            className="flex items-center gap-1 text-xs text-white/70 hover:text-white transition-colors group"
           >
-            <MapPin size={14} className="text-white" />
+            <MapPin size={14} className="text-inherit group-hover:text-white" />
             <span>View on Maps</span>
           </a>
         </div>
@@ -102,4 +102,3 @@ const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
 };
 
 export default RestaurantCard;
-

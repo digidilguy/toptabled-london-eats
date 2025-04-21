@@ -12,15 +12,16 @@ const IndexPage = () => {
 
   return (
     <RestaurantProvider>
-      <div className="min-h-screen bg-gradient-to-br from-secondary to-white">
+      {/* Set dark background to match navbar */}
+      <div className="min-h-screen bg-[#1A1F2C]">
         <Navbar onSubmitRestaurantClick={() => setIsSubmitFormOpen(true)} />
         
         <div className="container mx-auto px-4 py-8">
           <header className="mb-12 text-center">
-            <h1 className="font-serif text-4xl md:text-5xl mb-4 text-accent">
+            <h1 className="font-serif text-4xl md:text-5xl mb-4 text-white">
               Top London Restaurants
             </h1>
-            <p className="text-neutral max-w-2xl mx-auto text-lg">
+            <p className="text-white max-w-2xl mx-auto text-lg">
               A curated list of the best restaurants in London, rated by locals and food lovers. 
               Discover your next favorite spot!
             </p>

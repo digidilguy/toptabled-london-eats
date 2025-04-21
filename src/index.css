@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -25,7 +24,7 @@
     --input: 231 12% 20%;
     --ring: 0 0% 100%;
     --upvote: 142 69% 50%;     /* #27D471 - green for upvote, trending icon, etc */
-    --downvote: 142 69% 50%;   /* #27D471 - green for thumbs-down as well */
+    --downvote: 0 80% 60%;     /* #ea384c - red for thumbs-down */
   }
 }
 
@@ -59,10 +58,12 @@
 }
 
 /* Text upvote/downvote are now green */
-.text-upvote,
-.text-downvote {
+.text-upvote {
   color: #27D471 !important;
 }
 
-/* Remove anything else referencing non-white accent colors */
+.text-downvote {
+  color: #ea384c !important;
+}
 
+/* Remove anything else referencing non-white accent colors */
