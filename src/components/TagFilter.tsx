@@ -1,4 +1,3 @@
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,7 +5,6 @@ import { useRestaurants } from "@/context/RestaurantContext";
 import { tagCategories } from "@/data/tagCategories";
 import { TagCategory } from "@/types/restaurant";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 const TagFilter = () => {
   const { activeTagIds, toggleTagFilter, clearTagFilters, availableTags, restaurants } = useRestaurants();
@@ -111,19 +109,17 @@ const TagFilter = () => {
         )}
         
         <Tabs defaultValue="area" className="w-full">
-          <div className="filter-tabs-scroll-area">
-            <TabsList className="mb-4 flex space-x-1 rounded-full bg-background p-1">
-              {tagCategories.map(category => (
-                <TabsTrigger 
-                  key={category.id} 
-                  value={category.id}
-                  className="rounded-full whitespace-nowrap px-3 py-2"
-                >
-                  {category.name}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </div>
+          <TabsList className="mb-4 w-full grid grid-cols-4 gap-1 rounded-full bg-background p-1">
+            {tagCategories.map(category => (
+              <TabsTrigger 
+                key={category.id} 
+                value={category.id}
+                className="rounded-full text-xs whitespace-nowrap px-2 py-1.5"
+              >
+                {category.name}
+              </TabsTrigger>
+            ))}
+          </TabsList>
           
           {tagCategories.map(category => (
             <TabsContent key={category.id} value={category.id} className="p-1">
