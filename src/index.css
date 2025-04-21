@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -95,13 +96,14 @@
   @apply text-white bg-transparent hover:bg-white/10;
 }
 
-/* Food pattern background: lips variations only, faint & spread out */
+/* Food pattern background: lips variations only, faint, very sparse */
 .food-pattern-bg {
-  /* SVG background: fewer lips shapes (3 variations), pastel & faint with bigger spacing */
-  background-image: url("data:image/svg+xml;utf8,<svg width='140' height='70' viewBox='0 0 140 70' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M30 44 Q40 54 52 44 Q58 48 69 48 Q79 48 85 44 Q97 54 107 44 Q85 27 69 35 Q52 27 30 44Z' fill='%23FFDEE2' fill-opacity='0.14'/><path d='M17 17 Q26 26 40 17 Q47 19 58 19 Q69 19 74 17 Q85 26 94 17 Q74 7 58 12 Q40 7 17 17Z' fill='%239b87f5' fill-opacity='0.10'/><path d='M95 54 Q105 60 117 54 Q123 56 134 56 Q145 55 151 51 Q158 56 160 49 Q152 38 135 44 Q117 38 95 54Z' fill='%23D946EF' fill-opacity='0.09'/></svg>");
-  background-size: 420px 210px;
+  /* SVG background: minimal lips shapes (2 variations), pastel & faint with very big spacing */
+  background-image: url("data:image/svg+xml;utf8,<svg width='200' height='100' viewBox='0 0 200 100' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M50 70 Q65 85 85 70 Q95 78 115 78 Q135 78 145 70 Q165 85 180 70 Q145 45 115 60 Q85 45 50 70Z' fill='%23FFDEE2' fill-opacity='0.14'/><path d='M140 25 Q155 40 180 25 Q195 30 200 30 Q210 30 215 25 Q220 35 220 20 Q210 10 195 15 Q180 10 140 25Z' fill='%239b87f5' fill-opacity='0.10'/></svg>");
+  background-size: 600px 300px;
   background-repeat: repeat;
   background-position: center;
   /* Ensure it sits on top of the dark solid background */
   z-index: 0;
 }
+
