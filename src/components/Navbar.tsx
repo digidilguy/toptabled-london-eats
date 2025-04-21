@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { useAuth } from '@/context/AuthContext';
@@ -12,7 +13,7 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
   const displayName = user?.email?.split('@')[0] || 'User';
 
   return (
-    <nav className="bg-background shadow-sm sticky top-0 z-50 border-b border-border">
+    <nav className="bg-black shadow-sm sticky top-0 z-50 border-b border-border">
       <div className="container mx-auto px-4 md:px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center">

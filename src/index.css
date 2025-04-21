@@ -6,7 +6,7 @@
 @layer base {
   :root {
     /* Foundation: deep, luxurious darks & cool accents */
-    --background: 240 6% 10%;    /* #181820 */
+    --background: 0 0% 0%;       /* Pure black #000000 */
     --foreground: 0 0% 100%;
     --card: 240 7% 14%;          /* #23232a */
     --card-foreground: 0 0% 100%;
@@ -39,7 +39,7 @@
     @apply bg-background text-foreground antialiased;
   }
   body {
-    background-color: hsl(var(--background)) !important;
+    background-color: #000000 !important;
     color: hsl(var(--foreground)) !important;
   }
 }
@@ -98,7 +98,6 @@
 
 /* Basic background color for the food pattern without pattern */
 .food-pattern-bg {
-  background-color: hsl(var(--background)); /* matches navbar/footer #181820 exactly */
+  background-color: #000000; /* Explicit pure black */
   background-image: none;
 }
-

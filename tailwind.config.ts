@@ -24,7 +24,7 @@ export default {
         border: '#23232a',           // softer dark grey for borders
         input: '#23232a',
         ring: '#23232a',
-        background: '#181820',       // nearly black, slight blue influence
+        background: '#000000',       // pure black
         foreground: '#FFFFFF',
 
         primary: {
