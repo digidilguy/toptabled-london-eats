@@ -1,11 +1,12 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* Foundation: deep, dark blue-tinted black */
-    --background: 240 13% 15%;    /* rgb(35,35,42) */
+    /* Foundation: deep, luxurious darks & cool accents */
+    --background: 240 6% 10%;    /* #181820 */
     --foreground: 0 0% 100%;
     --card: 240 7% 14%;          /* #23232a */
     --card-foreground: 0 0% 100%;
