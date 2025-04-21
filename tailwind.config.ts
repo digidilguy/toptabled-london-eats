@@ -26,12 +26,12 @@ export default {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         primary: {
-          DEFAULT: '#0055FF', // Royal blue primary
+          DEFAULT: '#0055FF', // Royal blue
           foreground: '#FFFFFF'
         },
         secondary: {
-          DEFAULT: '#F5F5F5', // Light gray/white
-          foreground: '#121212'
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))'
         },
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',
@@ -54,10 +54,10 @@ export default {
           foreground: 'hsl(var(--card-foreground))'
         },
         upvote: '#2BCC2B', // Bright green
-        downvote: '#E63939', // NME red
+        downvote: '#E63939',
         neutral: {
-          DEFAULT: '#121212', // Deep black
-          foreground: '#FFFFFF'
+          DEFAULT: '#18181b', // rgb(24, 24, 27)
+          foreground: '#f4f4f5' // near-white
         }
       },
       backgroundImage: {
@@ -78,3 +78,4 @@ export default {
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;
+

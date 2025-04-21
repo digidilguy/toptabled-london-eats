@@ -5,51 +5,29 @@
 
 @layer base {
   :root {
-    --background: 231 12% 11%; /* Changed to rgb(24,24,27) approximated in HSL */
-    --foreground: 0 0% 7%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 7%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 7%;
-    --primary: 220 100% 50%;
+    /* All backgrounds are now dark, matching rgb(24,24,27) and similar deep hues */
+    --background: 231 12% 11%; /* ~rgb(24,24,27) */
+    --foreground: 240 6% 94%; /* light text for contrast (#f4f4f5) */
+    --card: 231 10% 13%; /* slightly lighter than bg for separation */
+    --card-foreground: 240 6% 94%;
+    --popover: 231 10% 13%;
+    --popover-foreground: 240 6% 94%;
+    --primary: 220 100% 50%; /* royal blue */
     --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 7%;
-    --muted: 0 0% 90%;
-    --muted-foreground: 0 0% 45%;
-    --accent: 0 72% 51%;
+    --secondary: 231 10% 18%; /* even lighter, but still dark, for secondary cards */
+    --secondary-foreground: 240 6% 94%;
+    --muted: 231 10% 20%; /* muted background goes to soft dark */
+    --muted-foreground: 240 0% 70%; /* softer text for muted/secondary */
+    --accent: 0 72% 51%; /* NME red */
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 85%;
-    --input: 0 0% 85%;
+    --border: 231 10% 22%; /* borders are dark gray */
+    --input: 231 12% 20%;
     --ring: 220 100% 50%;
-    
     /* Custom colors */
     --upvote: 120 61% 50%;
     --downvote: 0 72% 51%;
-  }
-
-  .dark {
-    --background: 0 0% 7%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 7%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 7%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 220 100% 50%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
-    --accent: 0 72% 51%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 220 100% 50%;
   }
 }
 
@@ -57,9 +35,19 @@
   * {
     @apply border-border;
   }
-  body {
-    @apply bg-background text-foreground;
+  html, body {
+    @apply bg-background text-foreground antialiased;
   }
+  body {
+    background-color: rgb(24,24,27) !important;
+    color: #f4f4f5;
+  }
+}
+
+/* Glassmorphism for cards, overlays, and popovers */
+.glass,
+.card-gradient {
+  @apply backdrop-blur-xl bg-card/80 border border-white/5 rounded-2xl shadow-[0_4px_16px_-4px_rgba(0,0,0,0.5)];
 }
 
 /* Custom animation for vote buttons */
@@ -68,17 +56,18 @@
   50% { transform: scale(1.2); }
   100% { transform: scale(1); }
 }
-
 .animate-vote-pulse {
   animation: vote-pulse 0.3s ease-in-out;
 }
 
-/* Add colors for upvote and downvote */
+/* Upvote/downvote text colors for clarity */
 .text-upvote {
   color: rgb(43, 204, 43); /* Bright green */
 }
-
 .text-downvote {
   color: rgb(230, 57, 57); /* NME red */
 }
 
+/* Replace all .bg-white or .bg-white/50 references in existing components with bg-card or bg-background in your components for consistency.
+   For example, replace "bg-white" with "bg-card" in your JSX. If needed for overlays, use "bg-card/90" or "bg-background/80".
+*/
