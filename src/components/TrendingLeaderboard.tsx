@@ -22,8 +22,8 @@ const TrendingLeaderboard = () => {
   };
 
   return (
-    <Card className="mb-6 border border-secondary shadow-sm">
-      <CardHeader className="pb-3 bg-gradient-to-r from-primary/5 to-secondary/30">
+    <Card className="mb-6 border border-accent/10 shadow-sm">
+      <CardHeader className="pb-3 bg-gradient-to-r from-primary/10 to-accent/10">
         <CardTitle className="text-lg font-bold flex items-center">
           <span className="mr-2">Trending This Week</span>
           <TrendingUp size={18} className="text-primary" />
