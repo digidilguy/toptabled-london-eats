@@ -19,7 +19,7 @@ const IndexPage = () => {
         <div className="container mx-auto px-4 py-8">
           <header className="mb-12 text-center">
             <h1
-              className="text-4xl md:text-5xl mb-4 text-white rounded-md inline-block px-6 py-3 font-sans"
+              className="text-4xl md:text-5xl mb-4 text-white rounded-md inline-block px-6 py-3 font-sans font-bold"
               style={{
                 backgroundColor: "#9b87f5",
                 boxShadow: "0 2px 12px 0 rgba(155,135,245,0.13)",
