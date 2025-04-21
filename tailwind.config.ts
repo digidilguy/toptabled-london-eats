@@ -24,40 +24,40 @@ export default {
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
+        foreground: '#FFFFFF',
         primary: {
-          DEFAULT: '#0055FF', // Royal blue
+          DEFAULT: '#FFFFFF', // All primary accents white
           foreground: '#FFFFFF'
         },
         secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))'
+          DEFAULT: '#22232A', // background/tint stays dark
+          foreground: '#FFFFFF'
         },
         destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))'
+          DEFAULT: '#FFFFFF', // even destructive is just white
+          foreground: '#FFFFFF'
         },
         muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))'
+          DEFAULT: '#22232A',
+          foreground: '#FFFFFF'
         },
         accent: {
-          DEFAULT: '#E63939', // NME red
+          DEFAULT: '#FFFFFF', // was red, now white
           foreground: '#FFFFFF'
         },
         popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))'
+          DEFAULT: '#22232A',
+          foreground: '#FFFFFF'
         },
         card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))'
+          DEFAULT: '#26272b',
+          foreground: '#FFFFFF'
         },
-        upvote: '#2BCC2B', // Bright green
-        downvote: '#E63939',
+        upvote: '#FFFFFF', // Bright green replaced with white
+        downvote: '#FFFFFF', // red replaced with white
         neutral: {
-          DEFAULT: '#18181b', // rgb(24, 24, 27)
-          foreground: '#f4f4f5' // near-white
+          DEFAULT: '#18181b',
+          foreground: '#FFFFFF'
         }
       },
       backgroundImage: {

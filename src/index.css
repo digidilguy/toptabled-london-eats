@@ -5,29 +5,27 @@
 
 @layer base {
   :root {
-    /* All backgrounds are now dark, matching rgb(24,24,27) and similar deep hues */
-    --background: 231 12% 11%; /* ~rgb(24,24,27) */
-    --foreground: 240 6% 94%; /* light text for contrast (#f4f4f5) */
-    --card: 231 10% 13%; /* slightly lighter than bg for separation */
-    --card-foreground: 240 6% 94%;
+    --background: 231 12% 11%;
+    --foreground: 0 0% 100%; /* force foreground text to white */
+    --card: 231 10% 13%;
+    --card-foreground: 0 0% 100%;
     --popover: 231 10% 13%;
-    --popover-foreground: 240 6% 94%;
-    --primary: 220 100% 50%; /* royal blue */
+    --popover-foreground: 0 0% 100%;
+    --primary: 0 0% 100%; /* white */
     --primary-foreground: 0 0% 100%;
-    --secondary: 231 10% 18%; /* even lighter, but still dark, for secondary cards */
-    --secondary-foreground: 240 6% 94%;
-    --muted: 231 10% 20%; /* muted background goes to soft dark */
-    --muted-foreground: 240 0% 70%; /* softer text for muted/secondary */
-    --accent: 0 72% 51%; /* NME red */
+    --secondary: 231 10% 18%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 231 10% 20%;
+    --muted-foreground: 0 0% 100%;
+    --accent: 0 0% 100%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
+    --destructive: 0 0% 100%;
     --destructive-foreground: 0 0% 100%;
-    --border: 231 10% 22%; /* borders are dark gray */
+    --border: 231 10% 22%;
     --input: 231 12% 20%;
-    --ring: 220 100% 50%;
-    /* Custom colors */
-    --upvote: 120 61% 50%;
-    --downvote: 0 72% 51%;
+    --ring: 0 0% 100%;
+    --upvote: 0 0% 100%;
+    --downvote: 0 0% 100%;
   }
 }
 
@@ -40,7 +38,7 @@
   }
   body {
     background-color: rgb(24,24,27) !important;
-    color: #f4f4f5;
+    color: #fff !important;
   }
 }
 
@@ -60,14 +58,13 @@
   animation: vote-pulse 0.3s ease-in-out;
 }
 
-/* Upvote/downvote text colors for clarity */
+/* Remove red/green text colors, force all to white for voting/text tags */
 .text-upvote {
-  color: rgb(43, 204, 43); /* Bright green */
+  color: #fff !important;
 }
 .text-downvote {
-  color: rgb(230, 57, 57); /* NME red */
+  color: #fff !important;
 }
 
-/* Replace all .bg-white or .bg-white/50 references in existing components with bg-card or bg-background in your components for consistency.
-   For example, replace "bg-white" with "bg-card" in your JSX. If needed for overlays, use "bg-card/90" or "bg-background/80".
-*/
+/* Remove anything else referencing non-white accent colors */
+

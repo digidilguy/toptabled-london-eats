@@ -40,29 +40,29 @@ const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
               onClick={() => handleVote(restaurant.id, "up")}
               className={
                 userVotes[restaurant.id] === "up"
-                  ? "text-upvote animate-vote-pulse"
-                  : "text-muted-foreground hover:text-upvote/80"
+                  ? "text-white animate-vote-pulse"
+                  : "text-white/70 hover:text-white"
               }
             >
               <ThumbsUp
                 size={16}
-                className={userVotes[restaurant.id] === "up" ? "fill-current" : ""}
+                className={userVotes[restaurant.id] === "up" ? "fill-current text-white" : "text-white"}
               />
             </Button>
-            <span className="text-sm font-medium text-card-foreground">{restaurant.voteCount}</span>
+            <span className="text-sm font-medium text-white">{restaurant.voteCount}</span>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => handleVote(restaurant.id, "down")}
               className={
                 userVotes[restaurant.id] === "down"
-                  ? "text-downvote animate-vote-pulse"
-                  : "text-muted-foreground hover:text-downvote/80"
+                  ? "text-white animate-vote-pulse"
+                  : "text-white/70 hover:text-white"
               }
             >
               <ThumbsDown
                 size={16}
-                className={userVotes[restaurant.id] === "down" ? "fill-current" : ""}
+                className={userVotes[restaurant.id] === "down" ? "fill-current text-white" : "text-white"}
               />
             </Button>
           </div>
@@ -72,7 +72,7 @@ const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
             {getRestaurantTags().map((tagId) => (
               <span
                 key={tagId}
-                className="text-xs px-2 py-0.5 bg-secondary/60 rounded-full text-accent/90"
+                className="text-xs px-2 py-0.5 bg-white/10 rounded-full text-white/90"
               >
                 {getTagDisplayName(tagId)}
               </span>
@@ -82,9 +82,9 @@ const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
             href={restaurant.googleMapsLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 transition-colors"
+            className="flex items-center gap-1 text-xs text-white/70 hover:text-white transition-colors"
           >
-            <MapPin size={14} />
+            <MapPin size={14} className="text-white" />
             <span>View on Maps</span>
           </a>
         </div>
