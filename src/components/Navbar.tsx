@@ -18,7 +18,14 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <a href="/" className="flex items-center">
-              <span className="text-xl font-bold text-white border-2 border-[#D946EF] rounded-md px-3 py-1">
+              <span
+                className="text-xl font-bold text-white rounded-md px-4 py-2"
+                style={{
+                  backgroundColor: "#9b87f5",
+                  boxShadow: "0 2px 12px 0 rgba(155,135,245,0.13)",
+                  border: "none"
+                }}
+              >
                 LeaderEats
               </span>
               <span className="text-xs ml-2 bg-green-500 text-white px-1.5 py-0.5 rounded">London</span>
@@ -122,7 +129,6 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
           </div>
         )}
       </div>
-
       <AuthDialog 
         isOpen={isAuthDialogOpen} 
         onClose={() => setIsAuthDialogOpen(false)} 
