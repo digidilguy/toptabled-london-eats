@@ -22,22 +22,22 @@ const TrendingLeaderboard = () => {
   };
 
   return (
-    <Card className="mb-6 border border-accent/10 shadow-sm">
-      <CardHeader className="pb-3 bg-gradient-to-r from-primary/10 to-accent/10">
-        <CardTitle className="text-lg font-bold flex items-center">
+    <Card className="mb-6 border border-accent/10 shadow-sm bg-card">
+      <CardHeader className="pb-3 bg-card rounded-t-2xl">
+        <CardTitle className="text-lg font-bold flex items-center text-white">
           <span className="mr-2">Trending This Week</span>
-          <TrendingUp size={18} className="text-primary" />
+          <TrendingUp size={18} className="text-green" />
         </CardTitle>
       </CardHeader>
       <CardContent>
         <ul className="space-y-3">
           {trendingRestaurants.map((restaurant, index) => (
             <li key={restaurant.id} className="flex items-center gap-3">
-              <span className="font-bold text-lg text-primary w-6">{index + 1}</span>
+              <span className="font-bold text-lg text-green w-6">{index + 1}</span>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <span className="font-medium">{restaurant.name}</span>
-                  <span className="text-sm text-upvote font-medium flex items-center gap-1">
+                  <span className="font-medium text-white">{restaurant.name}</span>
+                  <span className="text-sm font-medium flex items-center gap-1 text-green">
                     <TrendingUp size={14} />
                     +{restaurant.weeklyVoteIncrease || 0}
                   </span>
@@ -57,9 +57,9 @@ const TrendingLeaderboard = () => {
                     href={restaurant.googleMapsLink} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-xs text-accent hover:text-accent/80 transition-colors"
+                    className="flex items-center gap-1 text-xs text-white/70 hover:text-white transition-colors"
                   >
-                    <MapPin size={14} />
+                    <MapPin size={14} className="text-white" />
                     <span>View on Maps</span>
                   </a>
                 </div>
@@ -73,3 +73,4 @@ const TrendingLeaderboard = () => {
 };
 
 export default TrendingLeaderboard;
+

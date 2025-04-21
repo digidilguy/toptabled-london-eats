@@ -40,8 +40,8 @@ const IndexPage = () => {
           </div>
         </div>
         
-        <footer className="mt-12 py-8 bg-white/50 backdrop-blur-sm border-t">
-          <div className="container mx-auto px-4 text-center text-sm text-neutral">
+        <footer className="mt-12 py-8 bg-[#1A1F2C] backdrop-blur-sm border-t border-accent/10">
+          <div className="container mx-auto px-4 text-center text-sm text-white">
             <p>© 2025 LeaderEats – Discover London's best restaurants</p>
           </div>
         </footer>
@@ -56,3 +56,4 @@ const IndexPage = () => {
 };
 
 export default IndexPage;
+

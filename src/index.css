@@ -6,12 +6,12 @@
 @layer base {
   :root {
     --background: 231 12% 11%;
-    --foreground: 0 0% 100%; /* force foreground text to white */
+    --foreground: 0 0% 100%;
     --card: 231 10% 13%;
     --card-foreground: 0 0% 100%;
     --popover: 231 10% 13%;
     --popover-foreground: 0 0% 100%;
-    --primary: 0 0% 100%; /* white */
+    --primary: 0 0% 100%;
     --primary-foreground: 0 0% 100%;
     --secondary: 231 10% 18%;
     --secondary-foreground: 0 0% 100%;
@@ -24,8 +24,8 @@
     --border: 231 10% 22%;
     --input: 231 12% 20%;
     --ring: 0 0% 100%;
-    --upvote: 0 0% 100%;
-    --downvote: 0 0% 100%;
+    --upvote: 142 69% 50%;     /* #27D471 - green for upvote, trending icon, etc */
+    --downvote: 142 69% 50%;   /* #27D471 - green for thumbs-down as well */
   }
 }
 
@@ -58,12 +58,10 @@
   animation: vote-pulse 0.3s ease-in-out;
 }
 
-/* Remove red/green text colors, force all to white for voting/text tags */
-.text-upvote {
-  color: #fff !important;
-}
+/* Text upvote/downvote are now green */
+.text-upvote,
 .text-downvote {
-  color: #fff !important;
+  color: #27D471 !important;
 }
 
 /* Remove anything else referencing non-white accent colors */

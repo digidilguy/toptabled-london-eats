@@ -26,15 +26,15 @@ export default {
         background: 'hsl(var(--background))',
         foreground: '#FFFFFF',
         primary: {
-          DEFAULT: '#FFFFFF', // All primary accents white
+          DEFAULT: '#FFFFFF',
           foreground: '#FFFFFF'
         },
         secondary: {
-          DEFAULT: '#22232A', // background/tint stays dark
+          DEFAULT: '#22232A',
           foreground: '#FFFFFF'
         },
         destructive: {
-          DEFAULT: '#FFFFFF', // even destructive is just white
+          DEFAULT: '#FFFFFF',
           foreground: '#FFFFFF'
         },
         muted: {
@@ -42,7 +42,7 @@ export default {
           foreground: '#FFFFFF'
         },
         accent: {
-          DEFAULT: '#FFFFFF', // was red, now white
+          DEFAULT: '#FFFFFF',
           foreground: '#FFFFFF'
         },
         popover: {
@@ -53,8 +53,11 @@ export default {
           DEFAULT: '#26272b',
           foreground: '#FFFFFF'
         },
-        upvote: '#FFFFFF', // Bright green replaced with white
-        downvote: '#FFFFFF', // red replaced with white
+        upvote: '#27D471',        // green (used for upvote, trending icon, etc)
+        downvote: '#27D471',      // green for thumbs-down as well
+        green: {
+          DEFAULT: '#27D471',
+        },
         neutral: {
           DEFAULT: '#18181b',
           foreground: '#FFFFFF'

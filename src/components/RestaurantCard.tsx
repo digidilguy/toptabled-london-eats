@@ -40,13 +40,17 @@ const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
               onClick={() => handleVote(restaurant.id, "up")}
               className={
                 userVotes[restaurant.id] === "up"
-                  ? "text-white animate-vote-pulse"
-                  : "text-white/70 hover:text-white"
+                  ? "text-green animate-vote-pulse"
+                  : "text-green/70 hover:text-green"
               }
             >
               <ThumbsUp
                 size={16}
-                className={userVotes[restaurant.id] === "up" ? "fill-current text-white" : "text-white"}
+                className={
+                  userVotes[restaurant.id] === "up"
+                    ? "fill-current text-green"
+                    : "text-green"
+                }
               />
             </Button>
             <span className="text-sm font-medium text-white">{restaurant.voteCount}</span>
@@ -56,13 +60,17 @@ const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
               onClick={() => handleVote(restaurant.id, "down")}
               className={
                 userVotes[restaurant.id] === "down"
-                  ? "text-white animate-vote-pulse"
-                  : "text-white/70 hover:text-white"
+                  ? "text-green animate-vote-pulse"
+                  : "text-green/70 hover:text-green"
               }
             >
               <ThumbsDown
                 size={16}
-                className={userVotes[restaurant.id] === "down" ? "fill-current text-white" : "text-white"}
+                className={
+                  userVotes[restaurant.id] === "down"
+                    ? "fill-current text-green"
+                    : "text-green"
+                }
               />
             </Button>
           </div>

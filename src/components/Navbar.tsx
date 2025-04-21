@@ -13,13 +13,13 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
   const displayName = user?.email?.split('@')[0] || 'User';
 
   return (
-    <nav className="bg-white shadow-sm sticky top-0 z-50">
+    <nav className="bg-[#1A1F2C] shadow-sm sticky top-0 z-50 border-b border-accent/10">
       <div className="container mx-auto px-4 md:px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <a href="/" className="flex items-center">
-              <span className="text-xl font-bold text-primary">LeaderEats</span>
-              <span className="text-xs ml-2 bg-accent text-white px-1.5 py-0.5 rounded">London</span>
+              <span className="text-xl font-bold text-white">LeaderEats</span>
+              <span className="text-xs ml-2 bg-green text-white px-1.5 py-0.5 rounded">London</span>
             </a>
           </div>
 
@@ -28,6 +28,7 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
               <Button 
                 variant="outline" 
                 onClick={onSubmitRestaurantClick}
+                className="border-green text-green hover:bg-green/10"
               >
                 Submit Restaurant
               </Button>
@@ -36,16 +37,18 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
             {isAuthenticated ? (
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
-                  <User size={16} className="text-neutral" />
-                  <span className="text-sm font-medium">
+                  <User size={16} className="text-white" />
+                  <span className="text-sm font-medium text-white">
                     {displayName}
-                    {isAdmin && <span className="ml-1 text-xs text-primary">(Admin)</span>}
+                    {isAdmin && <span className="ml-1 text-xs text-green">(Admin)</span>}
                   </span>
                 </div>
-                <Button variant="ghost" onClick={logout}>Logout</Button>
+                <Button variant="ghost" onClick={logout} className="text-white hover:bg-green/5">
+                  Logout
+                </Button>
               </div>
             ) : (
-              <Button variant="default" onClick={() => setIsAuthDialogOpen(true)}>
+              <Button variant="default" onClick={() => setIsAuthDialogOpen(true)} className="bg-green text-white hover:bg-green/90">
                 Login / Sign Up
               </Button>
             )}
@@ -56,6 +59,7 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
               variant="ghost" 
               size="icon"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-white"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </Button>
@@ -63,12 +67,12 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
         </div>
 
         {isMenuOpen && (
-          <div className="md:hidden pt-4 pb-3 border-t mt-3">
+          <div className="md:hidden pt-4 pb-3 border-t border-green/30 mt-3">
             <div className="flex flex-col gap-2">
               {isAuthenticated && (
                 <Button 
                   variant="outline" 
-                  className="justify-start"
+                  className="justify-start border-green text-green hover:bg-green/10"
                   onClick={() => {
                     if (onSubmitRestaurantClick) {
                       onSubmitRestaurantClick();
@@ -83,15 +87,15 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
               {isAuthenticated ? (
                 <>
                   <div className="py-2 px-3 flex items-center gap-2">
-                    <User size={16} className="text-neutral" />
-                    <span className="text-sm font-medium">
+                    <User size={16} className="text-white" />
+                    <span className="text-sm font-medium text-white">
                       {displayName}
-                      {isAdmin && <span className="ml-1 text-xs text-primary">(Admin)</span>}
+                      {isAdmin && <span className="ml-1 text-xs text-green">(Admin)</span>}
                     </span>
                   </div>
                   <Button 
                     variant="ghost" 
-                    className="justify-start"
+                    className="justify-start text-white hover:bg-green/5"
                     onClick={() => {
                       logout();
                       setIsMenuOpen(false);
@@ -103,7 +107,7 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
               ) : (
                 <Button 
                   variant="default" 
-                  className="justify-start"
+                  className="justify-start bg-green text-white hover:bg-green/90"
                   onClick={() => {
                     setIsAuthDialogOpen(true);
                     setIsMenuOpen(false);
@@ -126,3 +130,4 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
 };
 
 export default Navbar;
+
