@@ -24,7 +24,7 @@ export default {
         border: '#23232a',           // softer dark grey for borders
         input: '#23232a',
         ring: '#23232a',
-        background: '#000000',       // pure black
+        background: '#181820',       // nearly black, slight blue influence
         foreground: '#FFFFFF',
 
         primary: {
@@ -81,3 +81,4 @@ export default {
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;
+
