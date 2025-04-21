@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import TagFilter from "@/components/TagFilter";
@@ -18,7 +19,7 @@ const IndexPage = () => {
         <div className="container mx-auto px-4 py-8">
           <header className="mb-12 text-center">
             <h1
-              className="text-4xl md:text-5xl mb-4 font-sans font-bold inline-block px-6 py-3 rounded-md bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white shadow-md"
+              className="text-4xl md:text-5xl mb-4 font-sans font-bold inline-block px-4 py-2 rounded-md bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white shadow-md"
             >
               LeaderEats
             </h1>
