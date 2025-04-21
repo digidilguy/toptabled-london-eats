@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -84,7 +83,7 @@
 
 /* Rounded tab styles for the filter */
 [role="tablist"][data-orientation="horizontal"] {
-  @apply rounded-full min-w-full flex-nowrap;
+  @apply rounded-full min-w-max pr-2;
 }
 
 /* Tab styling for the rounded filter tabs */
@@ -94,4 +93,18 @@
 
 [role="tab"][data-state="inactive"] {
   @apply text-white bg-transparent hover:bg-white/10;
+}
+
+/* Fix scrollbar styling for filter tabs */
+.filter-tabs-scroll-area {
+  @apply w-full overflow-x-auto;
+}
+
+.filter-tabs-scroll-area::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-tabs-scroll-area {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

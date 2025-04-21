@@ -111,8 +111,8 @@ const TagFilter = () => {
         )}
         
         <Tabs defaultValue="area" className="w-full">
-          <ScrollArea className="max-w-full">
-            <TabsList className="mb-4 flex w-full space-x-1 rounded-full bg-background p-1">
+          <div className="filter-tabs-scroll-area">
+            <TabsList className="mb-4 flex space-x-1 rounded-full bg-background p-1">
               {tagCategories.map(category => (
                 <TabsTrigger 
                   key={category.id} 
@@ -123,7 +123,7 @@ const TagFilter = () => {
                 </TabsTrigger>
               ))}
             </TabsList>
-          </ScrollArea>
+          </div>
           
           {tagCategories.map(category => (
             <TabsContent key={category.id} value={category.id} className="p-1">
