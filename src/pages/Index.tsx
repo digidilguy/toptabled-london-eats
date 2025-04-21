@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import TagFilter from "@/components/TagFilter";
@@ -12,8 +11,8 @@ const IndexPage = () => {
 
   return (
     <RestaurantProvider>
-      {/* Set deep luscious background */}
-      <div className="min-h-screen bg-background">
+      {/* Add subtle food pattern background */}
+      <div className="min-h-screen bg-background food-pattern-bg">
         <Navbar onSubmitRestaurantClick={() => setIsSubmitFormOpen(true)} />
 
         <div className="container mx-auto px-4 py-8">
@@ -56,4 +55,3 @@ const IndexPage = () => {
 };
 
 export default IndexPage;
-
