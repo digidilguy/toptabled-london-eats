@@ -136,8 +136,9 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
               
               <Button 
                 type="submit" 
-                className="w-full text-white" 
+                className="w-full text-[#221F26]" 
                 disabled={isLoading}
+                variant="default"
               >
                 {isLoading ? "Logging in..." : "Log In"}
               </Button>
@@ -189,8 +190,9 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
               
               <Button 
                 type="submit" 
-                className="w-full text-white"
+                className="w-full text-[#221F26]" 
                 disabled={isLoading}
+                variant="default"
               >
                 {isLoading ? "Creating account..." : "Create Account"}
               </Button>
