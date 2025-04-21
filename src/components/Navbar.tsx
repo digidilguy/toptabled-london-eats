@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { useAuth } from '@/context/AuthContext';
@@ -19,7 +18,7 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
           <div className="flex items-center">
             <a href="/" className="flex items-center">
               <span className="text-xl font-bold text-white">LeaderEats</span>
-              <span className="text-xs ml-2 bg-green text-white px-1.5 py-0.5 rounded">London</span>
+              <span className="text-xs ml-2 bg-green-500 text-white px-1.5 py-0.5 rounded">London</span>
             </a>
           </div>
 
@@ -28,7 +27,7 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
               <Button 
                 variant="outline" 
                 onClick={onSubmitRestaurantClick}
-                className="border-green text-green hover:bg-green/10"
+                className="border-green-500 text-green-500 hover:bg-green-700/20"
               >
                 Submit Restaurant
               </Button>
@@ -40,15 +39,15 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
                   <User size={16} className="text-white" />
                   <span className="text-sm font-medium text-white">
                     {displayName}
-                    {isAdmin && <span className="ml-1 text-xs text-green">(Admin)</span>}
+                    {isAdmin && <span className="ml-1 text-xs text-green-500">(Admin)</span>}
                   </span>
                 </div>
-                <Button variant="ghost" onClick={logout} className="text-white hover:bg-green/5">
+                <Button variant="ghost" onClick={logout} className="text-white hover:bg-green-900/20">
                   Logout
                 </Button>
               </div>
             ) : (
-              <Button variant="default" onClick={() => setIsAuthDialogOpen(true)} className="bg-green text-white hover:bg-green/90">
+              <Button variant="default" onClick={() => setIsAuthDialogOpen(true)} className="bg-green-500 text-white hover:bg-green-600">
                 Login / Sign Up
               </Button>
             )}
@@ -67,12 +66,12 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
         </div>
 
         {isMenuOpen && (
-          <div className="md:hidden pt-4 pb-3 border-t border-green/30 mt-3">
+          <div className="md:hidden pt-4 pb-3 border-t border-green-700/30 mt-3">
             <div className="flex flex-col gap-2">
               {isAuthenticated && (
                 <Button 
                   variant="outline" 
-                  className="justify-start border-green text-green hover:bg-green/10"
+                  className="justify-start border-green-500 text-green-500 hover:bg-green-700/20"
                   onClick={() => {
                     if (onSubmitRestaurantClick) {
                       onSubmitRestaurantClick();
@@ -90,12 +89,12 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
                     <User size={16} className="text-white" />
                     <span className="text-sm font-medium text-white">
                       {displayName}
-                      {isAdmin && <span className="ml-1 text-xs text-green">(Admin)</span>}
+                      {isAdmin && <span className="ml-1 text-xs text-green-500">(Admin)</span>}
                     </span>
                   </div>
                   <Button 
                     variant="ghost" 
-                    className="justify-start text-white hover:bg-green/5"
+                    className="justify-start text-white hover:bg-green-900/20"
                     onClick={() => {
                       logout();
                       setIsMenuOpen(false);
@@ -107,7 +106,7 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
               ) : (
                 <Button 
                   variant="default" 
-                  className="justify-start bg-green text-white hover:bg-green/90"
+                  className="justify-start bg-green-500 text-white hover:bg-green-600"
                   onClick={() => {
                     setIsAuthDialogOpen(true);
                     setIsMenuOpen(false);
@@ -130,4 +129,3 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
 };
 
 export default Navbar;
-

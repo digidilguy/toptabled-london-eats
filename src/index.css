@@ -1,30 +1,31 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 231 12% 11%;
+    --background: 210 24% 12%; /* Dark blueish for background/nav/footer */
     --foreground: 0 0% 100%;
-    --card: 231 10% 13%;
+    --card: 210 24% 14%;
     --card-foreground: 0 0% 100%;
-    --popover: 231 10% 13%;
+    --popover: 210 24% 14%;
     --popover-foreground: 0 0% 100%;
     --primary: 0 0% 100%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 231 10% 18%;
+    --secondary: 210 24% 18%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 231 10% 20%;
+    --muted: 210 24% 20%;
     --muted-foreground: 0 0% 100%;
     --accent: 0 0% 100%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 0% 100%;
+    --destructive: 0 80% 60%;  /* red for destructive */
     --destructive-foreground: 0 0% 100%;
-    --border: 231 10% 22%;
-    --input: 231 12% 20%;
+    --border: 210 24% 22%;
+    --input: 210 24% 20%;
     --ring: 0 0% 100%;
-    --upvote: 142 69% 50%;     /* #27D471 - green for upvote, trending icon, etc */
-    --downvote: 0 80% 60%;     /* #ea384c - red for thumbs-down */
+    --upvote: 142 69% 50%;     /* green for upvote */
+    --downvote: 0 80% 60%;     /* red for thumbs-down */
   }
 }
 
@@ -36,12 +37,12 @@
     @apply bg-background text-foreground antialiased;
   }
   body {
-    background-color: rgb(24,24,27) !important;
-    color: #fff !important;
+    background-color: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
   }
 }
 
-/* Glassmorphism for cards, overlays, and popovers */
+/* Glassmorphism adjustments for darker background */
 .glass,
 .card-gradient {
   @apply backdrop-blur-xl bg-card/80 border border-white/5 rounded-2xl shadow-[0_4px_16px_-4px_rgba(0,0,0,0.5)];
@@ -57,13 +58,14 @@
   animation: vote-pulse 0.3s ease-in-out;
 }
 
-/* Text upvote/downvote are now green */
+/* Text upvote/downvote colors */
 .text-upvote {
-  color: #27D471 !important;
+  color: hsl(var(--upvote)) !important;
 }
 
 .text-downvote {
-  color: #ea384c !important;
+  color: hsl(var(--destructive)) !important;
 }
 
-/* Remove anything else referencing non-white accent colors */
+/* Remove other accent colors */
+

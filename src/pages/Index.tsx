@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import TagFilter from "@/components/TagFilter";
@@ -57,4 +56,3 @@ const IndexPage = () => {
 };
 
 export default IndexPage;
-

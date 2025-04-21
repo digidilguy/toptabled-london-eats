@@ -90,7 +90,7 @@ const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
             href={restaurant.googleMapsLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-xs text-white/70 hover:text-white transition-colors group"
+            className="flex items-center gap-1 text-xs text-white/80 hover:text-white transition-colors group"
           >
             <MapPin size={14} className="text-inherit group-hover:text-white" />
             <span>View on Maps</span>
@@ -102,3 +102,4 @@ const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
 };
 
 export default RestaurantCard;
+

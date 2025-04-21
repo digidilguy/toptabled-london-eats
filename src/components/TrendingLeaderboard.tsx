@@ -25,8 +25,8 @@ const TrendingLeaderboard = () => {
     <Card className="mb-6 border border-accent/10 shadow-sm bg-[#1A1F2C]">
       <CardHeader className="pb-3 bg-[#1A1F2C] rounded-t-2xl">
         <CardTitle className="text-lg font-bold flex items-center text-white">
-          <span className="mr-2">Trending This Week</span>
-          <TrendingUp size={18} className="text-green" />
+          <span className="mr-2 text-green-500">Trending This Week</span>
+          <TrendingUp size={18} className="text-green-500" />
         </CardTitle>
       </CardHeader>
       <CardContent className="bg-[#1A1F2C]">
@@ -37,8 +37,8 @@ const TrendingLeaderboard = () => {
               <div className="flex-1">
                 <div className="flex items-center justify-between">
                   <span className="font-medium text-white">{restaurant.name}</span>
-                  <span className="text-sm font-medium flex items-center gap-1 text-green">
-                    <TrendingUp size={14} className="text-green" />
+                  <span className="text-sm font-medium flex items-center gap-1 text-green-500">
+                    <TrendingUp size={14} className="text-green-500" />
                     +{restaurant.weeklyVoteIncrease || 0}
                   </span>
                 </div>
@@ -57,9 +57,9 @@ const TrendingLeaderboard = () => {
                     href={restaurant.googleMapsLink} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-xs text-white/70 hover:text-white transition-colors"
+                    className="flex items-center gap-1 text-xs text-white/80 hover:text-white transition-colors"
                   >
-                    <MapPin size={14} className="text-white/70 group-hover:text-white" />
+                    <MapPin size={14} className="text-inherit" />
                     <span>View on Maps</span>
                   </a>
                 </div>
