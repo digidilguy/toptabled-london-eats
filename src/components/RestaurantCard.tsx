@@ -28,7 +28,7 @@ const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl border border-border bg-card/90 shadow-[0_4px_14px_-4px_rgba(0,0,0,0.5)] transition-shadow hover:shadow-xl">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl border border-border bg-card shadow-[0_4px_14px_-4px_rgba(0,0,0,0.5)] transition-shadow hover:shadow-xl">
       <div className="flex-1 space-y-3 sm:space-y-2">
         <div className="flex items-center justify-between">
           {/* Restaurant Name */}
