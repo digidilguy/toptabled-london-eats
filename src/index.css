@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -96,4 +95,14 @@
   @apply text-white bg-transparent hover:bg-white/10;
 }
 
-/* Removed lips background pattern */
+/* Faint offwhite abstract background */
+.body-bg-offwhite {
+  background: 
+    linear-gradient(120deg, rgba(238,238,238,0.12) 0%, rgba(252,247,255,0.09) 100%);
+  /* Slight repeating transparent dots for gentle texture effect */
+  background-image:
+    radial-gradient(rgba(255,255,255,0.16) 1px, transparent 1px),
+    linear-gradient(120deg, rgba(238,238,238,0.09) 0%, rgba(252,247,255,0.06) 100%);
+  background-size: 36px 36px, cover;
+  /* Soft overlay, doesn't compete with UI */
+}
