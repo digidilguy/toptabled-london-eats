@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import TagFilter from "@/components/TagFilter";
@@ -11,7 +12,6 @@ const IndexPage = () => {
 
   return (
     <RestaurantProvider>
-      {/* Add subtle food pattern background (now thumbs up) */}
       <div className="min-h-screen bg-background food-pattern-bg">
         <Navbar onSubmitRestaurantClick={() => setIsSubmitFormOpen(true)} />
 
@@ -23,7 +23,7 @@ const IndexPage = () => {
               LeaderEats
             </h1>
             <p className="text-white max-w-2xl mx-auto text-lg">
-              Discover London’s top restaurants, ranked by locals — and vote for your favorites to make your voice heard!
+              Discover London's top restaurants, ranked by locals — and vote for your favorites to make your voice heard!
             </p>
           </header>
           
