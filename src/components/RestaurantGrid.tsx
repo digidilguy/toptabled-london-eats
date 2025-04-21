@@ -40,9 +40,9 @@ const RestaurantGrid = () => {
 
   if (!allRestaurants.length) {
     return (
-      <div className="text-center py-12 px-4 rounded-lg border border-neutral/10 bg-white/50 backdrop-blur-sm">
-        <h3 className="text-xl font-medium mb-2">No restaurants found</h3>
-        <p className="text-neutral">Try removing some filters or check back later for new additions!</p>
+      <div className="text-center py-12 px-4 rounded-2xl border border-border bg-card/80 backdrop-blur-lg">
+        <h3 className="text-xl font-medium mb-2 text-card-foreground">No restaurants found</h3>
+        <p className="text-muted-foreground">Try removing some filters or check back later for new additions!</p>
       </div>
     );
   }
