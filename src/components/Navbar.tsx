@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { useAuth } from '@/context/AuthContext';
@@ -20,11 +19,6 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
             <a href="/" className="flex items-center">
               <span
                 className="text-xl font-bold text-white rounded-md px-4 py-2"
-                style={{
-                  backgroundColor: "#9b87f5",
-                  boxShadow: "0 2px 12px 0 rgba(155,135,245,0.13)",
-                  border: "none"
-                }}
               >
                 LeaderEats
               </span>
@@ -138,4 +132,3 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
 };
 
 export default Navbar;
-
