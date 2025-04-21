@@ -70,12 +70,12 @@
 
 /* Badge override for filter selection */
 .badge-selected {
-  @apply bg-card text-foreground border-white/20 hover:bg-card/90;
+  @apply bg-secondary text-foreground border-white/20 hover:bg-secondary/90;
 }
 
 /* Custom data-active styling for tabs */
 [data-state="active"] {
-  @apply bg-card text-foreground font-medium shadow-sm;
+  @apply bg-secondary text-foreground font-medium shadow-sm;
 }
 
 [data-state="inactive"] {
@@ -89,7 +89,7 @@
 
 /* Tab styling for the rounded filter tabs */
 [role="tab"][data-state="active"] {
-  @apply bg-card text-foreground font-medium shadow-sm;
+  @apply bg-secondary text-foreground font-medium shadow-sm;
 }
 
 [role="tab"][data-state="inactive"] {

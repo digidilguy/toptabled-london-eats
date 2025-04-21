@@ -1,3 +1,4 @@
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -52,7 +53,7 @@ const TagFilter = () => {
           <Badge 
             key={tag.id}
             variant={activeTagIds.includes(tag.id) ? "default" : "outline"}
-            className={`cursor-pointer text-xs py-1.5 font-normal ${
+            className={`cursor-pointer text-xs py-1.5 px-3 ${
               activeTagIds.includes(tag.id) 
                 ? "badge-selected" 
                 : "bg-transparent border border-white/20 text-white hover:bg-white/10"
@@ -91,7 +92,7 @@ const TagFilter = () => {
               <p className="text-sm text-white mb-2">Active filters:</p>
               <div className="flex flex-wrap gap-1">
                 {getSelectedTagNames().map((name, index) => (
-                  <span key={index} className="text-xs bg-white text-background px-2 py-1 rounded">
+                  <span key={index} className="text-xs bg-secondary text-foreground px-2 py-1 rounded">
                     {name}
                   </span>
                 ))}
