@@ -6,19 +6,36 @@ import { TrendingUp, MapPin } from "lucide-react";
 const TrendingLeaderboard = () => {
   const { trendingRestaurants } = useRestaurants();
   
-  // Get tag names for a restaurant
-  const getTagNames = (restaurant, limit = 2) => {
-    const restaurantTags = [];
-    if (restaurant.area_tag) restaurantTags.push(restaurant.area_tag);
-    if (restaurant.cuisine_tag) restaurantTags.push(restaurant.cuisine_tag);
-    if (restaurant.awards_tag) restaurantTags.push(restaurant.awards_tag);
-    if (restaurant.dietary_tag) restaurantTags.push(restaurant.dietary_tag);
+  // Get all available tags for a restaurant
+  const getTagNames = (restaurant) => {
+    const tags = [];
     
-    return restaurantTags
-      .slice(0, limit)
-      .map(tagId => tagId.split('-').map(word => 
+    if (restaurant.area_tag) tags.push({
+      type: 'area',
+      value: restaurant.area_tag
+    });
+    
+    if (restaurant.cuisine_tag) tags.push({
+      type: 'cuisine',
+      value: restaurant.cuisine_tag
+    });
+    
+    if (restaurant.awards_tag) tags.push({
+      type: 'awards',
+      value: restaurant.awards_tag
+    });
+    
+    if (restaurant.dietary_tag) tags.push({
+      type: 'dietary',
+      value: restaurant.dietary_tag
+    });
+    
+    return tags.map(tag => ({
+      ...tag,
+      displayName: tag.value.split('-').map(word => 
         word.charAt(0).toUpperCase() + word.slice(1)
-      ).join(' '));
+      ).join(' ')
+    }));
   };
 
   return (
@@ -42,14 +59,14 @@ const TrendingLeaderboard = () => {
                     +{restaurant.weeklyVoteIncrease || 0}
                   </span>
                 </div>
-                <div className="flex flex-wrap items-center gap-2 mt-1">
-                  <div className="flex gap-1">
+                <div className="flex flex-wrap items-center gap-y-1 mt-1">
+                  <div className="flex flex-wrap gap-1 w-full">
                     {getTagNames(restaurant).map((tag, i) => (
                       <span 
-                        key={i} 
-                        className="text-xs text-white/80"
+                        key={`${tag.type}-${i}`} 
+                        className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-white/90"
                       >
-                        {tag}{i < getTagNames(restaurant).length - 1 ? ',' : ''}
+                        {tag.displayName}
                       </span>
                     ))}
                   </div>
@@ -57,7 +74,7 @@ const TrendingLeaderboard = () => {
                     href={restaurant.googleMapsLink} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-xs text-white/80 hover:text-white transition-colors"
+                    className="flex items-center gap-1 text-xs text-white/80 hover:text-white transition-colors mt-1"
                   >
                     <MapPin size={14} className="text-inherit" />
                     <span>View on Maps</span>
