@@ -5,7 +5,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 231 12% 11%; /* Changed to rgb(24,24,27) approximated in HSL */
     --foreground: 0 0% 7%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 7%;
@@ -81,3 +81,4 @@
 .text-downvote {
   color: rgb(230, 57, 57); /* NME red */
 }
+
