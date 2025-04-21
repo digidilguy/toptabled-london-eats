@@ -68,3 +68,16 @@
   color: hsl(var(--downvote)) !important;
 }
 
+/* Badge override for filter selection */
+.badge-selected {
+  @apply bg-white text-background hover:bg-white/90;
+}
+
+/* Custom data-active styling for tabs */
+[data-state="active"] {
+  @apply bg-white text-background font-medium;
+}
+
+[data-state="inactive"] {
+  @apply text-white bg-transparent;
+}

@@ -55,7 +55,11 @@ const TagFilter = () => {
           <Badge 
             key={tag.id}
             variant={activeTagIds.includes(tag.id) ? "default" : "outline"}
-            className="cursor-pointer text-xs py-1.5 font-normal"
+            className={`cursor-pointer text-xs py-1.5 font-normal ${
+              activeTagIds.includes(tag.id) 
+                ? "bg-white text-background hover:bg-white/90" 
+                : "bg-transparent border border-white/20 text-white hover:bg-white/10"
+            }`}
             onClick={() => toggleTagFilter(tag.id)}
           >
             {tag.name}
@@ -79,7 +83,7 @@ const TagFilter = () => {
   };
 
   return (
-    <Card>
+    <Card className="glass border-white/5">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-bold">Filter Restaurants</CardTitle>
       </CardHeader>
@@ -87,10 +91,10 @@ const TagFilter = () => {
         {hasActiveFilters && (
           <div className="flex justify-between items-start mb-4">
             <div>
-              <p className="text-sm text-neutral mb-2">Active filters:</p>
+              <p className="text-sm text-white mb-2">Active filters:</p>
               <div className="flex flex-wrap gap-1">
                 {getSelectedTagNames().map((name, index) => (
-                  <span key={index} className="text-xs bg-accent text-white px-2 py-1 rounded">
+                  <span key={index} className="text-xs bg-white text-background px-2 py-1 rounded">
                     {name}
                   </span>
                 ))}
@@ -100,7 +104,7 @@ const TagFilter = () => {
               variant="ghost" 
               size="sm" 
               onClick={clearTagFilters}
-              className="text-xs"
+              className="text-xs text-white hover:bg-white/10"
             >
               Clear all
             </Button>
@@ -108,12 +112,12 @@ const TagFilter = () => {
         )}
         
         <Tabs defaultValue="area" className="w-full">
-          <TabsList className="grid grid-cols-4 w-full mb-2">
+          <TabsList className="grid grid-cols-4 w-full mb-2 bg-accent/50">
             {tagCategories.map(category => (
               <TabsTrigger 
                 key={category.id} 
                 value={category.id}
-                className="text-xs px-2 py-1.5"
+                className="text-xs px-2 py-1.5 data-[state=active]:bg-white data-[state=active]:text-background"
               >
                 {category.name}
               </TabsTrigger>
