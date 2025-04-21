@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -42,12 +41,6 @@
     background-color: hsl(var(--background)) !important;
     color: hsl(var(--foreground)) !important;
   }
-}
-
-/* Glassmorphism adjustments for darker background */
-.glass,
-.card-gradient {
-  @apply backdrop-blur-xl bg-card/85 border border-white/5 rounded-2xl shadow-[0_4px_16px_-4px_rgba(0,0,0,0.4)];
 }
 
 /* Custom animation for vote buttons */
@@ -96,9 +89,32 @@
   @apply text-white bg-transparent hover:bg-white/10;
 }
 
-/* Basic background color for the food pattern without pattern */
+/* Overall page background */
 .food-pattern-bg {
-  background-color: hsl(var(--background)); /* matches navbar/footer exactly */
+  background-color: #1A1F2C; /* Dark Purple base for clear contrast */
   background-image: none;
 }
 
+/* Trending leaderboard's card background */
+.card.trending-leaderboard {
+  @apply bg-[#7E69AB]/30 border-[#7E69AB]/40;
+  /* semi-transparent secondary purple for distinct look */
+}
+
+/* Filter Restaurants card background */
+.card.filter-restaurants {
+  @apply bg-[#221F26]/60 border-[#7E69AB]/40;
+  /* dark charcoal with purple border for filter panel */
+}
+
+/* Restaurant card background */
+.card-restaurant {
+  @apply bg-[#222229]/80 border-[#1A1F2C]/70;
+  /* slightly lighter charcoal for cards to stand out */
+}
+
+/* Glassmorphism adjustment remains the same for glass & card-gradient */
+.glass,
+.card-gradient {
+  @apply backdrop-blur-xl bg-card/85 border border-white/5 rounded-2xl shadow-[0_4px_16px_-4px_rgba(0,0,0,0.4)];
+}
