@@ -1,4 +1,3 @@
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -43,8 +42,6 @@ const TagFilter = () => {
   const renderTagsByCategory = (category: TagCategory) => {
     const categoryTags = getTagsForCategory(category);
     
-    console.log(`Tags for category ${category}:`, categoryTags);
-    
     if (categoryTags.length === 0) {
       return <p className="text-xs text-neutral-400 italic">No {category} tags available</p>;
     }
@@ -57,7 +54,7 @@ const TagFilter = () => {
             variant={activeTagIds.includes(tag.id) ? "default" : "outline"}
             className={`cursor-pointer text-xs py-1.5 font-normal ${
               activeTagIds.includes(tag.id) 
-                ? "bg-white text-background hover:bg-white/90" 
+                ? "badge-selected" 
                 : "bg-transparent border border-white/20 text-white hover:bg-white/10"
             }`}
             onClick={() => toggleTagFilter(tag.id)}
