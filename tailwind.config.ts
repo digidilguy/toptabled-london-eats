@@ -20,48 +20,48 @@ export default {
     },
     extend: {
       colors: {
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
+        // Deep, rich neutral blacks for background/card/border.
+        border: '#23232a',           // softer dark grey for borders
+        input: '#23232a',
+        ring: '#23232a',
+        background: '#181820',       // nearly black, slight blue influence
         foreground: '#FFFFFF',
+
         primary: {
           DEFAULT: '#FFFFFF',
           foreground: '#FFFFFF'
         },
         secondary: {
-          DEFAULT: '#22232A',
+          DEFAULT: '#222229',        // slightly lighter than bg (for subtle blocks)
           foreground: '#FFFFFF'
         },
         destructive: {
-          DEFAULT: '#FFFFFF',
+          DEFAULT: '#ea384c',
           foreground: '#FFFFFF'
         },
         muted: {
-          DEFAULT: '#22232A',
+          DEFAULT: '#222229',
           foreground: '#FFFFFF'
         },
         accent: {
-          DEFAULT: '#FFFFFF',
+          DEFAULT: '#23232a',
           foreground: '#FFFFFF'
         },
         popover: {
-          DEFAULT: '#22232A',
+          DEFAULT: '#23232a',
           foreground: '#FFFFFF'
         },
         card: {
-          DEFAULT: '#26272b',
+          DEFAULT: '#23232a',        // distinct deep card panel
           foreground: '#FFFFFF'
         },
-        upvote: '#27D471',        // green (used for upvote, trending icon, etc)
-        downvote: '#27D471',      // green for thumbs-down as well
-        green: {
-          DEFAULT: '#27D471',
-        },
+        upvote: '#27D471',           // green, keep as in your design
+        downvote: '#ea384c',         // red, keep as in your design
+
         neutral: {
           DEFAULT: '#18181b',
           foreground: '#FFFFFF'
-        }
+        },
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
@@ -69,9 +69,9 @@ export default {
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
       borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)'
+        lg: '1.2rem',
+        md: '1rem',
+        sm: '0.75rem'
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
@@ -81,4 +81,3 @@ export default {
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;
-

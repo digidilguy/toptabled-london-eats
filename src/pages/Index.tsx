@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import TagFilter from "@/components/TagFilter";
@@ -11,10 +12,10 @@ const IndexPage = () => {
 
   return (
     <RestaurantProvider>
-      {/* Set dark background to match navbar */}
-      <div className="min-h-screen bg-[#1A1F2C]">
+      {/* Set deep luscious background */}
+      <div className="min-h-screen bg-background">
         <Navbar onSubmitRestaurantClick={() => setIsSubmitFormOpen(true)} />
-        
+
         <div className="container mx-auto px-4 py-8">
           <header className="mb-12 text-center">
             <h1 className="font-serif text-4xl md:text-5xl mb-4 text-white">
@@ -40,7 +41,7 @@ const IndexPage = () => {
           </div>
         </div>
         
-        <footer className="mt-12 py-8 bg-[#1A1F2C] backdrop-blur-sm border-t border-accent/10">
+        <footer className="mt-12 py-8 bg-background backdrop-blur-sm border-t border-accent/10">
           <div className="container mx-auto px-4 text-center text-sm text-white">
             <p>© 2025 LeaderEats – Discover London's best restaurants</p>
           </div>

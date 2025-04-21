@@ -22,14 +22,14 @@ const TrendingLeaderboard = () => {
   };
 
   return (
-    <Card className="mb-6 border border-accent/10 shadow-sm bg-[#1A1F2C]">
-      <CardHeader className="pb-3 bg-[#1A1F2C] rounded-t-2xl">
-        <CardTitle className="text-lg font-bold flex items-center text-white">
-          <span className="mr-2 text-green-500">Trending This Week</span>
+    <Card className="mb-6 border border-border shadow-sm bg-card">
+      <CardHeader className="pb-3 bg-card rounded-t-2xl">
+        <CardTitle className="text-lg font-bold flex items-center text-green-500">
+          <span className="mr-2">Trending This Week</span>
           <TrendingUp size={18} className="text-green-500" />
         </CardTitle>
       </CardHeader>
-      <CardContent className="bg-[#1A1F2C]">
+      <CardContent className="bg-card">
         <ul className="space-y-3">
           {trendingRestaurants.map((restaurant, index) => (
             <li key={restaurant.id} className="flex items-center gap-3">
@@ -73,4 +73,3 @@ const TrendingLeaderboard = () => {
 };
 
 export default TrendingLeaderboard;
-

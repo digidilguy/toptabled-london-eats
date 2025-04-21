@@ -28,7 +28,7 @@ const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl border border-border bg-card/80 shadow-[0_4px_14px_-4px_rgba(0,0,0,0.4)] transition-shadow hover:shadow-xl">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl border border-border bg-card/90 shadow-[0_4px_14px_-4px_rgba(0,0,0,0.5)] transition-shadow hover:shadow-xl">
       <div className="flex-1 space-y-3 sm:space-y-2">
         <div className="flex items-center justify-between">
           {/* Restaurant Name */}
@@ -40,16 +40,16 @@ const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
               onClick={() => handleVote(restaurant.id, "up")}
               className={
                 userVotes[restaurant.id] === "up"
-                  ? "text-green animate-vote-pulse hover:bg-green/10"
-                  : "text-green/70 hover:text-green hover:bg-green/10"
+                  ? "text-upvote animate-vote-pulse hover:bg-upvote/10"
+                  : "text-upvote/80 hover:text-upvote hover:bg-upvote/10"
               }
             >
               <ThumbsUp
                 size={16}
                 className={
                   userVotes[restaurant.id] === "up"
-                    ? "fill-current text-green"
-                    : "text-green"
+                    ? "fill-current text-upvote"
+                    : "text-upvote"
                 }
               />
             </Button>
@@ -60,16 +60,16 @@ const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
               onClick={() => handleVote(restaurant.id, "down")}
               className={
                 userVotes[restaurant.id] === "down"
-                  ? "text-red-500 animate-vote-pulse hover:bg-red-500/10"
-                  : "text-red-500/80 hover:text-red-500 hover:bg-red-500/10"
+                  ? "text-downvote animate-vote-pulse hover:bg-downvote/10"
+                  : "text-downvote/80 hover:text-downvote hover:bg-downvote/10"
               }
             >
               <ThumbsDown
                 size={16}
                 className={
                   userVotes[restaurant.id] === "down"
-                    ? "fill-current text-red-500"
-                    : "text-red-500"
+                    ? "fill-current text-downvote"
+                    : "text-downvote"
                 }
               />
             </Button>
@@ -102,4 +102,3 @@ const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
 };
 
 export default RestaurantCard;
-

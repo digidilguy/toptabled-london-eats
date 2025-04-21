@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { useAuth } from '@/context/AuthContext';
@@ -12,7 +13,7 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
   const displayName = user?.email?.split('@')[0] || 'User';
 
   return (
-    <nav className="bg-[#1A1F2C] shadow-sm sticky top-0 z-50 border-b border-accent/10">
+    <nav className="bg-background shadow-sm sticky top-0 z-50 border-b border-border">
       <div className="container mx-auto px-4 md:px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
@@ -27,7 +28,7 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
               <Button 
                 variant="outline" 
                 onClick={onSubmitRestaurantClick}
-                className="border-green-500 text-green-500 hover:bg-green-700/20"
+                className="border-green-500 text-green-500 hover:bg-upvote/10 hover:text-upvote"
               >
                 Submit Restaurant
               </Button>
@@ -42,7 +43,7 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
                     {isAdmin && <span className="ml-1 text-xs text-green-500">(Admin)</span>}
                   </span>
                 </div>
-                <Button variant="ghost" onClick={logout} className="text-white hover:bg-green-900/20">
+                <Button variant="ghost" onClick={logout} className="text-white hover:bg-white/10">
                   Logout
                 </Button>
               </div>
@@ -71,7 +72,7 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
               {isAuthenticated && (
                 <Button 
                   variant="outline" 
-                  className="justify-start border-green-500 text-green-500 hover:bg-green-700/20"
+                  className="justify-start border-green-500 text-green-500 hover:bg-upvote/10 hover:text-upvote"
                   onClick={() => {
                     if (onSubmitRestaurantClick) {
                       onSubmitRestaurantClick();
@@ -94,7 +95,7 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
                   </div>
                   <Button 
                     variant="ghost" 
-                    className="justify-start text-white hover:bg-green-900/20"
+                    className="justify-start text-white hover:bg-white/10"
                     onClick={() => {
                       logout();
                       setIsMenuOpen(false);
