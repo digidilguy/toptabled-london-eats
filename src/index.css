@@ -70,7 +70,7 @@
 
 /* Badge override for filter selection */
 .badge-selected {
-  @apply bg-green-500 text-white border-green-600 hover:bg-green-600;
+  @apply bg-[#E5DEFF] text-[#4B3F6B] border-[#D6CDF4] hover:bg-[#D6CDF4];
 }
 
 /* Custom data-active styling for tabs */
@@ -101,3 +101,4 @@
   background-color: hsl(var(--background)); /* matches navbar/footer exactly */
   background-image: none;
 }
+

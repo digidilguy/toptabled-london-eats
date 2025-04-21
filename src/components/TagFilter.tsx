@@ -57,7 +57,7 @@ const TagFilter = () => {
               variant={isSelected ? "default" : "outline"}
               className={`cursor-pointer text-xs py-1.5 px-3 ${
                 isSelected 
-                  ? "bg-green-500 text-white hover:bg-green-600" 
+                  ? "badge-selected" 
                   : "bg-transparent border border-white/20 text-white hover:bg-white/10"
               }`}
               onClick={() => toggleTagFilter(tag.id)}
@@ -95,7 +95,7 @@ const TagFilter = () => {
               <p className="text-sm text-white mb-2">Active filters:</p>
               <div className="flex flex-wrap gap-1">
                 {getSelectedTagNames().map((name, index) => (
-                  <span key={index} className="text-xs bg-green-500 text-white px-2 py-1 rounded">
+                  <span key={index} className="text-xs badge-selected px-2 py-1 rounded">
                     {name}
                   </span>
                 ))}
@@ -137,3 +137,4 @@ const TagFilter = () => {
 };
 
 export default TagFilter;
+
