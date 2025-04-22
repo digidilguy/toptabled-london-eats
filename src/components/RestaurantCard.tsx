@@ -28,11 +28,11 @@ const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 rounded-2xl border border-border bg-gradient-to-br from-card to-secondary/80 backdrop-blur-sm shadow-[0_4px_14px_-4px_rgba(0,0,0,0.1)] transition-shadow hover:shadow-md">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl border border-border bg-card shadow-[0_4px_14px_-4px_rgba(0,0,0,0.1)] transition-shadow hover:shadow-md">
       <div className="flex-1 space-y-3 sm:space-y-2">
         <div className="flex items-center justify-between">
           {/* Restaurant Name */}
-          <h3 className="font-serif text-xl font-semibold text-primary">{restaurant.name}</h3>
+          <h3 className="font-serif text-lg font-medium text-foreground">{restaurant.name}</h3>
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
@@ -53,7 +53,7 @@ const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
                 }
               />
             </Button>
-            <span className="text-sm font-medium text-primary">{restaurant.voteCount}</span>
+            <span className="text-sm font-medium text-foreground">{restaurant.voteCount}</span>
             <Button
               variant="ghost"
               size="icon"
@@ -76,11 +76,11 @@ const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
           </div>
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-1">
             {getRestaurantTags().map((tagId) => (
               <span
                 key={tagId}
-                className="text-xs px-2.5 py-1 bg-primary/5 rounded-full text-primary/90 font-medium"
+                className="text-xs px-2 py-0.5 bg-secondary rounded-full text-foreground/90"
               >
                 {getTagDisplayName(tagId)}
               </span>
@@ -90,9 +90,9 @@ const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
             href={restaurant.googleMapsLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors group"
+            className="flex items-center gap-1 text-xs text-foreground/80 hover:text-foreground transition-colors group"
           >
-            <MapPin size={14} className="text-inherit group-hover:text-primary" />
+            <MapPin size={14} className="text-inherit group-hover:text-foreground" />
             <span>View on Maps</span>
           </a>
         </div>
