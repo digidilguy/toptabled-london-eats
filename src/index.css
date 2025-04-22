@@ -4,28 +4,28 @@
 
 @layer base {
   :root {
-    --background: 0 0% 4%;        /* #0A0A0A */
-    --foreground: 0 0% 100%;      /* White */
-    --card: 0 0% 8%;             /* #141414 */
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 10%;         /* #1A1A1A */
-    --popover-foreground: 0 0% 100%;
-    --primary: 0 0% 100%;        /* White */
-    --primary-foreground: 0 0% 4%;
-    --secondary: 0 0% 10%;       /* #1A1A1A */
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 10%;
-    --muted-foreground: 0 0% 60%;
-    --accent: 0 0% 16%;          /* #2A2A2A */
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;    /* #ea384c */
+    --background: 0 0% 100%;      /* White */
+    --foreground: 220 17% 11%;    /* Dark gray text */
+    --card: 0 0% 100%;           /* White */
+    --card-foreground: 220 17% 11%;
+    --popover: 0 0% 100%;        /* White */
+    --popover-foreground: 220 17% 11%;
+    --primary: 264 27% 54%;      /* Purple */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 98%;    /* Very light gray */
+    --secondary-foreground: 220 17% 11%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 220 14% 96%;
+    --accent-foreground: 220 17% 11%;
+    --destructive: 0 84% 60%;    /* Red */
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 16%;          /* #2A2A2A */
-    --input: 0 0% 16%;
-    --ring: 0 0% 16%;
+    --border: 220 13% 91%;       /* Light gray border */
+    --input: 220 13% 91%;
+    --ring: 262 83% 58%;
     --radius: 1rem;
-    --upvote: 142 69% 50%;       /* #27D471 */
-    --downvote: 348 81% 58%;     /* #ea384c */
+    --upvote: 142 69% 50%;       /* Green */
+    --downvote: 348 81% 58%;     /* Red */
   }
 }
 
@@ -71,49 +71,46 @@
 }
 
 [data-state="inactive"] {
-  @apply text-white bg-transparent hover:bg-white/10;
+  @apply text-foreground/60 bg-transparent hover:bg-secondary/80;
 }
 
 /* Rounded tab styles for the filter */
 [role="tablist"][data-orientation="horizontal"] {
-  @apply rounded-full bg-background;
+  @apply rounded-full bg-secondary/50;
 }
 
 /* Tab styling for the rounded filter tabs */
 [role="tab"][data-state="active"] {
-  @apply bg-secondary text-foreground font-medium shadow-sm;
+  @apply bg-white text-foreground font-medium shadow-sm;
 }
 
 [role="tab"][data-state="inactive"] {
-  @apply text-white bg-transparent hover:bg-white/10;
+  @apply text-foreground/60 bg-transparent hover:bg-white/50;
 }
 
 /* Overall page background */
 .food-pattern-bg {
-  background-color: #0d0d0d; /* True blackish base for clear contrast */
+  background-color: #ffffff;
   background-image: none;
 }
 
 /* Trending leaderboard's card background */
 .card.trending-leaderboard {
-  @apply bg-[#7E69AB]/30 border-[#7E69AB]/40;
-  /* semi-transparent secondary purple for distinct look */
+  @apply bg-white border-gray-100 shadow-sm;
 }
 
 /* Filter Restaurants card background */
 .card.filter-restaurants {
-  @apply bg-[#221F26]/60 border-[#7E69AB]/40;
-  /* dark charcoal with purple border for filter panel */
+  @apply bg-white border-gray-100 shadow-sm;
 }
 
 /* Restaurant card background */
 .card-restaurant {
-  @apply bg-[#222229]/80 border-[#1A1F2C]/70;
-  /* slightly lighter charcoal for cards to stand out */
+  @apply bg-white border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200;
 }
 
-/* Glassmorphism adjustment remains the same for glass & card-gradient */
+/* Glassmorphism adjustment */
 .glass,
 .card-gradient {
-  @apply backdrop-blur-xl bg-card/90 border border-white/5 rounded-2xl shadow-[0_4px_16px_-4px_rgba(0,0,0,0.6)];
+  @apply backdrop-blur-xl bg-white/90 border border-gray-100 rounded-2xl shadow-[0_4px_16px_-4px_rgba(0,0,0,0.1)];
 }

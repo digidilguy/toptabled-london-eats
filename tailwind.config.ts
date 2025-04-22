@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -19,39 +20,39 @@ export default {
     },
     extend: {
       colors: {
-        border: '#2A2A2A',           // darker border
-        input: '#2A2A2A',
-        ring: '#2A2A2A',
-        background: '#0A0A0A',       // deeper black background
-        foreground: '#FFFFFF',       // white text
+        border: '#E5E7EB',           // light gray border
+        input: '#F3F4F6',            // even lighter input background
+        ring: '#E5E7EB',
+        background: '#FFFFFF',        // pure white background
+        foreground: '#111827',        // dark text for contrast
 
         primary: {
-          DEFAULT: '#FFFFFF',        // white for primary elements
-          foreground: '#0A0A0A'      // black text on primary elements
+          DEFAULT: '#7E69AB',        // purple primary
+          foreground: '#FFFFFF'       // white text on primary
         },
         secondary: {
-          DEFAULT: '#1A1A1A',        // slightly lighter than bg
-          foreground: '#FFFFFF'
+          DEFAULT: '#F9FAFB',        // very light gray
+          foreground: '#4B5563'      // darker gray text
         },
         destructive: {
           DEFAULT: '#ea384c',
           foreground: '#FFFFFF'
         },
         muted: {
-          DEFAULT: '#1A1A1A',
-          foreground: '#999999'      // muted text
+          DEFAULT: '#F3F4F6',
+          foreground: '#6B7280'      // medium gray text
         },
         accent: {
-          DEFAULT: '#2A2A2A',        // accent for cards and UI elements
-          foreground: '#FFFFFF'
+          DEFAULT: '#F3F4F6',        // light accent background
+          foreground: '#111827'
         },
         popover: {
-          DEFAULT: '#1A1A1A',
-          foreground: '#FFFFFF'
+          DEFAULT: '#FFFFFF',
+          foreground: '#111827'
         },
         card: {
-          DEFAULT: '#141414',        // dark card background
-          foreground: '#FFFFFF'
+          DEFAULT: '#FFFFFF',        // white card background
+          foreground: '#111827'
         },
         upvote: '#27D471',          
         downvote: '#ea384c',
@@ -64,12 +65,9 @@ export default {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
         serif: ['DM Serif Display', 'serif']
-      },
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       }
     }
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;
+
