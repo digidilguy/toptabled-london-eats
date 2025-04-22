@@ -50,10 +50,10 @@ const TrendingLeaderboard = () => {
         <ul className="space-y-3">
           {trendingRestaurants.map((restaurant, index) => (
             <li key={restaurant.id} className="flex items-center gap-3">
-              <span className="font-bold text-lg text-white w-6">{index + 1}</span>
+              <span className="font-bold text-lg text-foreground w-6">{index + 1}</span>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <span className="font-medium text-white">{restaurant.name}</span>
+                  <span className="font-medium text-foreground">{restaurant.name}</span>
                   <span className="text-sm font-medium flex items-center gap-1 text-green-500">
                     <TrendingUp size={14} className="text-green-500" />
                     +{restaurant.weeklyVoteIncrease || 0}
@@ -64,7 +64,7 @@ const TrendingLeaderboard = () => {
                     {getTagNames(restaurant).map((tag, i) => (
                       <span 
                         key={`${tag.type}-${i}`} 
-                        className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-white/90"
+                        className="text-xs px-2 py-0.5 rounded-full bg-secondary text-foreground/90"
                       >
                         {tag.displayName}
                       </span>
@@ -74,7 +74,7 @@ const TrendingLeaderboard = () => {
                     href={restaurant.googleMapsLink} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-xs text-white/80 hover:text-white transition-colors mt-1"
+                    className="flex items-center gap-1 text-xs text-foreground/80 hover:text-foreground transition-colors mt-1"
                   >
                     <MapPin size={14} className="text-inherit" />
                     <span>View on Maps</span>

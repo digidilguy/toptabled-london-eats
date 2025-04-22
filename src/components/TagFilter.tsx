@@ -44,7 +44,7 @@ const TagFilter = () => {
     const categoryTags = getTagsForCategory(category);
     
     if (categoryTags.length === 0) {
-      return <p className="text-xs text-neutral-400 italic">No {category} tags available</p>;
+      return <p className="text-xs text-muted-foreground italic">No {category} tags available</p>;
     }
     
     return (
@@ -58,7 +58,7 @@ const TagFilter = () => {
               className={`cursor-pointer text-xs py-1.5 px-3 ${
                 isSelected 
                   ? "badge-selected" 
-                  : "bg-transparent border border-white/20 text-white hover:bg-white/10"
+                  : "bg-transparent border border-border text-foreground hover:bg-secondary/80"
               }`}
               onClick={() => toggleTagFilter(tag.id)}
             >
@@ -84,15 +84,15 @@ const TagFilter = () => {
   };
 
   return (
-    <Card className="glass border-white/5">
+    <Card className="glass border-border">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-bold">Filter Restaurants</CardTitle>
+        <CardTitle className="text-lg font-bold text-foreground">Filter Restaurants</CardTitle>
       </CardHeader>
       <CardContent>
         {hasActiveFilters && (
           <div className="flex justify-between items-start mb-4">
             <div>
-              <p className="text-sm text-white mb-2">Active filters:</p>
+              <p className="text-sm text-foreground mb-2">Active filters:</p>
               <div className="flex flex-wrap gap-1">
                 {getSelectedTagNames().map((name, index) => (
                   <span key={index} className="text-xs badge-selected px-2 py-1 rounded">
@@ -105,7 +105,7 @@ const TagFilter = () => {
               variant="ghost" 
               size="sm" 
               onClick={clearTagFilters}
-              className="text-xs text-white hover:bg-white/10"
+              className="text-xs text-foreground hover:bg-secondary/80"
             >
               Clear all
             </Button>
@@ -137,4 +137,3 @@ const TagFilter = () => {
 };
 
 export default TagFilter;
-
