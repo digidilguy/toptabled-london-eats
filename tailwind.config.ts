@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -20,19 +19,18 @@ export default {
     },
     extend: {
       colors: {
-        // Deep, rich neutral blacks for background/card/border.
-        border: '#23232a',           // softer dark grey for borders
-        input: '#23232a',
-        ring: '#23232a',
-        background: '#181820',       // nearly black, slight blue influence
-        foreground: '#FFFFFF',
+        border: '#2A2A2A',           // darker border
+        input: '#2A2A2A',
+        ring: '#2A2A2A',
+        background: '#0A0A0A',       // deeper black background
+        foreground: '#FFFFFF',       // white text
 
         primary: {
-          DEFAULT: '#FFFFFF',
-          foreground: '#FFFFFF'
+          DEFAULT: '#FFFFFF',        // white for primary elements
+          foreground: '#0A0A0A'      // black text on primary elements
         },
         secondary: {
-          DEFAULT: '#222229',        // slightly lighter than bg (for subtle blocks)
+          DEFAULT: '#1A1A1A',        // slightly lighter than bg
           foreground: '#FFFFFF'
         },
         destructive: {
@@ -40,45 +38,38 @@ export default {
           foreground: '#FFFFFF'
         },
         muted: {
-          DEFAULT: '#222229',
-          foreground: '#FFFFFF'
+          DEFAULT: '#1A1A1A',
+          foreground: '#999999'      // muted text
         },
         accent: {
-          DEFAULT: '#23232a',
+          DEFAULT: '#2A2A2A',        // accent for cards and UI elements
           foreground: '#FFFFFF'
         },
         popover: {
-          DEFAULT: '#23232a',
+          DEFAULT: '#1A1A1A',
           foreground: '#FFFFFF'
         },
         card: {
-          DEFAULT: '#23232a',        // distinct deep card panel
+          DEFAULT: '#141414',        // dark card background
           foreground: '#FFFFFF'
         },
-        upvote: '#27D471',           // green, keep as in your design
-        downvote: '#ea384c',         // red, keep as in your design
-
-        neutral: {
-          DEFAULT: '#18181b',
-          foreground: '#FFFFFF'
-        },
-      },
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic':
-          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        upvote: '#27D471',          
+        downvote: '#ea384c',
       },
       borderRadius: {
-        lg: '1.2rem',
-        md: '1rem',
-        sm: '0.75rem'
+        lg: '1rem',
+        md: '0.75rem',
+        sm: '0.5rem'
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
         serif: ['DM Serif Display', 'serif']
+      },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       }
     }
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;
-

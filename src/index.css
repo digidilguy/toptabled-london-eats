@@ -1,36 +1,34 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* Background is now blackish (was rgb(17, 17, 20)), now rgb(10,10,10) */
-    --background: 0 0% 5%;      /* rgb(13, 13, 13) True blackish background */
-    --foreground: 0 0% 100%;
-    --card: 240 7% 14%;          /* #23232a */
+    --background: 0 0% 4%;        /* #0A0A0A */
+    --foreground: 0 0% 100%;      /* White */
+    --card: 0 0% 8%;             /* #141414 */
     --card-foreground: 0 0% 100%;
-
-    --popover: 240 7% 14%;
+    --popover: 0 0% 10%;         /* #1A1A1A */
     --popover-foreground: 0 0% 100%;
-    --primary: 0 0% 100%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 240 5% 13%;     /* #222229 */
+    --primary: 0 0% 100%;        /* White */
+    --primary-foreground: 0 0% 4%;
+    --secondary: 0 0% 10%;       /* #1A1A1A */
     --secondary-foreground: 0 0% 100%;
-    --muted: 240 5% 13%;
-    --muted-foreground: 0 0% 100%;
-    --accent: 240 7% 13%;        /* #23232a */
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 0 0% 16%;          /* #2A2A2A */
     --accent-foreground: 0 0% 100%;
-    --destructive: 348 81% 58%;  /* #ea384c */
+    --destructive: 0 84% 60%;    /* #ea384c */
     --destructive-foreground: 0 0% 100%;
-    --border: 240 7% 14%;        /* #23232a */
-    --input: 240 7% 14%;
-    --ring: 240 7% 14%;
+    --border: 0 0% 16%;          /* #2A2A2A */
+    --input: 0 0% 16%;
+    --ring: 0 0% 16%;
+    --radius: 1rem;
     --upvote: 142 69% 50%;       /* #27D471 */
     --downvote: 348 81% 58%;     /* #ea384c */
-    --radius: 1.2rem;
   }
 }
+
 @layer base {
   * {
     @apply border-border;
@@ -117,6 +115,5 @@
 /* Glassmorphism adjustment remains the same for glass & card-gradient */
 .glass,
 .card-gradient {
-  @apply backdrop-blur-xl bg-card/85 border border-white/5 rounded-2xl shadow-[0_4px_16px_-4px_rgba(0,0,0,0.4)];
+  @apply backdrop-blur-xl bg-card/90 border border-white/5 rounded-2xl shadow-[0_4px_16px_-4px_rgba(0,0,0,0.6)];
 }
-
