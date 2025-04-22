@@ -86,7 +86,7 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="text-center text-2xl font-bold">
+          <DialogTitle className="text-center text-2xl font-bold text-foreground">
             LeaderEats
           </DialogTitle>
         </DialogHeader>
@@ -97,15 +97,25 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
           onValueChange={(value) => setActiveTab(value as "login" | "signup")}
           className="w-full"
         >
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="login">Log In</TabsTrigger>
-            <TabsTrigger value="signup">Sign Up</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 bg-secondary/50">
+            <TabsTrigger 
+              value="login" 
+              className="data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=inactive]:text-foreground/60"
+            >
+              Log In
+            </TabsTrigger>
+            <TabsTrigger 
+              value="signup" 
+              className="data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=inactive]:text-foreground/60"
+            >
+              Sign Up
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="login">
             <form onSubmit={handleLogin} className="space-y-4 pt-4">
               <div className="space-y-2">
-                <Label htmlFor="login-email">Email</Label>
+                <Label htmlFor="login-email" className="text-foreground">Email</Label>
                 <Input 
                   id="login-email"
                   type="email"
@@ -113,11 +123,12 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
                   onChange={(e) => setLoginEmail(e.target.value)}
                   placeholder="you@example.com"
                   required
+                  className="text-foreground placeholder:text-foreground/60"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="login-password">Password</Label>
+                <Label htmlFor="login-password" className="text-foreground">Password</Label>
                 <Input 
                   id="login-password"
                   type="password"
@@ -125,18 +136,17 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
                   onChange={(e) => setLoginPassword(e.target.value)}
                   placeholder="••••••••"
                   required
+                  className="text-foreground placeholder:text-foreground/60"
                 />
               </div>
               
               {error && (
-                <p className="text-red-500 text-sm">{error}</p>
+                <p className="text-destructive text-sm">{error}</p>
               )}
-              
-              {/* Removed demo accounts section as requested */}
               
               <Button 
                 type="submit" 
-                className="w-full text-[#221F26]" 
+                className="w-full text-primary-foreground" 
                 disabled={isLoading}
                 variant="default"
               >
@@ -148,7 +158,7 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
           <TabsContent value="signup">
             <form onSubmit={handleSignup} className="space-y-4 pt-4">
               <div className="space-y-2">
-                <Label htmlFor="signup-name">Name</Label>
+                <Label htmlFor="signup-name" className="text-foreground">Name</Label>
                 <Input 
                   id="signup-name"
                   type="text"
@@ -156,11 +166,12 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
                   onChange={(e) => setSignupName(e.target.value)}
                   placeholder="Your Name"
                   required
+                  className="text-foreground placeholder:text-foreground/60"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="signup-email">Email</Label>
+                <Label htmlFor="signup-email" className="text-foreground">Email</Label>
                 <Input 
                   id="signup-email"
                   type="email"
@@ -168,11 +179,12 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
                   onChange={(e) => setSignupEmail(e.target.value)}
                   placeholder="you@example.com"
                   required
+                  className="text-foreground placeholder:text-foreground/60"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="signup-password">Password</Label>
+                <Label htmlFor="signup-password" className="text-foreground">Password</Label>
                 <Input 
                   id="signup-password"
                   type="password"
@@ -181,16 +193,17 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }: AuthDialogProps) => {
                   placeholder="••••••••"
                   required
                   minLength={6}
+                  className="text-foreground placeholder:text-foreground/60"
                 />
               </div>
               
               {error && (
-                <p className="text-red-500 text-sm">{error}</p>
+                <p className="text-destructive text-sm">{error}</p>
               )}
               
               <Button 
                 type="submit" 
-                className="w-full text-[#221F26]" 
+                className="w-full text-primary-foreground" 
                 disabled={isLoading}
                 variant="default"
               >
