@@ -19,7 +19,7 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
           <div className="flex items-center">
             <a href="/" className="flex items-center">
               <span
-                className="text-xl font-bold text-white rounded-md px-4 py-2"
+                className="text-xl font-bold text-foreground rounded-md px-4 py-2"
               >
                 LeaderEats
               </span>
@@ -41,13 +41,13 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
             {isAuthenticated ? (
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
-                  <User size={16} className="text-white" />
-                  <span className="text-sm font-medium text-white">
+                  <User size={16} className="text-foreground" />
+                  <span className="text-sm font-medium text-foreground">
                     {displayName}
                     {isAdmin && <span className="ml-1 text-xs text-green-500">(Admin)</span>}
                   </span>
                 </div>
-                <Button variant="ghost" onClick={logout} className="text-white hover:bg-white/10">
+                <Button variant="ghost" onClick={logout} className="text-foreground hover:bg-secondary">
                   Logout
                 </Button>
               </div>
@@ -63,7 +63,7 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
               variant="ghost" 
               size="icon"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-white"
+              className="text-foreground"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </Button>
@@ -91,15 +91,15 @@ const Navbar = ({ onSubmitRestaurantClick }: { onSubmitRestaurantClick?: () => v
               {isAuthenticated ? (
                 <>
                   <div className="py-2 px-3 flex items-center gap-2">
-                    <User size={16} className="text-white" />
-                    <span className="text-sm font-medium text-white">
+                    <User size={16} className="text-foreground" />
+                    <span className="text-sm font-medium text-foreground">
                       {displayName}
                       {isAdmin && <span className="ml-1 text-xs text-green-500">(Admin)</span>}
                     </span>
                   </div>
                   <Button 
                     variant="ghost" 
-                    className="justify-start text-white hover:bg-white/10"
+                    className="justify-start text-foreground hover:bg-secondary"
                     onClick={() => {
                       logout();
                       setIsMenuOpen(false);

@@ -32,7 +32,7 @@ const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
       <div className="flex-1 space-y-3 sm:space-y-2">
         <div className="flex items-center justify-between">
           {/* Restaurant Name */}
-          <h3 className="font-serif text-lg text-foreground">{restaurant.name}</h3>
+          <h3 className="font-serif text-lg font-medium text-foreground">{restaurant.name}</h3>
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"

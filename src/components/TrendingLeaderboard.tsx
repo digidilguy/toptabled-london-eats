@@ -53,7 +53,7 @@ const TrendingLeaderboard = () => {
               <span className="font-bold text-lg text-foreground w-6">{index + 1}</span>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <span className="font-medium text-foreground">{restaurant.name}</span>
+                  <span className="font-serif font-medium text-foreground">{restaurant.name}</span>
                   <span className="text-sm font-medium flex items-center gap-1 text-green-500">
                     <TrendingUp size={14} className="text-green-500" />
                     +{restaurant.weeklyVoteIncrease || 0}

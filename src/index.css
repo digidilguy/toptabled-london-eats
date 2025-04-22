@@ -115,3 +115,28 @@
 .card-gradient {
   @apply backdrop-blur-xl bg-white/90 border border-gray-100 rounded-2xl shadow-[0_4px_16px_-4px_rgba(0,0,0,0.1)];
 }
+
+/* Font family modifications */
+@layer base {
+  .font-serif {
+    font-family: 'DM Serif Display', Georgia, serif;
+  }
+}
+
+/* Dialog styles for better visibility */
+.radix-dialog-content {
+  @apply text-foreground;
+}
+
+.radix-dialog-title,
+.radix-dialog-description {
+  @apply text-foreground;
+}
+
+/* Authentication dialog text fixes */
+[role="dialog"] h2, 
+[role="dialog"] p,
+[role="dialog"] label,
+[role="dialog"] button:not([class*="bg-"]) {
+  @apply text-foreground;
+}

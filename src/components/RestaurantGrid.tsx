@@ -41,7 +41,7 @@ const RestaurantGrid = () => {
   if (!allRestaurants.length) {
     return (
       <div className="text-center py-12 px-4 rounded-2xl border border-border bg-card/80 backdrop-blur-lg">
-        <h3 className="text-xl font-medium mb-2 text-card-foreground">No restaurants found</h3>
+        <h3 className="text-xl font-medium mb-2 text-foreground">No restaurants found</h3>
         <p className="text-muted-foreground">Try removing some filters or check back later for new additions!</p>
       </div>
     );
@@ -55,11 +55,11 @@ const RestaurantGrid = () => {
       
       <div ref={loadMoreRef} className="py-4 text-center">
         {isFetchingNextPage ? (
-          <p className="text-neutral">Loading more restaurants...</p>
+          <p className="text-muted-foreground">Loading more restaurants...</p>
         ) : hasNextPage ? (
-          <p className="text-neutral">Scroll to load more</p>
+          <p className="text-muted-foreground">Scroll to load more</p>
         ) : (
-          <p className="text-neutral">No more restaurants to load</p>
+          <p className="text-muted-foreground text-sm">No more restaurants to load</p>
         )}
       </div>
     </div>

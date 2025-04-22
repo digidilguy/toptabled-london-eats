@@ -118,7 +118,7 @@ const TagFilter = () => {
               <TabsTrigger 
                 key={category.id} 
                 value={category.id}
-                className="rounded-full text-xs whitespace-nowrap px-2 py-1.5"
+                className="rounded-full text-xs whitespace-nowrap px-2 py-1.5 text-foreground"
               >
                 {category.name}
               </TabsTrigger>

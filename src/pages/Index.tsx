@@ -22,7 +22,7 @@ const IndexPage = () => {
             >
               LeaderEats
             </h1>
-            <p className="text-white max-w-2xl mx-auto text-lg">
+            <p className="text-foreground max-w-2xl mx-auto text-lg font-medium">
               Discover London's top restaurants, ranked by locals — and vote for your favorites to make your voice heard!
             </p>
           </header>
@@ -42,7 +42,7 @@ const IndexPage = () => {
         </div>
         
         <footer className="mt-12 py-8 bg-background backdrop-blur-sm border-t border-accent/10">
-          <div className="container mx-auto px-4 text-center text-sm text-white">
+          <div className="container mx-auto px-4 text-center text-sm text-foreground">
             <p>© 2025 LeaderEats – Discover London's best restaurants</p>
           </div>
         </footer>
