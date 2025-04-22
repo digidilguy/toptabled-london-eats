@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -20,42 +19,41 @@ export default {
     },
     extend: {
       colors: {
-        border: '#E5E7EB',           // light gray border
-        input: '#F3F4F6',            // even lighter input background
-        ring: '#E5E7EB',
-        background: '#FFFFFF',        // pure white background
-        foreground: '#111827',        // dark text for contrast
-
+        border: 'hsl(var(--border) / <alpha-value>)',
+        input: 'hsl(var(--input) / <alpha-value>)',
+        ring: 'hsl(var(--ring) / <alpha-value>)',
+        background: 'hsl(var(--background) / <alpha-value>)',
+        foreground: 'hsl(var(--foreground) / <alpha-value>)',
         primary: {
-          DEFAULT: '#7E69AB',        // purple primary
-          foreground: '#FFFFFF'       // white text on primary
+          DEFAULT: 'hsl(var(--primary) / <alpha-value>)',
+          foreground: 'hsl(var(--primary-foreground) / <alpha-value>)'
         },
         secondary: {
-          DEFAULT: '#F9FAFB',        // very light gray
-          foreground: '#4B5563'      // darker gray text
+          DEFAULT: 'hsl(var(--secondary) / <alpha-value>)',
+          foreground: 'hsl(var(--secondary-foreground) / <alpha-value>)'
         },
         destructive: {
-          DEFAULT: '#ea384c',
-          foreground: '#FFFFFF'
+          DEFAULT: 'hsl(var(--destructive) / <alpha-value>)',
+          foreground: 'hsl(var(--destructive-foreground) / <alpha-value>)'
         },
         muted: {
-          DEFAULT: '#F3F4F6',
-          foreground: '#6B7280'      // medium gray text
+          DEFAULT: 'hsl(var(--muted) / <alpha-value>)',
+          foreground: 'hsl(var(--muted-foreground) / <alpha-value>)'
         },
         accent: {
-          DEFAULT: '#F3F4F6',        // light accent background
-          foreground: '#111827'
+          DEFAULT: 'hsl(var(--accent) / <alpha-value>)',
+          foreground: 'hsl(var(--accent-foreground) / <alpha-value>)'
         },
         popover: {
-          DEFAULT: '#FFFFFF',
-          foreground: '#111827'
+          DEFAULT: 'hsl(var(--popover) / <alpha-value>)',
+          foreground: 'hsl(var(--popover-foreground) / <alpha-value>)'
         },
         card: {
-          DEFAULT: '#FFFFFF',        // white card background
-          foreground: '#111827'
+          DEFAULT: 'hsl(var(--card) / <alpha-value>)',
+          foreground: 'hsl(var(--card-foreground) / <alpha-value>)'
         },
-        upvote: '#27D471',          
-        downvote: '#ea384c',
+        upvote: 'hsl(var(--upvote) / <alpha-value>)',
+        downvote: 'hsl(var(--downvote) / <alpha-value>)',
       },
       borderRadius: {
         lg: '1rem',
@@ -70,4 +68,3 @@ export default {
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;
-

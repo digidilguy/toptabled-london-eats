@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,27 +6,27 @@
 @layer base {
   :root {
     --background: 0 0% 100%;      /* White */
-    --foreground: 220 17% 11%;    /* Dark gray text */
-    --card: 0 0% 100%;           /* White */
-    --card-foreground: 220 17% 11%;
-    --popover: 0 0% 100%;        /* White */
-    --popover-foreground: 220 17% 11%;
-    --primary: 264 27% 54%;      /* Purple */
+    --foreground: 240 10% 10%;    /* Very dark gray for better contrast */
+    --card: 0 0% 100%;            /* White */
+    --card-foreground: 240 10% 10%;
+    --popover: 0 0% 100%;         /* White */
+    --popover-foreground: 240 10% 10%;
+    --primary: 264 27% 54%;       /* Purple */
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 98%;    /* Very light gray */
-    --secondary-foreground: 220 17% 11%;
+    --secondary: 210 40% 98%;     /* Very light gray */
+    --secondary-foreground: 240 10% 10%;
     --muted: 220 14% 96%;
     --muted-foreground: 220 9% 46%;
     --accent: 220 14% 96%;
-    --accent-foreground: 220 17% 11%;
-    --destructive: 0 84% 60%;    /* Red */
+    --accent-foreground: 240 10% 10%;
+    --destructive: 0 84% 60%;     /* Red */
     --destructive-foreground: 0 0% 100%;
-    --border: 220 13% 91%;       /* Light gray border */
+    --border: 220 13% 91%;        /* Light gray border */
     --input: 220 13% 91%;
     --ring: 262 83% 58%;
     --radius: 1rem;
-    --upvote: 142 69% 50%;       /* Green */
-    --downvote: 348 81% 58%;     /* Red */
+    --upvote: 142 69% 50%;        /* Green */
+    --downvote: 348 81% 58%;      /* Red */
   }
 }
 
