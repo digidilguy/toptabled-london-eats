@@ -1,4 +1,3 @@
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -55,11 +54,19 @@ const TagFilter = () => {
             <Badge 
               key={tag.id}
               variant={isSelected ? "default" : "outline"}
-              className={`cursor-pointer text-xs py-1.5 px-3 ${
-                isSelected 
-                  ? "badge-selected" 
-                  : "bg-transparent border border-border text-foreground hover:bg-secondary/80"
-              }`}
+              className={`
+                cursor-pointer 
+                text-xs 
+                py-1.5 
+                px-3 
+                ${isSelected 
+                  ? "bg-primary text-primary-foreground" 
+                  : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                }
+                transition-colors
+                duration-200
+                ease-in-out
+              `}
               onClick={() => toggleTagFilter(tag.id)}
             >
               {tag.name}
@@ -113,12 +120,25 @@ const TagFilter = () => {
         )}
         
         <Tabs defaultValue="area" className="w-full">
-          <TabsList className="mb-4 w-full grid grid-cols-4 gap-1 rounded-full bg-background p-1">
+          <TabsList className="mb-4 w-full grid grid-cols-4 gap-1 rounded-full bg-secondary/50 p-1">
             {tagCategories.map(category => (
               <TabsTrigger 
                 key={category.id} 
                 value={category.id}
-                className="rounded-full text-xs whitespace-nowrap px-2 py-1.5 text-foreground"
+                className="
+                  rounded-full 
+                  text-xs 
+                  whitespace-nowrap 
+                  px-2 
+                  py-1.5 
+                  text-foreground 
+                  data-[state=active]:bg-white 
+                  data-[state=active]:text-foreground 
+                  data-[state=active]:shadow-sm
+                  hover:bg-secondary/80
+                  transition-colors
+                  duration-200
+                "
               >
                 {category.name}
               </TabsTrigger>
